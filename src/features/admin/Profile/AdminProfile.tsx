@@ -1,7 +1,8 @@
-import { useAuth } from '@/contexts/AuthContext';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store/store';
 
 const AdminProfile = () => {
-  const { user } = useAuth();
+  const user = useSelector((state: RootState) => state.auth.user);
 
   if (!user) return <p>Loading profile...</p>;
 

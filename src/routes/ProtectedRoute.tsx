@@ -1,14 +1,16 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store/store';
 import type { JSX } from 'react';
 
 interface ProtectedRouteProps {
   allowedRoles: string[];
-  children?: JSX.Element; // ✅ optional for flexibility
+  children?: JSX.Element; // optional for flexibility
 }
 
 const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
-  const { user } = useAuth();
+  // Select user from Redux auth slice
+  const user = useSelector((state: RootState) => state.auth.user);
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -18,7 +20,7 @@ const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
     return <Navigate to="/" replace />;
   }
 
-  // ✅ Render custom layout or nested outlet
+  // Render children or nested routes
   return children ?? <Outlet />;
 };
 

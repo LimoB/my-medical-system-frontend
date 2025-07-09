@@ -1,37 +1,64 @@
-// src/features/admin/Appointments.tsx
-export default function Appointments() {
-  const mockAppointments = [
-    { id: 1, patient: "Alice Smith", doctor: "Dr. Johnson", date: "2025-07-10", time: "10:00 AM", status: "Confirmed" },
-    { id: 2, patient: "Bob Brown", doctor: "Dr. Adams", date: "2025-07-11", time: "1:00 PM", status: "Pending" },
-  ];
+// src/features/admin/ManageAppointments/Appointments.tsx
+
+import { useState } from 'react';
+import { Loader } from 'lucide-react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import AppointmentTable from './AppointmentTable';
+import AppointmentDetails from './AppointmentDetails';
+import { useAppointments } from './useAppointments';
+import type { Appointment } from '@/types/appointment';
+
+const ManageAppointments = () => {
+  const {
+    appointments,
+    loading,
+    error,
+    refresh,
+  } = useAppointments();
+
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Appointments</h1>
-      <div className="overflow-x-auto bg-white shadow rounded-lg">
-        <table className="min-w-full text-sm text-left">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-2">Patient</th>
-              <th className="px-4 py-2">Doctor</th>
-              <th className="px-4 py-2">Date</th>
-              <th className="px-4 py-2">Time</th>
-              <th className="px-4 py-2">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mockAppointments.map((a) => (
-              <tr key={a.id} className="border-t">
-                <td className="px-4 py-2">{a.patient}</td>
-                <td className="px-4 py-2">{a.doctor}</td>
-                <td className="px-4 py-2">{a.date}</td>
-                <td className="px-4 py-2">{a.time}</td>
-                <td className="px-4 py-2">{a.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div className="flex min-h-screen bg-gradient-to-br from-green-100 via-blue-100 to-white text-gray-800">
+      {/* Toastify container */}
+      <ToastContainer position="top-right" autoClose={4000} hideProgressBar={false} closeOnClick pauseOnHover />
+
+      <main className="flex-1 p-6 sm:p-8">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-blue-900">Manage Appointments</h1>
+        </div>
+
+        {/* Status Messages */}
+        {loading ? (
+          <div className="flex items-center gap-2 text-blue-600">
+            <Loader className="animate-spin" size={20} />
+            Loading appointments...
+          </div>
+        ) : error ? (
+          <p className="text-red-600 font-medium">{error}</p>
+        ) : appointments.length === 0 ? (
+          <p className="text-gray-500">No appointments found.</p>
+        ) : (
+          <AppointmentTable
+            appointments={appointments}
+            onView={(appt) => setSelectedAppointment(appt)}
+          />
+        )}
+
+        {/* Details Modal */}
+        {selectedAppointment && (
+          <AppointmentDetails
+            appointment={selectedAppointment}
+            onClose={() => setSelectedAppointment(null)}
+            onUpdated={refresh}
+          />
+        )}
+      </main>
     </div>
   );
-}
+};
+
+export default ManageAppointments;

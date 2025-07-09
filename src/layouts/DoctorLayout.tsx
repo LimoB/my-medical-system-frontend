@@ -1,7 +1,8 @@
 // src/layouts/DoctorLayout.tsx
 import { useState } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store/store';
 import LogoutButton from '../components/LogoutButton';
 import {
   LayoutDashboard,
@@ -16,7 +17,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 const DoctorLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { user } = useAuth();
+
+  // Get user from Redux store instead of context
+  const user = useSelector((state: RootState) => state.auth.user);
   const navigate = useNavigate();
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -120,7 +123,7 @@ const DoctorLayout = () => {
                     </button>
                     <div className="border-t border-gray-200 my-1" />
                     <div className="px-4 py-2">
-                      {/* <LogoutButton /> */}
+                      <LogoutButton />
                     </div>
                   </motion.div>
                 )}

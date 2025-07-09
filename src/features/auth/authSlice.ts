@@ -1,6 +1,7 @@
 // File: src/features/auth/authSlice.ts
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
+// Define the decoded JWT token payload
 export interface DecodedToken {
   id: number;
   email: string;
@@ -10,14 +11,16 @@ export interface DecodedToken {
   avatarUrl?: string;
   contact_phone?: string;
   address?: string;
-  exp: number; // expiration
+  exp: number; // expiration timestamp
 }
 
+// Define the auth slice state
 interface AuthState {
   token: string | null;
   user: DecodedToken | null;
 }
 
+// Initial empty state — redux-persist will rehydrate automatically
 const initialState: AuthState = {
   token: null,
   user: null,
