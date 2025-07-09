@@ -19,8 +19,24 @@ export default {
         // Custom alias for primary usage
         primary: '#007F88',
       },
+
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
+      },
+
+      animation: {
+        'fade-in': 'fadeIn 0.2s ease-out',
+      },
+
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: 0, transform: 'scale(0.95)' },
+          '100%': { opacity: 1, transform: 'scale(1)' },
+        },
+      },
+
+      backgroundImage: {
+        'blue-green': 'linear-gradient(to right, #3b82f6, #10b981)',
       },
     },
   },
