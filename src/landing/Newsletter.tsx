@@ -1,24 +1,26 @@
 const Newsletter = () => {
-    return (
-        <section className="bg-teal-700 text-white py-16 px-6 md:px-12">
-            <div className="max-w-3xl mx-auto text-center">
-                <h2 className="text-3xl font-bold mb-4">Stay Informed</h2>
-                <p className="text-white/90 mb-6">
-                    Subscribe to our newsletter for health tips, clinic updates, and more.
-                </p>
-                <form className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <input
-                        type="email"
-                        placeholder="Enter your email"
-                        className="px-4 py-3 rounded text-gray-800 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-white"
-                    />
-                    <button className="bg-white text-teal-700 font-semibold px-6 py-3 rounded hover:bg-teal-100 transition">
-                        Subscribe
-                    </button>
-                </form>
-            </div>
-        </section>
-    );
+  return (
+    <section className="bg-[#f4f4f5] text-teal-700 py-16 px-6 md:px-12">
+      <div className="max-w-6xl mx-auto text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-teal-700 mb-6">
+          Stay Informed
+        </h2>
+        <p className="text-gray-600 mb-12 max-w-2xl mx-auto text-base md:text-lg">
+          Subscribe to our newsletter for health tips, clinic updates, and more.
+        </p>
+        <form className="flex flex-col sm:flex-row gap-6 justify-center">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            className="px-4 py-3 rounded-xl text-gray-800 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-lg transition-all"
+          />
+          <button className="bg-teal-700 text-white font-semibold px-6 py-3 rounded-xl hover:bg-teal-800 transition-shadow duration-300">
+            Subscribe
+          </button>
+        </form>
+      </div>
+    </section>
+  );
 };
 
 export default Newsletter;

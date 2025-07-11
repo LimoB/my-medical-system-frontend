@@ -8,8 +8,21 @@ import './App.css';
 function App() {
   return (
     <>
+      {/* All routes are handled through AppRoutes */}
       <AppRoutes />
-      <ToastContainer position="top-center" autoClose={3000} />
+
+      {/* Toast notifications container */}
+      <ToastContainer 
+        position="top-center" 
+        autoClose={3000} 
+        hideProgressBar={false} 
+        newestOnTop={false} 
+        closeOnClick 
+        rtl={false} 
+        pauseOnFocusLoss 
+        draggable 
+        pauseOnHover 
+      />
     </>
   );
 }

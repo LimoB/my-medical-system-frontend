@@ -1,4 +1,3 @@
-// File: src/landing/Header.tsx
 import { Link, useLocation } from 'react-router-dom';
 
 const Header = () => {
@@ -10,7 +9,7 @@ const Header = () => {
     }`;
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-[#f4f4f5] shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
@@ -23,10 +22,14 @@ const Header = () => {
         {/* Nav Links */}
         <nav className="hidden md:flex space-x-6 text-gray-700 font-medium">
           <Link to="/" className={linkClasses('/')}>Home</Link>
-          <a href="#services" className="hover:text-teal-600">Service</a>
-          <a href="#contact" className="hover:text-teal-600">Contact Us</a>
-          <a href="#help" className="hover:text-teal-600">Help</a>
-          <a href="#insights" className="hover:text-teal-600">Health Insights</a>
+          {/* Updated Link to navigate to the Service Page */}
+          <Link to="/service" className={linkClasses('/service')}>Service</Link>
+          {/* Link to navigate to ContactPage */}
+          <Link to="/contact" className={linkClasses('/contact')}>Contact Us</Link>
+          {/* Link to navigate to Help Page */}
+          <Link to="/help" className={linkClasses('/help')}>Help</Link>
+          {/* Link to navigate to Health Insights Page */}
+          <Link to="/insights" className={linkClasses('/insights')}>Health Insights</Link>
         </nav>
 
         {/* Auth Buttons */}

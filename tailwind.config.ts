@@ -18,6 +18,9 @@ export default {
           50: '#E6FAFB',
         },
 
+        // Custom color for footer
+        'footer-background': '#007E85',
+
         // Semantic colors
         success: '#4ade80',  // green-400
         error: '#f87171',    // red-400
