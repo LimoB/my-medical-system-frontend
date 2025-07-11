@@ -1,144 +1,77 @@
-// src/layouts/DoctorLayout.tsx
-import { useState } from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import type { RootState } from '@/store/store';
-import LogoutButton from '../components/LogoutButton';
+import { Outlet, NavLink } from 'react-router-dom';
 import {
-  LayoutDashboard,
-  CalendarCheck2,
-  Bell,
-  UserCircle2,
-  Menu,
-  ChevronDown,
+  LayoutGrid,
+  Calendar,
+  Video,
+  PieChart,
+  Settings,
+  LogOut,
+  Users,
+  ClipboardList,
+  FileText,
+  DollarSign,
+  AlertCircle,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import DoctorTopBar from '@/components/DoctorTopBar';
+
+const navItems = [
+  { to: '/doctor/dashboard', icon: LayoutGrid, label: 'Dashboard' },
+  { to: '/doctor/calendar', icon: Calendar, label: 'Calendar' },
+  { to: '/doctor/appointments', icon: ClipboardList, label: 'Appointments' },
+  { to: '/doctor/patients', icon: Users, label: 'Patients' },
+  { to: '/doctor/prescriptions', icon: FileText, label: 'Prescriptions' },
+  { to: '/doctor/consultation', icon: Video, label: 'Consultation' },
+  { to: '/doctor/complaints', icon: AlertCircle, label: 'Complaints' },
+  { to: '/doctor/payments', icon: DollarSign, label: 'Payments' },
+  { to: '/doctor/reports', icon: PieChart, label: 'Reports' },
+  { to: '/doctor/settings', icon: Settings, label: 'Settings' },
+  { to: '/logout', icon: LogOut, label: 'Logout' },
+];
 
 const DoctorLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  // Get user from Redux store instead of context
-  const user = useSelector((state: RootState) => state.auth.user);
-  const navigate = useNavigate();
-
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
-  const handleLinkClick = (path: string) => {
-    navigate(path);
-    setDropdownOpen(false);
-  };
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-gray-100">
+    <div className="flex h-screen font-sans bg-[#f8f9fa]">
       {/* Sidebar */}
       <aside
-        className={`bg-teal-800 text-white w-64 flex flex-col transition-transform duration-300 ease-in-out ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0 fixed md:static z-20 h-full`}
+        className={`group transition-all duration-500 ease-in-out
+          ${sidebarOpen ? 'w-56' : 'w-0 sm:w-[4.5rem] hover:w-56'}
+          bg-[#007c89] text-white flex flex-col py-6 px-2 
+          rounded-tr-[2rem] rounded-br-[2rem] shadow-xl overflow-hidden fixed sm:relative z-50`}
       >
-        <div className="p-6">
-          <h2 className="text-2xl font-bold mb-6">Doctor Panel</h2>
-          <nav className="flex flex-col space-y-4 text-sm">
-            <Link to="/doctor" className="flex items-center gap-2 hover:underline">
-              <LayoutDashboard size={18} /> Dashboard
-            </Link>
-            <Link to="/doctor/my-appointments" className="flex items-center gap-2 hover:underline">
-              <CalendarCheck2 size={18} /> My Appointments
-            </Link>
-            <Link to="/doctor/profile" className="flex items-center gap-2 hover:underline">
-              <UserCircle2 size={18} /> Profile
-            </Link>
-            <Link to="/doctor/notifications" className="flex items-center gap-2 hover:underline relative">
-              <Bell size={18} /> Notifications
-              <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5">
-                2
+        <nav className="flex flex-col gap-6 mt-12">
+          {navItems.map(({ to, icon: Icon, label }, idx) => (
+            <NavLink
+              key={idx}
+              to={to}
+              className={({ isActive }) =>
+                `flex items-center gap-4 py-2 px-4 rounded-xl transition-all duration-300 whitespace-nowrap
+                ${isActive
+                  ? 'bg-white text-[#007c89] shadow-md'
+                  : 'hover:bg-[#006d77] text-white'}`
+              }
+              onClick={() => setSidebarOpen(false)}
+            >
+              <Icon className="w-5 h-5 shrink-0" />
+              <span className="hidden lg:inline group-hover:inline opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out text-sm">
+                {label}
               </span>
-            </Link>
-          </nav>
-        </div>
-
-        <div className="mt-auto p-4 border-t border-teal-700">
-          <LogoutButton />
-        </div>
+            </NavLink>
+          ))}
+        </nav>
       </aside>
 
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-10 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
       {/* Main Content */}
-      <div className="flex-1 flex flex-col ml-0 md:ml-64">
-        {/* Header */}
-        <header className="bg-white shadow-md p-4 flex justify-between items-center">
-          <button
-            onClick={toggleSidebar}
-            className="text-teal-700 md:hidden"
-            aria-label="Toggle Sidebar"
-          >
-            <Menu size={24} />
-          </button>
+      <div className="flex-1 flex flex-col overflow-hidden ml-0 sm:ml-[4.5rem]">
+        {/* Top Bar */}
+        <DoctorTopBar onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
 
-          <h1 className="text-lg font-semibold">Welcome to Harmony Health Clinic</h1>
-
-          {/* User Dropdown */}
-          {user && (
-            <div className="relative">
-              <button
-                onClick={() => setDropdownOpen((prev) => !prev)}
-                className="flex items-center gap-2 text-sm font-medium text-teal-800 hover:text-teal-900"
-              >
-                <img
-                  src={user.avatarUrl || '/avatar-placeholder.png'}
-                  alt="avatar"
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-                Dr. {user.first_name}
-                <ChevronDown size={18} />
-              </button>
-
-              <AnimatePresence>
-                {dropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 bg-white border border-gray-200 rounded shadow-lg w-44 z-30"
-                  >
-                    <button
-                      onClick={() => handleLinkClick('/doctor/profile')}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
-                    >
-                      Profile
-                    </button>
-                    <button
-                      onClick={() => handleLinkClick('/doctor/notifications')}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
-                    >
-                      Notifications
-                    </button>
-                    <div className="border-t border-gray-200 my-1" />
-                    <div className="px-4 py-2">
-                      <LogoutButton />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
-        </header>
-
-        <main className="flex-grow p-6">
+        {/* Page Content */}
+        <main className="flex-1 overflow-y-auto p-6 bg-[#f8f9fa]">
           <Outlet />
         </main>
-
-        <footer className="bg-gray-200 text-center text-sm py-4 text-gray-600">
-          © {new Date().getFullYear()} Harmony Health Clinic – Doctor Portal
-        </footer>
       </div>
     </div>
   );

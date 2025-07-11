@@ -11,7 +11,7 @@ import {
   FaBars,
 } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
-import TopBar from '@/components/TopBar'; // ✅ Adjust import path if needed
+import AdminTopBar from '@/components/AdminTopBar'; // ✅ Use dedicated top bar for admin
 
 const sidebarItems = [
   { label: 'Dashboard', icon: <FaTachometerAlt />, to: '/admin/dashboard' },
@@ -80,7 +80,7 @@ export default function AdminLayout() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        <TopBar onToggleSidebar={toggleSidebar} />
+        <AdminTopBar onToggleSidebar={toggleSidebar} />
         <main className="flex-1 p-6 overflow-y-auto">
           <Outlet />
         </main>

@@ -33,6 +33,8 @@ export interface PrescriptionSummary {
 
 // -- Fully populated doctor for frontend display --
 export interface SanitizedDoctor {
+  payment_per_hour: any;
+  available_hours: any;
   user_id: any;
   doctor_id: number;
   specialization: string;

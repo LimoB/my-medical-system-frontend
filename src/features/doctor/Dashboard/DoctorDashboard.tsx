@@ -1,23 +1,48 @@
-import LogoutButton from '@/components/LogoutButton';
+import StatsCard from './components/StatsCard';
+import PatientList from './components/PatientList';
+import ConsultationCard from './components/ConsultationCard';
+import CalendarPanel from './components/CalendarPanel';
+import DailyReadCard from './components/DailyRead';
 
 const DoctorDashboard = () => {
   return (
-    <div className="p-6">
-      <header className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-teal-700">Doctor Dashboard</h1>
-        <LogoutButton />
-      </header>
+    <div className="min-h-screen w-full flex flex-col bg-[#f9f9f9] p-6 font-sans">
+      {/* Greeting */}
+      <div className="mb-4">
+        <h1 className="text-3xl font-bold text-gray-800">
+          Good Morning <span className="text-teal-600">Dr. Kim!</span>
+        </h1>
+        <p className="text-sm text-gray-500 mt-1">Here’s a quick look at your day.</p>
+      </div>
 
-      <section>
-        <h2 className="text-xl font-semibold mb-4">My Appointments</h2>
-        <p>View your scheduled appointments here.</p>
-        {/* Import and embed MyAppointments component if you want */}
-      </section>
+      {/* Main Grid Layout */}
+      <div className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Left Section */}
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          {/* Stats */}
+          <StatsCard />
 
-      <section className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">Patient Records</h2>
-        <p>Access patient medical records and notes here.</p>
-      </section>
+          {/* Patient + Consultation */}
+          <div className="flex flex-col lg:flex-row gap-6 flex-1">
+            <div className="w-full lg:w-1/2">
+              <PatientList />
+            </div>
+            <div className="w-full lg:w-1/2">
+              <ConsultationCard />
+            </div>
+          </div>
+        </div>
+
+        {/* Right Sidebar Section */}
+        <div className="flex flex-col gap-6 h-full">
+          <div className="flex-1">
+            <CalendarPanel />
+          </div>
+          <div className="flex-1">
+            <DailyReadCard />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

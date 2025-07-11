@@ -1,3 +1,5 @@
+// File: src/features/admin/Dashboard/components/WeeklyAppointmentsChart.tsx
+
 import {
   BarChart,
   Bar,
@@ -6,16 +8,20 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-
-const chartData = [
-  { name: 'Mon', appointments: 10 },
-  { name: 'Tue', appointments: 14 },
-  { name: 'Wed', appointments: 8 },
-  { name: 'Thu', appointments: 16 },
-  { name: 'Fri', appointments: 12 },
-];
+import { useDashboardData } from '@/features/admin/hooks/useDashboardData';
+import { Loader2 } from 'lucide-react';
 
 export default function WeeklyAppointmentsChart() {
+  const { chartData, loading } = useDashboardData();
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-52 bg-white rounded-2xl shadow-sm">
+        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm">
       <h2 className="text-xl font-semibold mb-4">Weekly Appointments</h2>

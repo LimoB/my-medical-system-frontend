@@ -1,45 +1,24 @@
+// File: src/features/admin/hooks/useDashboardData.ts
+
 import { useState, useEffect } from 'react';
-import type { LucideIcon } from 'lucide-react';
 import { User, UserCheck, CalendarDays, AlertCircle } from 'lucide-react';
+import {
+  fetchAppointmentStatus,
+  fetchDashboardStats,
+  fetchRecentAppointments,
+  fetchRecentComplaints,
+  fetchSatisfactionScore,
+  fetchWeeklyAppointments,
+} from '@/services/dashboardService';
 
-// Define the types for the data structures:
-
-export interface StatItem {
-  label: string;
-  value: number | string;
-  icon: LucideIcon;
-  gradient: string;
-}
-
-export interface ChartDataItem {
-  name: string;
-  appointments: number;
-}
-
-export interface PieDataItem {
-  name: string;
-  value: number;
-}
-
-export interface GaugeDataItem {
-  name: string;
-  value: number;
-  fill: string;
-}
-
-export interface Appointment {
-  patient: string;
-  doctor: string;
-  date: string;
-  time: string;
-  status: 'Confirmed' | 'Pending' | string;
-}
-
-export interface Complaint {
-  patient: string;
-  issue: string;
-  status: 'Open' | 'In Progress' | string;
-}
+import type {
+  StatItem,
+  ChartDataItem,
+  PieDataItem,
+  GaugeDataItem,
+  Appointment,
+  Complaint,
+} from '@/types/dashboard';
 
 export function useDashboardData() {
   const [stats, setStats] = useState<StatItem[]>([]);
@@ -49,59 +28,81 @@ export function useDashboardData() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate fetch call - replace this with actual API fetch logic
-    setTimeout(() => {
-      setStats([
-        { label: 'Total Users', value: 134, icon: User, gradient: 'from-cyan-500 to-blue-500' },
-        { label: 'Total Doctors', value: 15, icon: UserCheck, gradient: 'from-purple-500 to-indigo-500' },
-        { label: "Today's Appointments", value: '22 (KES 5,000)', icon: CalendarDays, gradient: 'from-green-400 to-emerald-500' },
-        { label: 'Open Complaints', value: 4, icon: AlertCircle, gradient: 'from-red-400 to-pink-500' },
-      ]);
-      setChartData([
-        { name: 'Mon', appointments: 10 },
-        { name: 'Tue', appointments: 14 },
-        { name: 'Wed', appointments: 8 },
-        { name: 'Thu', appointments: 16 },
-        { name: 'Fri', appointments: 12 },
-      ]);
-      setPieData([
-        { name: 'Completed', value: 45 },
-        { name: 'Pending', value: 20 },
-        { name: 'Cancelled', value: 5 },
-      ]);
-      setGaugeData([{ name: 'Satisfaction', value: 78, fill: '#0f766e' }]);
-      setAppointments([
-        {
-          patient: 'Laura Limo',
-          doctor: 'Dr. Kim',
-          date: '8 July',
-          time: '10:30 AM',
-          status: 'Confirmed',
-        },
-        {
-          patient: 'Susan Myers',
-          doctor: 'Dr. Ray',
-          date: '8 July',
-          time: '11:00 AM',
-          status: 'Pending',
-        },
-      ]);
-      setComplaints([
-        {
-          patient: 'Laura',
-          issue: 'Appointment was rescheduled without notice',
-          status: 'Open',
-        },
-        {
-          patient: 'Mike',
-          issue: 'Doctor was late',
-          status: 'In Progress',
-        },
-      ]);
-      setLoading(false);
-    }, 500);
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [
+          statsRes,
+          chartRes,
+          pieRes,
+          gaugeRes,
+          recentAppointmentsRes,
+          recentComplaintsRes,
+        ] = await Promise.all([
+          fetchDashboardStats(),
+          fetchWeeklyAppointments(),
+          fetchAppointmentStatus(),
+          fetchSatisfactionScore(),
+          fetchRecentAppointments(),
+          fetchRecentComplaints(),
+        ]);
+
+        // Fallback score in case API returns undefined/null
+        const satisfactionScore =
+          typeof gaugeRes.score === 'number' ? gaugeRes.score : 0;
+
+        setStats([
+          {
+            label: 'Total Users',
+            value: statsRes.totalUsers,
+            icon: User,
+            gradient: 'from-cyan-500 to-blue-500',
+          },
+          {
+            label: 'Total Doctors',
+            value: statsRes.totalDoctors,
+            icon: UserCheck,
+            gradient: 'from-purple-500 to-indigo-500',
+          },
+          {
+            label: "Today's Appointments",
+            value: `${statsRes.totalAppointmentsToday} (KES ${statsRes.totalRevenueToday})`,
+            icon: CalendarDays,
+            gradient: 'from-green-400 to-emerald-500',
+          },
+          {
+            label: 'Open Complaints',
+            value: statsRes.openComplaints,
+            icon: AlertCircle,
+            gradient: 'from-red-400 to-pink-500',
+          },
+        ]);
+
+        setChartData(chartRes);
+        setPieData(pieRes);
+        setGaugeData([
+          {
+            name: 'Satisfaction',
+            value: satisfactionScore,
+            fill: '#0f766e',
+          },
+        ]);
+        setAppointments(recentAppointmentsRes);
+        setComplaints(recentComplaintsRes);
+      } catch (err) {
+        console.error('❌ Error fetching dashboard data:', err);
+        setError('Failed to load dashboard data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
   }, []);
 
   return {
@@ -112,5 +113,6 @@ export function useDashboardData() {
     appointments,
     complaints,
     loading,
+    error, // ✅ returned for UI use
   };
 }

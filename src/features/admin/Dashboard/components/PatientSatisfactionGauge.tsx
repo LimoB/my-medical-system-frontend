@@ -1,13 +1,38 @@
+// File: src/features/admin/Dashboard/components/PatientSatisfactionGauge.tsx
+
 import {
   RadialBarChart,
   RadialBar,
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-
-const gaugeData = [{ name: 'Satisfaction', value: 78, fill: '#0f766e' }];
+import { useDashboardData } from '@/features/admin/hooks/useDashboardData';
 
 export default function PatientSatisfactionGauge() {
+  const { gaugeData, loading } = useDashboardData();
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="bg-white p-6 rounded-2xl shadow-sm">
+        <p className="text-gray-500">Loading satisfaction data...</p>
+      </div>
+    );
+  }
+
+  // Error or empty data state
+  const satisfaction = gaugeData?.[0];
+  const value = typeof satisfaction?.value === 'number' ? satisfaction.value : undefined;
+  const fillColor = satisfaction?.fill || '#0f766e';
+
+  if (value === undefined) {
+    return (
+      <div className="bg-white p-6 rounded-2xl shadow-sm">
+        <p className="text-gray-500">No satisfaction data available.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm">
       <h2 className="text-xl font-semibold mb-4">Patient Satisfaction</h2>
@@ -15,13 +40,13 @@ export default function PatientSatisfactionGauge() {
         <RadialBarChart
           innerRadius="70%"
           outerRadius="100%"
-          data={gaugeData}
+          data={[{ ...satisfaction, value }]}
           startAngle={180}
           endAngle={0}
         >
           <RadialBar
             dataKey="value"
-            fill="#0f766e"
+            fill={fillColor}
             background
             cornerRadius={10}
           />
@@ -30,7 +55,7 @@ export default function PatientSatisfactionGauge() {
             layout="horizontal"
             verticalAlign="bottom"
             align="center"
-            formatter={() => `Satisfaction: ${gaugeData[0].value}%`}
+            formatter={() => `Satisfaction: ${value}%`}
           />
         </RadialBarChart>
       </ResponsiveContainer>

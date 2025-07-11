@@ -24,6 +24,12 @@ const DoctorTable = ({ doctors, onView, onEdit, onDelete }: Props) => {
               Available Days
             </th>
             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+              Available Hours
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+              Payment per Hour
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
               Actions
             </th>
           </tr>
@@ -42,6 +48,16 @@ const DoctorTable = ({ doctors, onView, onEdit, onDelete }: Props) => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                 {doc.available_days || '—'}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                {/* Format Available Hours as a comma-separated string */}
+                {doc.available_hours && doc.available_hours.length > 0
+                  ? doc.available_hours.join(', ')
+                  : '—'}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                {/* Show the payment per hour */}
+                {doc.payment_per_hour ? `$${doc.payment_per_hour}` : '—'}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex flex-wrap gap-2">
