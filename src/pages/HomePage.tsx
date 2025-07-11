@@ -2,7 +2,7 @@ import HeroSection from '../landing/HeroSection';
 import FindDoctor from '../landing/FindDoctor';
 import ImpactSection from '../landing/ImpactSection';
 import WhyChooseUs from '../landing/WhyChooseUs';
-import ServicesSection from '../landing/ServicesSection'; // Importing only the Services Section
+import ServicesSection from '../landing/servicePage/ServicesSection'; // Importing only the Services Section
 import TeamSection from '../landing/TeamSection';
 import Testimonials from '../landing/Testimonials';
 import PartnersSection from '../landing/PartnersSection';

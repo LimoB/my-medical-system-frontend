@@ -1,7 +1,7 @@
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import AppRoutes from './routes';
+import AppRoutes from './routes';  // Import AppRoutes that contains all your route definitions
 
 import './App.css';
 
