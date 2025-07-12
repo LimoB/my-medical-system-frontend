@@ -3,6 +3,8 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 // Define the decoded JWT token payload
 export interface DecodedToken {
+  updated_at: string;
+  created_at: string;
   id: number;              // User ID
   email: string;           // User's email address
   role: 'admin' | 'doctor' | 'user';  // User role

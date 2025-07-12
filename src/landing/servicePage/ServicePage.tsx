@@ -1,6 +1,7 @@
 import ServiceHeroSection from './ServiceHeroSection'; // Import the hero section
 import ServicesSection from './ServicesSection'; // Import the services section
 import FindDoctor from '../FindDoctor'; // Import FindDoctor section
+import DoctorsSection from '../DoctorsSection'; // Import DoctorsSection to display doctors
 import Testimonials from '../Testimonials'; // Import Testimonials section
 import Footer from '../Footer'; // Import Footer section
 import Newsletter from '../Newsletter'; // Import Newsletter section
@@ -14,11 +15,11 @@ const ServicePage = () => {
       {/* Find a Doctor section */}
       <FindDoctor />
 
-
       {/* Medical services list */}
       <ServicesSection />
 
-
+      {/* Doctors section to showcase all the doctors */}
+      <DoctorsSection /> {/* This will display all doctors available */}
 
       {/* Testimonials section */}
       <Testimonials />

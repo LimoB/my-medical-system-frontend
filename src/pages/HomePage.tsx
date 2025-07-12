@@ -3,7 +3,8 @@ import FindDoctor from '../landing/FindDoctor';
 import ImpactSection from '../landing/ImpactSection';
 import WhyChooseUs from '../landing/WhyChooseUs';
 import ServicesSection from '../landing/servicePage/ServicesSection'; // Importing only the Services Section
-import TeamSection from '../landing/TeamSection';
+import TeamSection from '../landing/TeamSection';  // This now includes both doctors and non-medical staff like CEO
+import DoctorsSection from '../landing/DoctorsSection';  // This section will only display medical doctors
 import Testimonials from '../landing/Testimonials';
 import PartnersSection from '../landing/PartnersSection';
 import Newsletter from '../landing/Newsletter';
@@ -27,8 +28,11 @@ const HomePage = () => {
       {/* Services Section without the Hero Section */}
       <ServicesSection />  {/* Services only, no hero section */}
 
+      {/* Doctors Section */}
+      <DoctorsSection />  {/* Only medical doctors will be displayed here */}
+
       {/* Team Section */}
-      <TeamSection />
+      <TeamSection />  {/* Includes non-medical staff like CEO, leadership team, etc. */}
 
       {/* Testimonials Section */}
       <Testimonials />

@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { useUsers } from './useUsers';
 import UserTable from './UserTable';
 import AddUserModal from './AddUserModal';
-import type { CreateUserPayload } from '@/types/user';
+import EditUserModal from './EditUserModal';
+import type { CreateUserPayload, User } from '@/types/user';
 
 const ManageUsers = () => {
   const {
@@ -25,6 +26,8 @@ const ManageUsers = () => {
   } = useUsers();
 
   const [showModal, setShowModal] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const [formData, setFormData] = useState<CreateUserPayload>({
     first_name: '',
@@ -36,7 +39,7 @@ const ManageUsers = () => {
     address: '',
   });
 
-  const openModal = () => {
+  const openAddModal = () => {
     setFormData({
       first_name: '',
       last_name: '',
@@ -49,7 +52,7 @@ const ManageUsers = () => {
     setShowModal(true);
   };
 
-  const closeModal = () => {
+  const closeAddModal = () => {
     setShowModal(false);
     setFormData({
       first_name: '',
@@ -62,9 +65,26 @@ const ManageUsers = () => {
     });
   };
 
+  const handleEdit = (user: User) => {
+    setSelectedUser(user);
+    setEditModalOpen(true);
+  };
+
+  const handleSaveEditedUser = async (updatedUser: Partial<User>) => {
+    try {
+      // Replace with real API call
+      console.log('Saving edited user:', updatedUser);
+      // await updateUserAPI(updatedUser);
+      setEditModalOpen(false);
+      setSelectedUser(null);
+      fetchUsers(); // Refresh user list
+    } catch (err) {
+      console.error('Failed to update user:', err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-white text-gray-800">
-      {/* Toast container */}
       <ToastContainer position="top-right" autoClose={4000} hideProgressBar={false} closeOnClick pauseOnHover />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-8 py-8">
@@ -72,7 +92,7 @@ const ManageUsers = () => {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-blue-900">Manage Users</h1>
           <Button
-            onClick={openModal}
+            onClick={openAddModal}
             className="bg-gradient-to-r from-green-400 to-blue-500 text-white hover:from-green-500 hover:to-blue-600 transition-all px-4 py-2 text-sm font-semibold rounded-md shadow"
           >
             + Add User
@@ -109,21 +129,30 @@ const ManageUsers = () => {
             users={currentUsers}
             onRoleChange={handleRoleChange}
             onDelete={handleDelete}
+            onEdit={handleEdit} // ✅ Fix applied here
             currentPage={currentPage}
             totalPages={totalPages}
             setCurrentPage={setCurrentPage}
           />
         )}
 
-        {/* Modal */}
+        {/* Add User Modal */}
         {showModal && (
           <AddUserModal
             formData={formData}
             setFormData={setFormData}
-            closeModal={closeModal}
+            closeModal={closeAddModal}
             fetchUsers={fetchUsers}
           />
         )}
+
+        {/* Edit User Modal */}
+        <EditUserModal
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          user={selectedUser}
+          onSave={handleSaveEditedUser}
+        />
       </main>
     </div>
   );

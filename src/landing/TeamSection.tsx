@@ -1,3 +1,5 @@
+// TeamSection.tsx
+
 const doctors = [
   { 
     name: 'Dr. Boaz Limo', 

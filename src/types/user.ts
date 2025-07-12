@@ -15,18 +15,21 @@ export interface CreateUserPayload {
 }
 
 // 🔹 Payload for updating an existing user (partial fields)
-export interface UpdateUserPayload {
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-  password?: string;
+export type UpdateUserPayload = {
+  first_name: string;
+  last_name: string;
+  email: string;
   contact_phone?: string;
   address?: string;
-  role?: UserRole;
-}
+  image_url?: string;
+  is_verified?: boolean;
+  role: 'admin' | 'doctor' | 'user';
+};
+
 
 // 🔹 Full user object returned from backend (includes sensitive & audit data)
 export interface User {
+  image_url: string;
   user_id: number;
   first_name: string;
   last_name: string;

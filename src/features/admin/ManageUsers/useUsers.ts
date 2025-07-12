@@ -18,15 +18,16 @@ export const useUsers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
+  // 🔄 Fetch users from backend
   const fetchUserList = async () => {
     try {
       setLoading(true);
       const data = await fetchUsers();
       setUsers(data);
       setError(null);
-      console.log('Users fetched successfully:', data);
+      console.log('✅ Users fetched:', data);
     } catch (err) {
-      console.error('Error fetching users:', err);
+      console.error('❌ Error fetching users:', err);
       setError('Failed to fetch users.');
       toast.error('Failed to fetch users');
     } finally {
@@ -38,6 +39,7 @@ export const useUsers = () => {
     fetchUserList();
   }, []);
 
+  // 🔍 Filtered and paginated list
   const filteredUsers = users.filter((user) =>
     `${user.first_name} ${user.last_name}`
       .toLowerCase()
@@ -50,39 +52,46 @@ export const useUsers = () => {
     currentPage * USERS_PER_PAGE
   );
 
+  // ❌ Delete user
   const handleDelete = async (id: number) => {
     try {
       await deleteUser(id.toString());
       toast.success('User deleted');
-      console.log(`User with ID ${id} deleted successfully`);
+      console.log(`🗑️ User ID ${id} deleted`);
       fetchUserList();
     } catch (err) {
-      console.error(`Error deleting user with ID ${id}:`, err);
+      console.error(`❌ Error deleting user ${id}:`, err);
       toast.error('Failed to delete user');
     }
   };
 
+  // 🔄 Update user role
   const handleRoleChange = async (id: number, newRole: UserRole) => {
     try {
-      const existingUser = await fetchUserById(id.toString());
-      console.log('Existing user fetched for update:', existingUser);
+      const user = await fetchUserById(id.toString());
+      if (!user) throw new Error('User not found');
 
-      const updatedUser: UpdateUserPayload = {
-        first_name: existingUser.first_name,
-        last_name: existingUser.last_name,
-        contact_phone: existingUser.contact_phone,
-        email: existingUser.email,
+
+
+      const updatedPayload: UpdateUserPayload = {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        contact_phone: user.contact_phone || '',
+        address: user.address || '',
+        image_url: user.image_url || '',
+        is_verified: user.is_verified ?? true,
         role: newRole,
       };
 
-      await updateUser(id.toString(), updatedUser);
 
-      toast.success('Role updated');
-      console.log(`Role updated for user ID ${id} to '${newRole}'`);
+      await updateUser(id.toString(), updatedPayload);
+      toast.success(`✅ Role updated to "${newRole}"`);
+      console.log(`🔁 Role updated for user ID ${id}: ${newRole}`);
 
-      fetchUserList();
+      fetchUserList(); // Refresh user list
     } catch (err) {
-      console.error(`Failed to update role for user ID ${id}:`, err);
+      console.error(`❌ Failed to update role for user ID ${id}:`, err);
       toast.error('Failed to update role');
     }
   };
