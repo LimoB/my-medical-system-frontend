@@ -18,7 +18,6 @@ export const useUsers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // 🔄 Fetch users from backend
   const fetchUserList = async () => {
     try {
       setLoading(true);
@@ -39,7 +38,6 @@ export const useUsers = () => {
     fetchUserList();
   }, []);
 
-  // 🔍 Filtered and paginated list
   const filteredUsers = users.filter((user) =>
     `${user.first_name} ${user.last_name}`
       .toLowerCase()
@@ -52,7 +50,6 @@ export const useUsers = () => {
     currentPage * USERS_PER_PAGE
   );
 
-  // ❌ Delete user
   const handleDelete = async (id: number) => {
     try {
       await deleteUser(id.toString());
@@ -65,13 +62,10 @@ export const useUsers = () => {
     }
   };
 
-  // 🔄 Update user role
   const handleRoleChange = async (id: number, newRole: UserRole) => {
     try {
       const user = await fetchUserById(id.toString());
       if (!user) throw new Error('User not found');
-
-
 
       const updatedPayload: UpdateUserPayload = {
         first_name: user.first_name,
@@ -79,17 +73,16 @@ export const useUsers = () => {
         email: user.email,
         contact_phone: user.contact_phone || '',
         address: user.address || '',
-        image_url: user.image_url || '',
+        image_url: user.image_url || '', // ✅ include this
         is_verified: user.is_verified ?? true,
         role: newRole,
       };
-
 
       await updateUser(id.toString(), updatedPayload);
       toast.success(`✅ Role updated to "${newRole}"`);
       console.log(`🔁 Role updated for user ID ${id}: ${newRole}`);
 
-      fetchUserList(); // Refresh user list
+      fetchUserList();
     } catch (err) {
       console.error(`❌ Failed to update role for user ID ${id}:`, err);
       toast.error('Failed to update role');

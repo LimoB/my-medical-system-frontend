@@ -1,9 +1,9 @@
-// File: Doctors.tsx
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import {
   getDoctors,
+  createDoctor,
   updateDoctor,
   deleteDoctor,
 } from '@/services/doctors';
@@ -22,7 +22,6 @@ const Doctors = () => {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Fetch all doctors
   const fetchDoctors = async () => {
     setLoading(true);
     try {
@@ -36,32 +35,42 @@ const Doctors = () => {
     }
   };
 
-  // Update doctor only
+
   const handleSubmit = async (payload: DoctorCreatePayload) => {
-    if (
-      editingDoctor?.doctor_id === undefined ||
-      editingDoctor?.doctor_id === null ||
-      !editingDoctor.user?.user_id
-    ) {
-      toast.error('Invalid doctor selected for update.');
-      console.warn('🚨 Missing or invalid doctor_id/user:', editingDoctor);
-      return;
-    }
+    const formattedPayload: DoctorCreatePayload = {
+      ...payload,
+      payment_per_hour:
+        typeof payload.payment_per_hour === 'string'
+          ? parseFloat(payload.payment_per_hour)
+          : payload.payment_per_hour,
+    };
+
+    console.log('📤 Submitting payload:', formattedPayload);
 
     try {
-      await updateDoctor(editingDoctor.doctor_id, payload);
-      toast.success('Doctor updated successfully');
+      if (!editingDoctor?.doctor_id) {
+        console.log('🆕 Creating new doctor...');
+        await createDoctor(formattedPayload);
+        toast.success('Doctor created successfully');
+      } else {
+        console.log('✏️ Updating doctor ID:', editingDoctor.doctor_id);
+        await updateDoctor(editingDoctor.doctor_id, formattedPayload);
+        toast.success('Doctor updated successfully');
+      }
+
       setShowForm(false);
       setEditingDoctor(null);
       await fetchDoctors();
-    } catch (error) {
-      console.error('❌ Update failed:', error);
-      toast.error('Failed to update doctor');
+    } catch (error: any) {
+      console.error('❌ Failed to save doctor:', error);
+      if (error.response) {
+        console.error('📥 Server response data:', error.response.data);
+      }
+      toast.error('Failed to save doctor');
     }
   };
 
 
-  // Delete doctor
   const handleDelete = async (doctorId: number) => {
     if (!confirm('Are you sure you want to delete this doctor?')) return;
     try {
@@ -96,7 +105,6 @@ const Doctors = () => {
         />
       )}
 
-      {/* 👁️ View Doctor Details */}
       {viewingDoctor && (
         <DoctorDetailsModal
           doctor={viewingDoctor}
@@ -104,10 +112,9 @@ const Doctors = () => {
         />
       )}
 
-      {/* 📝 Edit Doctor Form */}
-      {showForm && editingDoctor ? (
+      {showForm && editingDoctor && (
         <Modal
-          title="Edit Doctor"
+          title={editingDoctor.doctor_id ? 'Edit Doctor' : 'Add Doctor Info'}
           onClose={() => {
             setShowForm(false);
             setEditingDoctor(null);
@@ -122,7 +129,7 @@ const Doctors = () => {
             }}
           />
         </Modal>
-      ) : null}
+      )}
     </div>
   );
 };

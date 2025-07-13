@@ -1,6 +1,9 @@
 // src/types/appointment.ts
 
+import type { Key } from "react";
+
 export interface Appointment {
+  id: Key | null | undefined;
   appointment_id: number;
   user_id: number;
   doctor_id: number;

@@ -1,33 +1,34 @@
-// // src/features/user/UserProfile.tsx
-// // import { useAuth } from '@/features/auth/authSlice';
+// src/features/user/Profile/UserProfile.tsx
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store/store';
+import EditUserProfileForm from './EditUserProfileForm';
 
-// const UserProfile = () => {
-//   const { user } = useAuth();
+const UserProfile = () => {
+  const user = useSelector((state: RootState) => state.auth.user);
 
-//   if (!user) return <p>Loading...</p>;
+  if (!user) {
+    return <p className="text-center text-gray-600">Loading profile...</p>;
+  }
 
-//   return (
-//     <div className="bg-white shadow p-6 rounded-md max-w-lg mx-auto">
-//       <h2 className="text-xl font-semibold mb-4">My Profile</h2>
-//       <div className="space-y-3">
-//         <div>
-//           <span className="font-medium text-gray-700">Name:</span> {user.first_name} {user.last_name}
-//         </div>
-//         <div>
-//           <span className="font-medium text-gray-700">Email:</span> {user.email}
-//         </div>
-//         <div>
-//           <span className="font-medium text-gray-700">Role:</span> {user.role}
-//         </div>
-//         <div>
-//           <span className="font-medium text-gray-700">Phone:</span> {user.contact_phone || 'N/A'}
-//         </div>
-//         <div>
-//           <span className="font-medium text-gray-700">Address:</span> {user.address || 'N/A'}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
+  return (
+    <div className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-6">
+      <h2 className="text-2xl font-bold text-teal-700 mb-2">My Profile</h2>
 
-// export default UserProfile;
+      <div className="flex items-center gap-4">
+        <img
+          src={user.image_url || '/avatar-placeholder.png'}
+          alt="User Avatar"
+          className="w-20 h-20 rounded-full object-cover border"
+        />
+        <div>
+          <p className="text-lg font-semibold">{user.first_name} {user.last_name}</p>
+          <p className="text-sm text-gray-500">{user.email}</p>
+        </div>
+      </div>
+
+      <EditUserProfileForm />
+    </div>
+  );
+};
+
+export default UserProfile;

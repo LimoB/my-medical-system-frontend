@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import type { DoctorCreatePayload, SanitizedDoctor } from '@/types/doctor';
 
 interface Props {
-  initialData: SanitizedDoctor; // update-only form
+  initialData: SanitizedDoctor;
   onSubmit: (payload: DoctorCreatePayload) => void;
   onCancel: () => void;
 }
@@ -19,8 +19,17 @@ const commonSpecializations = [
   'General Practitioner',
 ];
 
+// Internal form structure
+type DoctorFormValues = {
+  user_id: number;
+  specialization: string;
+  available_days: string;
+  available_hours: string; // comma-separated string
+  payment_per_hour: number;
+  description?: string;
+};
+
 const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
-  // ❗ Guard: if user is undefined, show error
   if (!initialData.user) {
     return <p className="text-red-500">Invalid doctor data: User is missing.</p>;
   }
@@ -32,16 +41,21 @@ const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<DoctorCreatePayload>({
+  } = useForm<DoctorFormValues>({
     defaultValues: {
       user_id: initialData.user.user_id,
       specialization: initialData.specialization || '',
       available_days: initialData.available_days || '',
+      available_hours: initialData.available_hours?.join(', ') || '',
+      payment_per_hour: initialData.payment_per_hour || 0,
+      description: initialData.description || '',
     },
   });
 
   const availableDays = watch('available_days') || '';
-  const selectedDays = availableDays.split(',').map((d) => d.trim()).filter(Boolean);
+  const selectedDays = typeof availableDays === 'string'
+    ? availableDays.split(',').map((d) => d.trim()).filter(Boolean)
+    : [];
 
   const toggleDay = (day: string) => {
     const updated = selectedDays.includes(day)
@@ -50,12 +64,25 @@ const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
     setValue('available_days', updated.join(', '));
   };
 
-  const submitForm = (data: DoctorCreatePayload) => {
+  const submitForm = (data: DoctorFormValues) => {
     if (!data.specialization.trim()) {
       toast.error('Specialization is required.');
       return;
     }
-    onSubmit(data);
+
+    const payload: DoctorCreatePayload = {
+      user_id: data.user_id,
+      specialization: data.specialization,
+      available_days: data.available_days,
+      available_hours: data.available_hours
+        .split(',')
+        .map((h) => h.trim())
+        .filter(Boolean),
+      payment_per_hour: data.payment_per_hour,
+      description: data.description?.trim() || '',
+    };
+
+    onSubmit(payload);
   };
 
   return (
@@ -74,7 +101,7 @@ const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
         />
       </div>
 
-      {/* Specialization input with suggestions */}
+      {/* Specialization input */}
       <div>
         <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-1">
           Specialization
@@ -119,6 +146,49 @@ const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
         control={control}
         render={({ field }) => <input type="hidden" {...field} />}
       />
+
+      {/* Available Hours input */}
+      <div>
+        <label htmlFor="available_hours" className="block text-sm font-medium text-gray-700 mb-1">
+          Available Hours (comma-separated)
+        </label>
+        <input
+          id="available_hours"
+          {...register('available_hours')}
+          placeholder="e.g. 09:00, 10:00, 14:00"
+          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+        />
+      </div>
+
+      {/* Payment per hour input */}
+      <div>
+        <label htmlFor="payment_per_hour" className="block text-sm font-medium text-gray-700 mb-1">
+          Payment Per Hour (KSh)
+        </label>
+        <input
+          type="number"
+          step="0.01"
+          {...register('payment_per_hour', { required: true })}
+          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+        />
+        {errors.payment_per_hour && (
+          <p className="text-sm text-red-500 mt-1">This field is required.</p>
+        )}
+      </div>
+
+      {/* Description textarea */}
+      <div>
+        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+          Description
+        </label>
+        <textarea
+          id="description"
+          {...register('description')}
+          rows={4}
+          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+          placeholder="Short bio or description"
+        />
+      </div>
 
       {/* Actions */}
       <div className="flex justify-end gap-3 pt-4">

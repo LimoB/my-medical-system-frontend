@@ -9,6 +9,7 @@ import UserTable from './UserTable';
 import AddUserModal from './AddUserModal';
 import EditUserModal from './EditUserModal';
 import type { CreateUserPayload, User } from '@/types/user';
+import { updateUser } from '@/services/users';
 
 const ManageUsers = () => {
   const {
@@ -72,14 +73,27 @@ const ManageUsers = () => {
 
   const handleSaveEditedUser = async (updatedUser: Partial<User>) => {
     try {
-      // Replace with real API call
-      console.log('Saving edited user:', updatedUser);
-      // await updateUserAPI(updatedUser);
+      console.log('📝 Saving edited user:', updatedUser);
+
+      if (!updatedUser.user_id) throw new Error('User ID missing for update');
+
+      const payload = {
+        first_name: updatedUser.first_name,
+        last_name: updatedUser.last_name,
+        email: updatedUser.email,
+        contact_phone: updatedUser.contact_phone,
+        address: updatedUser.address,
+        image_url: updatedUser.image_url, // ✅ include image
+        role: updatedUser.role,
+        is_verified: updatedUser.is_verified,
+      };
+
+      await updateUser(updatedUser.user_id.toString(), payload);
       setEditModalOpen(false);
       setSelectedUser(null);
-      fetchUsers(); // Refresh user list
+      fetchUsers(); // 🔄 Refresh list
     } catch (err) {
-      console.error('Failed to update user:', err);
+      console.error('❌ Failed to update user:', err);
     }
   };
 
@@ -129,7 +143,7 @@ const ManageUsers = () => {
             users={currentUsers}
             onRoleChange={handleRoleChange}
             onDelete={handleDelete}
-            onEdit={handleEdit} // ✅ Fix applied here
+            onEdit={handleEdit} // ✅ Edit button triggers modal
             currentPage={currentPage}
             totalPages={totalPages}
             setCurrentPage={setCurrentPage}

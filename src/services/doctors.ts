@@ -1,25 +1,26 @@
+// File: services/doctors.ts
 import api from './axios';
 import type { SanitizedDoctor, DoctorCreatePayload } from '@/types/doctor';
 
 const BASE_URL = '/doctors';
 
 /**
- * 🔹 Fetch all doctors (sorted by recently updated/added)
+ * 🔹 Fetch all doctors
  */
 export const getDoctors = async (): Promise<SanitizedDoctor[]> => {
   const res = await api.get<SanitizedDoctor[]>(BASE_URL);
-  
+
   return res.data.map((doctor) => ({
     doctor_id: doctor.doctor_id,
     user_id: doctor.user_id,
-    name: `${doctor.user.first_name} ${doctor.user.last_name}`, // Concatenate first and last name from user
+    name: `${doctor.user.first_name} ${doctor.user.last_name}`,
     specialty: doctor.specialization,
-    image: doctor.user.image_url || '/default-doctor.jpg', // Default image if missing
+    image: doctor.user.image_url || '/default-doctor.jpg',
     payment_per_hour: doctor.payment_per_hour,
     available_hours: doctor.available_hours || [],
-    available_days: doctor.available_days,
+    available_days: doctor.available_days || '',
     specialization: doctor.specialization,
-    description: doctor.description || '', // Added description field
+    description: doctor.description || '',
     appointments: doctor.appointments || [],
     prescriptions: doctor.prescriptions || [],
     user: {
@@ -28,7 +29,7 @@ export const getDoctors = async (): Promise<SanitizedDoctor[]> => {
       last_name: doctor.user.last_name,
       email: doctor.user.email,
       contact_phone: doctor.user.contact_phone,
-      image_url: doctor.user.image_url || '/default-doctor.jpg', // Default image if missing
+      image_url: doctor.user.image_url || '/default-doctor.jpg',
     },
   }));
 };
@@ -38,33 +39,35 @@ export const getDoctors = async (): Promise<SanitizedDoctor[]> => {
  */
 export const getDoctorById = async (id: number): Promise<SanitizedDoctor> => {
   const res = await api.get<SanitizedDoctor>(`${BASE_URL}/${id}`);
-  
+
+  const doctor = res.data;
+
   return {
-    doctor_id: res.data.doctor_id,
-    user_id: res.data.user_id,
-    name: `${res.data.user.first_name} ${res.data.user.last_name}`, // Concatenate first and last name from user
-    specialty: res.data.specialization,
-    image: res.data.user.image_url || '/default-doctor.jpg', // Default image if missing
-    payment_per_hour: res.data.payment_per_hour,
-    available_hours: res.data.available_hours || [],
-    available_days: res.data.available_days,
-    specialization: res.data.specialization,
-    description: res.data.description || '', // Added description field
-    appointments: res.data.appointments || [],
-    prescriptions: res.data.prescriptions || [],
+    doctor_id: doctor.doctor_id,
+    user_id: doctor.user_id,
+    name: `${doctor.user.first_name} ${doctor.user.last_name}`,
+    specialty: doctor.specialization,
+    image: doctor.user.image_url || '/default-doctor.jpg',
+    payment_per_hour: doctor.payment_per_hour,
+    available_hours: doctor.available_hours || [],
+    available_days: doctor.available_days || '',
+    specialization: doctor.specialization,
+    description: doctor.description || '',
+    appointments: doctor.appointments || [],
+    prescriptions: doctor.prescriptions || [],
     user: {
-      user_id: res.data.user.user_id,
-      first_name: res.data.user.first_name,
-      last_name: res.data.user.last_name,
-      email: res.data.user.email,
-      contact_phone: res.data.user.contact_phone,
-      image_url: res.data.user.image_url || '/default-doctor.jpg', // Default image if missing
+      user_id: doctor.user.user_id,
+      first_name: doctor.user.first_name,
+      last_name: doctor.user.last_name,
+      email: doctor.user.email,
+      contact_phone: doctor.user.contact_phone,
+      image_url: doctor.user.image_url || '/default-doctor.jpg',
     },
   };
 };
 
 /**
- * 🔹 Create a new doctor (admin only)
+ * 🔹 Create a new doctor
  */
 export const createDoctor = async (
   data: DoctorCreatePayload
@@ -74,7 +77,7 @@ export const createDoctor = async (
 };
 
 /**
- * 🔹 Update an existing doctor (admin only)
+ * 🔹 Update an existing doctor
  */
 export const updateDoctor = async (
   id: number,
@@ -85,7 +88,7 @@ export const updateDoctor = async (
 };
 
 /**
- * 🔹 Delete a doctor by ID (admin only)
+ * 🔹 Delete a doctor by ID
  */
 export const deleteDoctor = async (id: number): Promise<string> => {
   const res = await api.delete<{ message: string }>(`${BASE_URL}/${id}`);

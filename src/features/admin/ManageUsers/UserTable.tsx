@@ -23,42 +23,35 @@ const UserTable = ({
   return (
     <div className="p-4 md:p-6 bg-white border border-gray-300 shadow-xl rounded-2xl">
       <div className="overflow-x-auto">
-        <table className="min-w-full text-[16px] divide-y divide-gray-200">
+        <table className="min-w-full text-[15px] divide-y divide-gray-200">
           <thead className="bg-gradient-to-r from-emerald-200 to-sky-200">
             <tr>
-              <th className="px-6 py-5 text-left text-base font-semibold text-gray-700 uppercase tracking-wide">
-                Profile
-              </th>
-              <th className="px-6 py-5 text-left text-base font-semibold text-gray-700 uppercase tracking-wide">
-                Name
-              </th>
-              <th className="px-6 py-5 text-left text-base font-semibold text-gray-700 uppercase tracking-wide">
-                Email
-              </th>
-              <th className="px-6 py-5 text-left text-base font-semibold text-gray-700 uppercase tracking-wide">
-                Role
-              </th>
-              <th className="px-6 py-5 text-left text-base font-semibold text-gray-700 uppercase tracking-wide">
-                Actions
-              </th>
+              <th className="px-6 py-5 text-left font-semibold text-gray-700 uppercase tracking-wide">Profile</th>
+              <th className="px-6 py-5 text-left font-semibold text-gray-700 uppercase tracking-wide">Name</th>
+              <th className="px-6 py-5 text-left font-semibold text-gray-700 uppercase tracking-wide">Email</th>
+              <th className="px-6 py-5 text-left font-semibold text-gray-700 uppercase tracking-wide">Role</th>
+              <th className="px-6 py-5 text-left font-semibold text-gray-700 uppercase tracking-wide">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {users.map((user) => (
               <tr
                 key={user.user_id ?? `${user.email}-${user.first_name}`}
-                className="hover:bg-gray-100 transition-colors duration-200"
+                className="hover:bg-gray-50 transition-colors duration-200"
               >
-                {/* Avatar */}
+                {/* Profile Image */}
                 <td className="px-6 py-5 whitespace-nowrap">
                   <img
                     src={user.image_url || '/default-avatar.png'}
                     alt={`${user.first_name} ${user.last_name}`}
-                    className="w-12 h-12 object-cover rounded-full border border-gray-300"
+                    className="w-12 h-12 rounded-full object-cover border border-gray-300 shadow-sm"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/default-avatar.png';
+                    }}
                   />
                 </td>
 
-                {/* Name */}
+                {/* Full Name */}
                 <td className="px-6 py-5 whitespace-nowrap font-medium text-gray-900">
                   {user.first_name} {user.last_name}
                 </td>
@@ -80,7 +73,7 @@ const UserTable = ({
                   </select>
                 </td>
 
-                {/* Actions */}
+                {/* Edit/Delete Actions */}
                 <td className="px-6 py-5 whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <Button

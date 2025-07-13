@@ -1,9 +1,13 @@
-// src/routes/UserRoutes.tsx
 import { Route, Routes, Navigate } from 'react-router-dom';
 import UserDashboard from '../features/user/Dashboard/UserDashboard';
 import BookAppointment from '../features/user/BookAppointment/BookAppointment';
-// import UserProfile from '../features/user/Profile/UserProfile';
+import MyAppointments from '../features/user/MyAppointments/MyAppointments';
+import UserPrescriptions from '../features/user/Prescriptions/UserPrescriptions';
+import UserPayments from '../features/user/Payments/UserPayments';
+import UserComplaints from '../features/user/Complaints/UserComplaints';
+import UserProfile from '../features/user/Profile/UserProfile';
 import UserNotifications from '../features/user/Notifications/UserNotifications';
+
 import UserLayout from '../layouts/UserLayout';
 import ProtectedRoute from './ProtectedRoute';
 
@@ -19,11 +23,15 @@ const UserRoutes = () => {
       >
         <Route index element={<UserDashboard />} />
         <Route path="book-appointment" element={<BookAppointment />} />
-        {/* <Route path="profile" element={<UserProfile />} /> */}
+        <Route path="appointments" element={<MyAppointments />} />
+        <Route path="prescriptions" element={<UserPrescriptions />} />
+        <Route path="payments" element={<UserPayments />} />
+        <Route path="complaints" element={<UserComplaints />} />
+        <Route path="profile" element={<UserProfile />} />
         <Route path="notifications" element={<UserNotifications />} />
       </Route>
 
-      {/* Redirect unknown user paths to dashboard */}
+      {/* Redirect unknown paths to dashboard */}
       <Route path="*" element={<Navigate to="/user" replace />} />
     </Routes>
   );

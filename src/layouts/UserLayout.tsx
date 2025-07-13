@@ -1,29 +1,39 @@
-// src/layouts/UserLayout.tsx
 import { useState } from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import type { RootState } from '@/store/store';
-import LogoutButton from '../components/LogoutButton';
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   CalendarCheck2,
+  FileText,
+  CreditCard,
+  MessageSquare,
   UserCircle2,
   Bell,
+  LogOut,
   Menu,
   ChevronDown,
 } from 'lucide-react';
+import { useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
+import LogoutButton from '@/components/LogoutButton';
+import type { RootState } from '@/store/store';
+
+const navItems = [
+  { to: '/user', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/user/book-appointment', icon: CalendarCheck2, label: 'Book Appointment' },
+  { to: '/user/appointments', icon: CalendarCheck2, label: 'My Appointments' },
+  { to: '/user/prescriptions', icon: FileText, label: 'Prescriptions' },
+  { to: '/user/payments', icon: CreditCard, label: 'Payments' },
+  { to: '/user/complaints', icon: MessageSquare, label: 'Complaints' },
+  { to: '/user/profile', icon: UserCircle2, label: 'Profile' },
+  { to: '/user/notifications', icon: Bell, label: 'Notifications' },
+  { to: '/logout', icon: LogOut, label: 'Logout' },
+];
 
 const UserLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  // Get user from Redux store
   const user = useSelector((state: RootState) => state.auth.user);
-
   const navigate = useNavigate();
-
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const handleLinkClick = (path: string) => {
     navigate(path);
@@ -31,68 +41,52 @@ const UserLayout = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-100">
+    <div className="flex h-screen font-sans bg-[#f8f9fa]">
       {/* Sidebar */}
       <aside
-        className={`bg-teal-700 text-white w-64 flex flex-col transition-transform duration-300 ease-in-out ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0 fixed md:static z-20 h-full`}
+        className={`group transition-all duration-500 ease-in-out
+        ${sidebarOpen ? 'w-56' : 'w-0 sm:w-[4.5rem] hover:w-56'}
+        bg-[#0f766e] text-white flex flex-col py-6 px-2 
+        rounded-tr-[2rem] rounded-br-[2rem] shadow-xl overflow-hidden fixed sm:relative z-50`}
       >
-        <div className="p-6">
-          <h2 className="text-2xl font-bold mb-6">User Panel</h2>
-          <nav className="flex flex-col space-y-4 text-sm">
-            <Link to="/user" className="flex items-center gap-2 hover:underline">
-              <LayoutDashboard size={18} /> Dashboard
-            </Link>
-            <Link
-              to="/user/book-appointment"
-              className="flex items-center gap-2 hover:underline"
+        <nav className="flex flex-col gap-6 mt-12">
+          {navItems.map(({ to, icon: Icon, label }, idx) => (
+            <NavLink
+              key={idx}
+              to={to}
+              className={({ isActive }) =>
+                `flex items-center gap-4 py-2 px-4 rounded-xl transition-all duration-300 whitespace-nowrap
+                ${isActive
+                  ? 'bg-white text-[#0f766e] shadow-md'
+                  : 'hover:bg-[#0e6b64] text-white'}`
+              }
+              onClick={() => setSidebarOpen(false)}
             >
-              <CalendarCheck2 size={18} /> Book Appointment
-            </Link>
-            <Link to="/user/profile" className="flex items-center gap-2 hover:underline">
-              <UserCircle2 size={18} /> Profile
-            </Link>
-            <Link
-              to="/user/notifications"
-              className="flex items-center gap-2 hover:underline relative"
-            >
-              <Bell size={18} /> Notifications
-              <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5">
-                3
+              <Icon className="w-5 h-5 shrink-0" />
+              <span className="hidden lg:inline group-hover:inline opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out text-sm">
+                {label}
               </span>
-            </Link>
-          </nav>
-        </div>
-
-        <div className="mt-auto p-4 border-t border-teal-600">
-          <LogoutButton />
-        </div>
+            </NavLink>
+          ))}
+        </nav>
       </aside>
 
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-10 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
       {/* Main Content */}
-      <div className="flex-1 flex flex-col ml-0 md:ml-64">
+      <div className="flex-1 flex flex-col overflow-hidden ml-0 sm:ml-[4.5rem]">
         {/* Header */}
         <header className="bg-white shadow-md p-4 flex justify-between items-center">
           <button
-            onClick={toggleSidebar}
-            className="text-teal-700 md:hidden"
+            onClick={() => setSidebarOpen((prev) => !prev)}
+            className="text-teal-700 sm:hidden"
             aria-label="Toggle Sidebar"
           >
             <Menu size={24} />
           </button>
 
-          <h1 className="text-lg font-semibold">Welcome to Harmony Health Clinic</h1>
+          <h1 className="text-lg font-semibold text-gray-800">
+            Welcome to Harmony Health Clinic
+          </h1>
 
-          {/* User Dropdown */}
           {user && (
             <div className="relative">
               <button
@@ -100,7 +94,7 @@ const UserLayout = () => {
                 className="flex items-center gap-2 text-sm font-medium text-teal-800 hover:text-teal-900"
               >
                 <img
-                  src={user.avatarUrl || '/avatar-placeholder.png'}
+                  src={user.image_url || '/avatar-placeholder.png'}
                   alt="avatar"
                   className="w-8 h-8 rounded-full object-cover"
                 />
@@ -139,12 +133,14 @@ const UserLayout = () => {
           )}
         </header>
 
-        <main className="flex-grow p-6">
+        {/* Page Content */}
+        <main className="flex-grow overflow-y-auto p-6 bg-[#f8f9fa]">
           <Outlet />
         </main>
 
+        {/* Footer */}
         <footer className="bg-gray-200 text-center text-sm py-4 text-gray-600">
-          © {new Date().getFullYear()} Harmony Health Clinic – User Portal
+          © {new Date().getFullYear()} Harmony Health Clinic – Patient Portal
         </footer>
       </div>
     </div>

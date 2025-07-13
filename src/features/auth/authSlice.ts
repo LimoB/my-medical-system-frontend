@@ -3,19 +3,21 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 // Define the decoded JWT token payload
 export interface DecodedToken {
+  user_id: number;
   updated_at: string;
   created_at: string;
-  id: number;              // User ID
-  email: string;           // User's email address
-  role: 'admin' | 'doctor' | 'user';  // User role
-  first_name: string;      // User's first name
-  last_name: string;       // User's last name
-  name: string;            // Full name (first + last name)
-  image_url?: string;      // Optional profile picture URL (image_url)
-  contact_phone?: string;  // Optional phone number
-  address?: string;        // Optional address
-  exp: number;             // Expiration timestamp of the JWT token
+  id: number;
+  email: string;
+  role: 'admin' | 'doctor' | 'user';
+  first_name: string;
+  last_name: string;
+  name: string;
+  image_url?: string;
+  contact_phone?: string;
+  address?: string;
+  exp: number;
 }
+
 
 // Define the auth slice state
 interface AuthState {

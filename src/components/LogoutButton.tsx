@@ -4,9 +4,17 @@ const LogoutButton = ({ className = '' }: { className?: string }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    // Clear all possible user-related data
     localStorage.removeItem('token');
-    sessionStorage.removeItem('token');
     localStorage.removeItem('savedEmail');
+    localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+
+    // Optionally: clear entire storage if you're sure nothing else is needed
+    // localStorage.clear();
+    // sessionStorage.clear();
+
     navigate('/login');
   };
 
