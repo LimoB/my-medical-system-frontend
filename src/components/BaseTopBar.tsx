@@ -14,10 +14,9 @@ import { useNavigate } from 'react-router-dom';
 
 interface BaseTopBarProps {
   onToggleSidebar: () => void;
-  greeting: string;
 }
 
-export default function BaseTopBar({ onToggleSidebar, greeting }: BaseTopBarProps) {
+export default function BaseTopBar({ onToggleSidebar }: BaseTopBarProps) {
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -30,22 +29,23 @@ export default function BaseTopBar({ onToggleSidebar, greeting }: BaseTopBarProp
         setDropdownOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const role = user?.role || 'user';
+  const basePath = `/${role}`;
+
   return (
-    <header className="bg-white px-6 md:px-12 flex items-center justify-between h-24 border-b shadow-md sticky top-0 z-50">
-      {/* Left: Sidebar toggle & greeting */}
-      <div className="flex items-center gap-6">
+    <header className="px-6 md:px-12 flex items-center justify-between h-20 sticky top-0 z-50 bg-transparent">
+      {/* Left: Sidebar toggle */}
+      <div className="flex items-center gap-4">
         <button
           onClick={onToggleSidebar}
           className="md:hidden p-3 rounded-full hover:bg-gray-100"
         >
           <Menu className="w-6 h-6 text-gray-700" />
         </button>
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{greeting}</h1>
       </div>
 
       {/* Center: Search */}
@@ -70,7 +70,7 @@ export default function BaseTopBar({ onToggleSidebar, greeting }: BaseTopBarProp
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen((prev) => !prev)}
-            className="flex items-center gap-4 p-2 pr-4 rounded-full border border-gray-200 hover:ring-2 hover:ring-cyan-500 transition"
+            className="flex items-center gap-4 p-2 pr-4 transition"
           >
             <img
               src={user?.image_url || '/default-avatar.jpg'}
@@ -91,16 +91,16 @@ export default function BaseTopBar({ onToggleSidebar, greeting }: BaseTopBarProp
           <AnimatePresence>
             {dropdownOpen && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: -8 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -8 }}
-                transition={{ duration: 0.2 }}
-                className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg z-50 overflow-hidden"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="absolute right-0 top-full w-52 bg-white border border-gray-200 z-50"
               >
                 <div className="flex flex-col py-2 text-[15px] text-gray-700">
                   <div
                     onClick={() => {
-                      navigate('/admin/profile');
+                      navigate(`${basePath}/profile`);
                       setDropdownOpen(false);
                     }}
                     className="px-5 py-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3"
@@ -110,7 +110,7 @@ export default function BaseTopBar({ onToggleSidebar, greeting }: BaseTopBarProp
                   </div>
                   <div
                     onClick={() => {
-                      navigate('/admin/settings');
+                      navigate(`${basePath}/settings`);
                       setDropdownOpen(false);
                     }}
                     className="px-5 py-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3"

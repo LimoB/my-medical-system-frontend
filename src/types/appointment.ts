@@ -2,6 +2,7 @@ import type { Key } from "react";
 
 // === Appointment object returned from backend ===
 export interface Appointment {
+  reason: any;
   id: Key | null | undefined;              // For React list keys, optional
   appointment_id: number;
   user_id: number;

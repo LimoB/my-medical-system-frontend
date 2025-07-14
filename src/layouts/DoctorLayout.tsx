@@ -4,8 +4,6 @@ import {
   Calendar,
   Video,
   PieChart,
-  Settings,
-  LogOut,
   Users,
   ClipboardList,
   FileText,
@@ -25,8 +23,7 @@ const navItems = [
   { to: '/doctor/complaints', icon: AlertCircle, label: 'Complaints' },
   { to: '/doctor/payments', icon: DollarSign, label: 'Payments' },
   { to: '/doctor/reports', icon: PieChart, label: 'Reports' },
-  { to: '/doctor/settings', icon: Settings, label: 'Settings' },
-  { to: '/logout', icon: LogOut, label: 'Logout' },
+
 ];
 
 const DoctorLayout = () => {

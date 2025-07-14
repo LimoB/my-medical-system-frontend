@@ -1,4 +1,3 @@
-// src/features/admin/ManageComplaints/ComplaintDetailsModal.tsx
 import React from "react";
 import type { Complaint, ComplaintStatus } from "@/types/complaints";
 
@@ -21,81 +20,89 @@ const ComplaintDetailsModal: React.FC<ComplaintDetailsModalProps> = ({
 }) => {
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="complaint-details-title"
     >
       <div
-        className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 mx-4 sm:mx-0"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-xl mx-4 sm:mx-0 p-6 md:p-8"
         onClick={(e) => e.stopPropagation()}
       >
         <h2
           id="complaint-details-title"
-          className="text-2xl font-semibold mb-5 text-gray-900"
+          className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
         >
-          Complaint Details
+          📝 Complaint Details
         </h2>
 
-        <div className="space-y-3 text-gray-800 text-sm sm:text-base">
+        <div className="space-y-4 text-gray-700 text-sm md:text-base">
           <p>
-            <strong className="font-medium text-gray-700">ID:</strong> {complaint.complaint_id}
+            <span className="font-semibold text-gray-600">ID:</span>{' '}
+            {complaint.complaint_id}
           </p>
           <p>
-            <strong className="font-medium text-gray-700">User:</strong>{" "}
+            <span className="font-semibold text-gray-600">User:</span>{' '}
             {complaint.user
               ? `${complaint.user.first_name} ${complaint.user.last_name} (${complaint.user.email})`
-              : "Unknown"}
+              : 'Unknown'}
           </p>
           <p>
-            <strong className="font-medium text-gray-700">Appointment:</strong>{" "}
+            <span className="font-semibold text-gray-600">Appointment:</span>{' '}
             {complaint.appointment
               ? `#${complaint.appointment.appointment_id} on ${new Date(
                   complaint.appointment.date
                 ).toLocaleDateString()} at ${complaint.appointment.time}`
-              : "None"}
+              : 'None'}
           </p>
           <p>
-            <strong className="font-medium text-gray-700">Subject:</strong> {complaint.subject}
+            <span className="font-semibold text-gray-600">Subject:</span>{' '}
+            {complaint.subject}
           </p>
           <p className="whitespace-pre-wrap">
-            <strong className="font-medium text-gray-700">Description:</strong>{" "}
+            <span className="font-semibold text-gray-600">Description:</span>{' '}
             {complaint.description}
           </p>
         </div>
 
-        <label className="block mt-6">
-          <span className="font-semibold text-gray-700 mb-1 block">Status:</span>
+        <div className="mt-6">
+          <label className="block mb-2 font-semibold text-gray-700">Update Status</label>
           <select
             value={complaint.status}
-            onChange={(e) => onStatusChange(complaint.complaint_id, e.target.value as ComplaintStatus)}
+            onChange={(e) =>
+              onStatusChange(complaint.complaint_id, e.target.value as ComplaintStatus)
+            }
             disabled={updatingStatus}
-            className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 transition"
+            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           >
-            {["Open", "In Progress", "Resolved", "Closed"].map((status) => (
+            {['Open', 'In Progress', 'Resolved', 'Closed'].map((status) => (
               <option key={status} value={status}>
                 {status}
               </option>
             ))}
           </select>
-        </label>
+        </div>
 
         <div className="mt-8 flex justify-end space-x-4">
           <button
-            className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300 transition"
             onClick={onClose}
             type="button"
+            className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
           >
             Close
           </button>
           <button
-            className="rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 transition disabled:opacity-50"
             onClick={() => onDelete(complaint.complaint_id)}
-            disabled={deletingId === complaint.complaint_id}
             type="button"
+            disabled={deletingId === complaint.complaint_id}
+            className={`px-4 py-2 rounded-lg bg-red-600 text-white transition ${
+              deletingId === complaint.complaint_id
+                ? 'opacity-50 cursor-not-allowed'
+                : 'hover:bg-red-700'
+            }`}
           >
-            {deletingId === complaint.complaint_id ? "Deleting..." : "Delete"}
+            {deletingId === complaint.complaint_id ? 'Deleting...' : 'Delete'}
           </button>
         </div>
       </div>

@@ -3,7 +3,7 @@ const ServiceHeroSection = () => {
   return (
     <section
       className="relative bg-cover bg-center h-screen flex items-center justify-between px-6 md:px-12"
-      style={{ backgroundImage: `url('/hospital.jpg')` }}
+      style={{ backgroundImage: `url('/national-cancer.jpg')` }}
     >
       <div className="flex justify-between w-full items-center">
         <div className="w-full md:w-1/2 text-left text-white">

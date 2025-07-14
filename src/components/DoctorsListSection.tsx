@@ -39,7 +39,8 @@ const DoctorsListSection = ({
         const doctorsData = await getDoctors();
         setDoctors(doctorsData);
       } catch (err) {
-        setError('Failed to fetch doctors');
+        console.error(err);
+        setError('⚠️ Failed to fetch doctors. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -68,20 +69,26 @@ const DoctorsListSection = ({
 
   return (
     <section className="bg-[#f4f4f5] py-16 px-6 md:px-12">
-      <div className="max-w-6xl mx-auto text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6 text-teal-700">
-          {heading}
-        </h2>
-        <p className="text-gray-600 mb-10 text-lg md:text-xl">
-          {subheading}
-        </p>
+      <div className="max-w-6xl mx-auto">
+        {/* Headings */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-teal-700">
+            {heading}
+          </h2>
+          <p className="text-gray-600 text-lg md:text-xl mt-2">
+            {subheading}
+          </p>
+        </div>
 
+        {/* Loading / Error / Grid */}
         {loading ? (
-          <div className="text-center text-gray-500 py-20">Loading doctors...</div>
+          <div className="text-center text-gray-500 py-20 text-lg animate-pulse">
+            Loading doctors...
+          </div>
         ) : error ? (
-          <div className="text-center text-red-600 py-20">{error}</div>
+          <div className="text-center text-red-600 py-20 text-lg">{error}</div>
         ) : (
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {doctors.map((doc) =>
               renderDoctorCard
                 ? renderDoctorCard(doc, handleBookClick)
@@ -91,7 +98,7 @@ const DoctorsListSection = ({
         )}
       </div>
 
-      {/* Always show modals when enabled */}
+      {/* Modals */}
       {showModals && (
         <>
           {selectedDoctor && (
