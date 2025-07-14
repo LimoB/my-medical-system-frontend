@@ -13,26 +13,30 @@ export const getDoctors = async (): Promise<SanitizedDoctor[]> => {
   return res.data.map((doctor) => ({
     doctor_id: doctor.doctor_id,
     user_id: doctor.user_id,
-    name: `${doctor.user.first_name} ${doctor.user.last_name}`,
-    specialty: doctor.specialization,
-    image: doctor.user.image_url || '/default-doctor.jpg',
-    payment_per_hour: doctor.payment_per_hour,
+    name:
+      doctor.user?.first_name && doctor.user?.last_name
+        ? `${doctor.user.first_name} ${doctor.user.last_name}`
+        : 'Unknown Doctor',
+    specialty: doctor.specialization || 'General',
+    image: doctor.user?.image_url || '/default-doctor.jpg',
+    payment_per_hour: doctor.payment_per_hour || 0,
     available_hours: doctor.available_hours || [],
-    available_days: doctor.available_days || '',
-    specialization: doctor.specialization,
-    description: doctor.description || '',
+    available_days: doctor.available_days || 'Not available',
+    description: doctor.description || 'No description available.',
+    specialization: doctor.specialization || 'General',
     appointments: doctor.appointments || [],
     prescriptions: doctor.prescriptions || [],
-    user: {
-      user_id: doctor.user.user_id,
-      first_name: doctor.user.first_name,
-      last_name: doctor.user.last_name,
-      email: doctor.user.email,
-      contact_phone: doctor.user.contact_phone,
-      image_url: doctor.user.image_url || '/default-doctor.jpg',
+    user: doctor.user || {
+      user_id: 0,
+      first_name: '',
+      last_name: '',
+      email: '',
+      contact_phone: '',
+      image_url: '/default-doctor.jpg',
     },
   }));
 };
+
 
 /**
  * 🔹 Fetch a single doctor by ID

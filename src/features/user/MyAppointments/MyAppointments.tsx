@@ -8,13 +8,22 @@ const MyAppointments = () => {
 
   useEffect(() => {
     fetchAppointments();
-  }, []);
+  }, [fetchAppointments]);
 
-  if (loading) return <p className="text-center mt-10">Loading appointments...</p>;
-  if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
+  if (loading) {
+    return <p className="text-center mt-10">Loading appointments...</p>;
+  }
+
+  if (error) {
+    return (
+      <p className="text-center mt-10 text-red-500" role="alert" aria-live="assertive">
+        {error}
+      </p>
+    );
+  }
 
   return (
-    <div>
+    <section>
       <h2 className="text-2xl font-semibold mb-4 text-teal-700">My Appointments</h2>
 
       {appointments.length === 0 ? (
@@ -22,11 +31,14 @@ const MyAppointments = () => {
       ) : (
         <div className="grid gap-4">
           {appointments.map((appointment) => (
-            <AppointmentCard key={appointment.id} appointment={appointment} />
+            <AppointmentCard
+              key={appointment.appointment_id} // ✅ Use correct and stable ID
+              appointment={appointment}
+            />
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

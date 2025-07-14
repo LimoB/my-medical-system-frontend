@@ -1,6 +1,7 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
 import UserDashboard from '../features/user/Dashboard/UserDashboard';
 import BookAppointment from '../features/user/BookAppointment/BookAppointment';
+import ConfirmBooking from '../features/user/BookAppointment/ConfirmBooking'; // ✅ import this
 import MyAppointments from '../features/user/MyAppointments/MyAppointments';
 import UserPrescriptions from '../features/user/Prescriptions/UserPrescriptions';
 import UserPayments from '../features/user/Payments/UserPayments';
@@ -22,7 +23,12 @@ const UserRoutes = () => {
         }
       >
         <Route index element={<UserDashboard />} />
+
+        {/* ✅ Booking flow */}
         <Route path="book-appointment" element={<BookAppointment />} />
+        <Route path="book-appointment/confirm" element={<ConfirmBooking />} />
+
+        {/* ✅ Other user routes */}
         <Route path="appointments" element={<MyAppointments />} />
         <Route path="prescriptions" element={<UserPrescriptions />} />
         <Route path="payments" element={<UserPayments />} />

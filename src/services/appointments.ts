@@ -1,50 +1,41 @@
 import api from '@/services/axios';
-import { store } from '@/store/store';
 import type {
   Appointment,
   AppointmentCreatePayload,
   AppointmentStatusUpdatePayload,
 } from '@/types/appointment';
 
-// Get token
-const getAuthHeaders = () => {
-  const token = store.getState().auth.token;
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-};
-
 // ✅ Admin: Fetch all appointments
 export const fetchAppointments = async (): Promise<Appointment[]> => {
-  const response = await api.get('/appointments', getAuthHeaders());
+  const response = await api.get('/appointments');
   return response.data;
 };
 
-// Fetch only my appointments (user)
-export const fetchMyAppointments = async (): Promise<Appointment[]> => {
-  const response = await api.get('/appointments/me', getAuthHeaders());
+// ✅ Fetch appointments by user ID (Admin or user themself)
+export const fetchAppointmentsByUserId = async (
+  userId: number
+): Promise<Appointment[]> => {
+  const response = await api.get(`/appointments/user/${userId}`);
   return response.data;
 };
 
-// Create appointment
+// ✅ Create a new appointment
 export const createAppointment = async (
   payload: AppointmentCreatePayload
 ): Promise<Appointment> => {
-  const response = await api.post('/appointments', payload, getAuthHeaders());
+  const response = await api.post('/appointments', payload);
   return response.data;
 };
 
-// Update appointment status
+// ✅ Update appointment status (e.g., from pending to confirmed)
 export const updateAppointmentStatus = async (
   appointmentId: number,
   payload: AppointmentStatusUpdatePayload
 ): Promise<void> => {
-  await api.put(`/appointments/${appointmentId}/status`, payload, getAuthHeaders());
+  await api.put(`/appointments/${appointmentId}/status`, payload);
 };
 
-// Delete appointment
+// ✅ Delete an appointment by ID
 export const deleteAppointment = async (appointmentId: number): Promise<void> => {
-  await api.delete(`/appointments/${appointmentId}`, getAuthHeaders());
+  await api.delete(`/appointments/${appointmentId}`);
 };

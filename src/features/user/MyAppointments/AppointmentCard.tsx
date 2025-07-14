@@ -1,5 +1,4 @@
 // src/features/user/MyAppointments/AppointmentCard.tsx
-// src/features/user/MyAppointments/AppointmentCard.tsx
 import type { Appointment } from '@/types/appointment';
 import AppointmentStatusBadge from '@/components/AppointmentStatusBadge';
 
@@ -17,13 +16,14 @@ const AppointmentCard = ({ appointment }: Props) => {
   } = appointment;
 
   const doctorName = doctor?.user
-    ? `${doctor.user.first_name} ${doctor.user.last_name}`
+    ? `${doctor.user.first_name ?? ''} ${doctor.user.last_name ?? ''}`.trim() || 'N/A'
     : 'N/A';
+
   const specialization = doctor?.specialization || 'General';
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-md">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center" aria-label="Appointment status">
         <div>
           <h3 className="text-lg font-semibold text-teal-700">{doctorName}</h3>
           <p className="text-sm text-gray-500">{specialization}</p>
@@ -33,10 +33,15 @@ const AppointmentCard = ({ appointment }: Props) => {
 
       <div className="mt-3 text-sm text-gray-600">
         <p>
-          <strong>Date:</strong> {appointment_date}
+          <strong>Date:</strong>{' '}
+          {new Date(appointment_date).toLocaleDateString('en-KE', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          })}
         </p>
         <p>
-          <strong>Time:</strong> {time_slot}
+          <strong>Time:</strong> {time_slot ?? 'N/A'}
         </p>
         <p>
           <strong>Booked:</strong>{' '}
