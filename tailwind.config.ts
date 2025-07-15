@@ -18,13 +18,13 @@ export default {
           50: '#E6FAFB',
         },
 
-        // Custom color for footer
+        // Footer Background
         'footer-background': '#007E85',
 
-        // Semantic colors
-        success: '#4ade80',  // green-400
-        error: '#f87171',    // red-400
-        muted: '#6b7280',    // gray-500
+        // Semantic
+        success: '#4ade80',   // green-400
+        error: '#f87171',     // red-400
+        muted: '#6b7280',     // gray-500
         card: '#ffffff',
         background: '#f9f9f9',
 
@@ -51,6 +51,7 @@ export default {
 
       animation: {
         'fade-in': 'fadeIn 0.2s ease-out',
+        'slide-down': 'slideDown 0.3s ease-out',
       },
 
       keyframes: {
@@ -58,17 +59,19 @@ export default {
           '0%': { opacity: 0, transform: 'scale(0.95)' },
           '100%': { opacity: 1, transform: 'scale(1)' },
         },
+        slideDown: {
+          '0%': { transform: 'translateY(-10%)', opacity: 0 },
+          '100%': { transform: 'translateY(0)', opacity: 1 },
+        },
       },
 
       backgroundImage: {
         // Gradients
         'blue-green': 'linear-gradient(to right, #3b82f6, #10b981)',
         'radiant-blue': 'linear-gradient(to right, #3b82f6, #1e3a8a)',
-
-        // ✅ Teal Dashboard Gradient
         'dashboard-teal': 'linear-gradient(to right, rgba(0,126,133,0.33) 0%, rgba(0,126,133,0.34) 39%, rgba(0,126,133,1) 100%)',
       },
     },
   },
   plugins: [],
-}
+};

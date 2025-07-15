@@ -8,26 +8,33 @@ type DoctorCardProps = {
 
 const DoctorCard = ({ doctor, onBook }: DoctorCardProps) => {
   return (
-    <div className="bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-200 hover:ring-2 hover:ring-teal-500 transition-all p-6 flex flex-col items-center text-center">
+    <div className="group bg-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-transform duration-300 overflow-hidden flex flex-col items-center text-center px-6 pt-6 pb-8">
+      {/* Doctor Image with ring and hover animation */}
       <img
         src={doctor.image || '/doc3.jpeg'}
         alt={`Portrait of Dr. ${doctor.name}`}
         loading="lazy"
-        className="w-24 h-24 object-cover rounded-full mb-4 shadow-sm"
+        className="w-24 h-24 object-cover rounded-full ring-2 ring-white ring-offset-2 ring-offset-teal-500 mb-4 shadow-md transition-transform duration-300 group-hover:scale-105"
       />
 
-      <h3 className="text-xl font-bold text-gray-800">{doctor.name}</h3>
+      {/* Doctor Name */}
+      <h3 className="text-lg font-semibold text-teal-700 mb-1">
+        {doctor.name}
+      </h3>
 
+      {/* Specialty */}
       {doctor.specialty && (
-        <span className="bg-teal-100 text-teal-700 text-xs font-medium px-3 py-1 rounded-full mt-1 mb-2">
+        <div className="bg-teal-100 text-teal-700 text-xs font-medium inline-block px-3 py-1 rounded-full mb-2">
           {doctor.specialty}
-        </span>
+        </div>
       )}
 
+      {/* Description */}
       {doctor.description?.trim() && (
-        <p className="text-gray-600 text-sm mt-2 mb-4">{doctor.description}</p>
+        <p className="text-gray-600 text-sm mb-4 max-w-xs">{doctor.description}</p>
       )}
 
+      {/* Availability */}
       <div className="w-full text-sm text-gray-700 text-left space-y-4">
         {doctor.available_days?.trim() && (
           <div className="flex items-start gap-2">
@@ -62,6 +69,7 @@ const DoctorCard = ({ doctor, onBook }: DoctorCardProps) => {
         </div>
       </div>
 
+      {/* Book Now Button */}
       <button
         className="mt-6 w-full bg-teal-600 text-white py-2 px-6 rounded-full hover:bg-teal-700 transition duration-300 font-medium"
         onClick={() => onBook(doctor)}

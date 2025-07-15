@@ -66,9 +66,12 @@ const UserLayout = () => {
         </main>
 
         {/* Footer */}
-        <footer className="bg-gray-200 text-center text-sm py-4 text-gray-600">
-          © {new Date().getFullYear()} Harmony Health Clinic – Patient Portal
+        <footer className="text-center text-sm py-6">
+          <p className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent font-semibold tracking-wide">
+            © {new Date().getFullYear()} Harmony Health Clinic – Patient Portal
+          </p>
         </footer>
+
       </div>
     </div>
   );
