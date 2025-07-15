@@ -1,6 +1,10 @@
-// File: services/doctors.ts
+// File: src/services/doctors.ts
 import api from './axios';
-import type { SanitizedDoctor, DoctorCreatePayload } from '@/types/doctor';
+import type {
+  SanitizedDoctor,
+  DoctorCreatePayload,
+  DoctorPatient,
+} from '@/types/doctor';
 
 const BASE_URL = '/doctors';
 
@@ -37,13 +41,11 @@ export const getDoctors = async (): Promise<SanitizedDoctor[]> => {
   }));
 };
 
-
 /**
  * 🔹 Fetch a single doctor by ID
  */
 export const getDoctorById = async (id: number): Promise<SanitizedDoctor> => {
   const res = await api.get<SanitizedDoctor>(`${BASE_URL}/${id}`);
-
   const doctor = res.data;
 
   return {
@@ -68,6 +70,47 @@ export const getDoctorById = async (id: number): Promise<SanitizedDoctor> => {
       image_url: doctor.user.image_url || '/default-doctor.jpg',
     },
   };
+};
+
+/**
+ * 🔹 Fetch a doctor by user ID
+ */
+export const getDoctorByUserId = async (
+  userId: number
+): Promise<SanitizedDoctor> => {
+  const res = await api.get<SanitizedDoctor[]>(`${BASE_URL}?user_id=${userId}`);
+  if (!res.data.length) throw new Error('Doctor not found for given user ID');
+  return res.data[0];
+};
+
+/**
+ * 🔹 Get patients for the currently logged-in doctor
+ */
+export const getDoctorPatients = async (): Promise<DoctorPatient[]> => {
+  try {
+    const res = await api.get<DoctorPatient[]>('/doctor/patients');
+    return res.data;
+  } catch (error: any) {
+    console.error('❌ Failed to fetch doctor patients:', error);
+    throw new Error(
+      error?.response?.data?.message || 'Unable to fetch doctor patients'
+    );
+  }
+};
+
+/**
+ * 🔹 Get patients by doctor ID (for admin use only)
+ */
+export const getPatientsByDoctorId = async (
+  doctorId: number
+): Promise<DoctorPatient[]> => {
+  try {
+    const res = await api.get<DoctorPatient[]>(`${BASE_URL}/${doctorId}/patients`);
+    return res.data;
+  } catch (error: any) {
+    console.error(`❌ Failed to fetch patients for doctor ${doctorId}:`, error);
+    throw new Error('Unable to fetch patients for the specified doctor');
+  }
 };
 
 /**
@@ -97,4 +140,23 @@ export const updateDoctor = async (
 export const deleteDoctor = async (id: number): Promise<string> => {
   const res = await api.delete<{ message: string }>(`${BASE_URL}/${id}`);
   return res.data.message || 'Doctor deleted';
+};
+
+/**
+ * 🔹 Delete a doctor's patient (i.e. delete appointment history with a specific patient)
+ */
+export const deletePatientAppointment = async (
+  patientUserId: number
+): Promise<string> => {
+  try {
+    const res = await api.delete<{ message: string }>(
+      `/doctors/patients/${patientUserId}`
+    );
+    return res.data.message || 'Patient appointment history deleted';
+  } catch (error: any) {
+    console.error('❌ Failed to delete patient appointment history:', error);
+    throw new Error(
+      error?.response?.data?.message || 'Failed to delete patient appointment history'
+    );
+  }
 };

@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { loginUser } from '../services/auth';
-import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
-import { loginSuccess, type DecodedToken } from '@/features/auth/authSlice';
+import { loginSuccess } from '@/features/auth/authSlice';
+import type { DecodedToken } from '@/features/auth/authSlice';
 import { Eye, EyeOff } from 'lucide-react';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -42,34 +42,37 @@ const LoginHeroSection = () => {
     setLoading(true);
 
     try {
-      const res = await loginUser(formData);
-      const token = res?.token;
-      const role = res?.user?.role;
+      const { token, user } = await loginUser(formData);
 
-      if (!token || !role) {
+      if (!token || !user) {
         toast.error('Invalid login response from server.');
         return;
       }
 
-      // Store in browser storage
+      // Persist token + user
       if (rememberMe) {
         localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('savedEmail', formData.email);
       } else {
         sessionStorage.setItem('token', token);
+        sessionStorage.setItem('user', JSON.stringify(user));
       }
 
-      // Decode and dispatch to Redux
-      const decoded = jwtDecode<DecodedToken>(token);
-      dispatch(loginSuccess({ token, user: decoded }));
+      // Dispatch to Redux
+      dispatch(loginSuccess({ token, user: user as DecodedToken }));
 
-      // Redirect by role
-      if (role === 'admin') {
-        navigate('/admin');
-      } else if (role === 'doctor') {
-        navigate('/doctor');
-      } else {
-        navigate('/user');
+      // Redirect user by role
+      switch (user.role) {
+        case 'admin':
+          navigate('/admin');
+          break;
+        case 'doctor':
+          navigate('/doctor');
+          break;
+        default:
+          navigate('/user');
+          break;
       }
     } catch (err: any) {
       console.error('Login error:', err);
@@ -83,7 +86,7 @@ const LoginHeroSection = () => {
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center"
-      style={{ backgroundImage: `url('/national-cancer.jpg')` }} // Set your image path here
+      style={{ backgroundImage: `url('/national-cancer.jpg')` }}
     >
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg opacity-90">
         <h2 className="text-2xl font-bold text-teal-700 mb-6 text-center">
@@ -118,11 +121,7 @@ const LoginHeroSection = () => {
                 onClick={togglePasswordVisibility}
                 className="absolute inset-y-0 right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
               >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5" />
-                ) : (
-                  <Eye className="h-5 w-5" />
-                )}
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
           </div>
@@ -145,10 +144,9 @@ const LoginHeroSection = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2 rounded transition ${loading
-              ? 'bg-teal-300 cursor-not-allowed'
-              : 'bg-teal-700 hover:bg-teal-800 text-white'
-              }`}
+            className={`w-full py-2 rounded transition ${
+              loading ? 'bg-teal-300 cursor-not-allowed' : 'bg-teal-700 hover:bg-teal-800 text-white'
+            }`}
           >
             {loading ? 'Logging in...' : 'Log In'}
           </button>

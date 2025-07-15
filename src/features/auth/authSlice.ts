@@ -1,12 +1,14 @@
 // File: src/features/auth/authSlice.ts
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-// Define the decoded JWT token payload
+// Extend JWT-decoded payload with optional doctorId
 export interface DecodedToken {
-  user_id: number;
+  specialization: string;
+  id: number; // From JWT payload
+  user_id?: number; // optional alias for id
+  doctorId?: number | null; // 👈 added doctorId (for doctors only)
   updated_at: string;
   created_at: string;
-  id: number;
   email: string;
   role: 'admin' | 'doctor' | 'user';
   first_name: string;
@@ -16,38 +18,41 @@ export interface DecodedToken {
   contact_phone?: string;
   address?: string;
   exp: number;
+  iat?: number;
 }
 
-
-// Define the auth slice state
+// Auth slice state
 interface AuthState {
-  token: string | null;      // JWT token stored in state
-  user: DecodedToken | null; // User object based on DecodedToken
+  token: string | null;
+  user: DecodedToken | null;
 }
 
-// Initial empty state — redux-persist will rehydrate automatically
+// Initial state (can be hydrated by redux-persist)
 const initialState: AuthState = {
   token: null,
   user: null,
 };
 
 const authSlice = createSlice({
-  name: "auth", // Slice name
+  name: 'auth',
   initialState,
   reducers: {
-    // Action to handle login success
-    loginSuccess(state, action: PayloadAction<{ token: string; user: DecodedToken }>) {
-      state.token = action.payload.token;  // Save the token in state
-      state.user = action.payload.user;    // Save the user data in state
+    // Called after login success
+    loginSuccess(
+      state,
+      action: PayloadAction<{ token: string; user: DecodedToken }>
+    ) {
+      state.token = action.payload.token;
+      state.user = action.payload.user;
     },
 
-    // Action to handle logout
+    // Called on logout
     logout(state) {
-      state.token = null;  // Clear the token
-      state.user = null;    // Clear the user data
+      state.token = null;
+      state.user = null;
     },
 
-    // Action to set auth state (for initial state or session restoration)
+    // Optionally set state manually (e.g., restoring session)
     setAuthState(state, action: PayloadAction<AuthState>) {
       state.token = action.payload.token;
       state.user = action.payload.user;

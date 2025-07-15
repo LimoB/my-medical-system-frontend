@@ -50,3 +50,22 @@ export interface SanitizedDoctor {
   prescriptions: PrescriptionSummary[];
   user: SanitizedUser; // User object
 }
+
+
+export type DoctorPatient = {
+  user: {
+    address: string;
+    created_at: any;
+    last_login: any;
+    is_verified: any;
+    user_id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    contact_phone: string;
+    image_url: string;
+  };
+  appointmentDate: string;
+  timeSlot: string;
+  status: string;
+};
