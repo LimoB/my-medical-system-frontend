@@ -1,4 +1,3 @@
-
 import { Route, Routes, Navigate } from 'react-router-dom';
 import AdminDashboard from '../features/admin/Dashboard/AdminDashboard';
 import ManageUsers from '../features/admin/ManageUsers/ManageUsers';
@@ -8,6 +7,7 @@ import Appointments from '../features/admin/ManageAppointments/Appointments';
 import Complaints from '../features/admin/ManageComplaints/Complaints';
 import Doctors from '../features/admin/ManageDoctors/Doctors';
 import Payments from '../features/admin/ManagePayments/Payments';
+import Meetings from '../features/admin/meetings/AdminMeetingsPage'; // ✅ new import
 import AdminLayout from '../layouts/AdminLayout';
 import ProtectedRoute from './ProtectedRoute';
 
@@ -28,6 +28,7 @@ const AdminRoutes = () => {
         <Route path="users" element={<ManageUsers />} />
         <Route path="payments" element={<Payments />} />
         <Route path="complaints" element={<Complaints />} />
+        <Route path="meetings" element={<Meetings />} /> {/* ✅ new route */}
         <Route path="settings" element={<AdminSettings />} />
         <Route path="profile" element={<AdminProfile />} />
       </Route>

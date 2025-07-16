@@ -1,3 +1,7 @@
+import { useSelector } from 'react-redux';
+import { useState } from 'react';
+import type { RootState } from '@/store/store';
+
 import StatsCard from './components/StatsCard';
 import PatientList from './components/PatientList';
 import ConsultationCard from './components/ConsultationCard';
@@ -5,12 +9,17 @@ import CalendarPanel from './components/CalendarPanel';
 import DailyReadCard from './components/DailyRead';
 
 const DoctorDashboard = () => {
+  const user = useSelector((state: RootState) => state.auth.user);
+  const doctorName = user?.first_name ? `Dr. ${user.first_name}` : 'Doctor';
+
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
   return (
     <div className="min-h-screen w-full flex flex-col bg-[#f9f9f9] p-6 font-sans">
       {/* Greeting */}
       <div className="mb-4">
         <h1 className="text-3xl font-bold text-gray-800">
-          Good Morning <span className="text-teal-600">Dr. Kim!</span>
+          Good Morning <span className="text-teal-600">{doctorName}!</span>
         </h1>
         <p className="text-sm text-gray-500 mt-1">Here’s a quick look at your day.</p>
       </div>
@@ -36,7 +45,10 @@ const DoctorDashboard = () => {
         {/* Right Sidebar Section */}
         <div className="flex flex-col gap-6 h-full">
           <div className="flex-1">
-            <CalendarPanel />
+            <CalendarPanel
+              selectedDate={selectedDate}
+              onDateSelect={setSelectedDate}
+            />
           </div>
           <div className="flex-1">
             <DailyReadCard />

@@ -1,4 +1,5 @@
 // File: src/features/user/BookAppointment/ConfirmBooking.tsx
+
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
@@ -13,7 +14,7 @@ const ConfirmBooking = () => {
     const user = useSelector((state: RootState) => state.auth.user);
 
     const { doctor, selectedDate, selectedHour } = state || {};
-    const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'stripe' | 'cash' | ''>('');
+    const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'stripe' | 'cash' | 'paypal' | ''>('');
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
@@ -28,7 +29,8 @@ const ConfirmBooking = () => {
     const handleConfirm = async () => {
         if (!paymentMethod) return;
 
-        if (!user?.id && !user?.user_id) {
+        const userId = user.id ?? user.user_id;
+        if (!userId) {
             alert('User info missing. Please login again.');
             return;
         }
@@ -37,13 +39,13 @@ const ConfirmBooking = () => {
             setLoading(true);
 
             const appointmentPayload = {
-                user_id: user.id ?? user.user_id,  // use whichever is defined
+                user_id: userId,
                 doctor_id: (doctor as SanitizedDoctor).doctor_id,
-                appointment_date: new Date(selectedDate).toISOString().split('T')[0],
-                time_slot: selectedHour,
+                appointment_date: new Date(selectedDate).toISOString(), // Valid ISO string
+                time_slot: selectedHour.slice(0, 5), // Ensure "HH:MM"
                 total_amount: Number(doctor.payment_per_hour),
                 payment_per_hour: Number(doctor.payment_per_hour),
-                payment_method: paymentMethod,
+                payment_method: paymentMethod, // ✅ Include the selected payment method
             };
 
             console.log('📦 Payload:', appointmentPayload);
@@ -51,13 +53,17 @@ const ConfirmBooking = () => {
             await createAppointment(appointmentPayload);
             setShowModal(true);
         } catch (error: any) {
-            console.error('❌ Booking failed', error.response?.data || error.message);
-            alert('Booking failed. Please try again.');
+            const msg =
+                error?.response?.data?.error ||
+                error?.response?.data?.message ||
+                error?.message ||
+                'Booking failed';
+            console.error('❌ Booking failed:', msg);
+            alert(`Booking failed. ${msg}`);
         } finally {
             setLoading(false);
         }
     };
-
 
     const handleModalClose = () => {
         setShowModal(false);

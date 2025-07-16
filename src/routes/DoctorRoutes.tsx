@@ -10,6 +10,7 @@ import Payments from '../features/doctor/Payments/Payments';
 import Reports from '../features/doctor/Reports/Reports';
 import Settings from '../features/doctor/Settings/Settings';
 import DoctorNotifications from '../features/doctor/Notifications/DoctorNotifications';
+import Meetings from '../features/doctor/Meetings/Meetings'; // ✅ Added
 
 import DoctorLayout from '../layouts/DoctorLayout';
 import ProtectedRoute from './ProtectedRoute';
@@ -30,6 +31,7 @@ const DoctorRoutes = () => {
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
           <Route path="notifications" element={<DoctorNotifications />} />
+          <Route path="meetings" element={<Meetings />} /> {/* ✅ New route */}
         </Route>
       </Route>
 

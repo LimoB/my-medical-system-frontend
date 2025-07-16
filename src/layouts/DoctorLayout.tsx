@@ -9,6 +9,7 @@ import {
   FileText,
   DollarSign,
   AlertCircle,
+  CalendarDays, // ✅ Optional: use CalendarDays instead of Calendar if you want variety
 } from 'lucide-react';
 import { useState } from 'react';
 import DoctorTopBar from '@/components/DoctorTopBar';
@@ -23,7 +24,7 @@ const navItems = [
   { to: '/doctor/complaints', icon: AlertCircle, label: 'Complaints' },
   { to: '/doctor/payments', icon: DollarSign, label: 'Payments' },
   { to: '/doctor/reports', icon: PieChart, label: 'Reports' },
-
+  { to: '/doctor/meetings', icon: CalendarDays, label: 'Meetings' }, // ✅ New link
 ];
 
 const DoctorLayout = () => {

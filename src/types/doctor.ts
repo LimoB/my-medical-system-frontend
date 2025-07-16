@@ -21,6 +21,7 @@ export interface DoctorCreatePayload {
 
 // -- Appointment summary for doctor table or detail view --
 export interface AppointmentSummary {
+  date(date: any): unknown;
   appointment_id: number;
   appointment_date: string; // ISO format
   time_slot: string;        // HH:MM
@@ -69,3 +70,20 @@ export type DoctorPatient = {
   timeSlot: string;
   status: string;
 };
+
+
+// -- Consultation summary (for doctor's consultation list) --
+export interface ConsultationSummary {
+  consultation_id: number;
+  appointment_id: number;
+  diagnosis: string;
+  status: 'Ongoing' | 'Completed';
+  created_at: string;
+  duration_minutes?: number;
+  patient?: SanitizedUser;
+}
+
+// -- Add this to doctor profile type if needed --
+export interface SanitizedDoctorWithConsultations extends SanitizedDoctor {
+  consultations: ConsultationSummary[];
+}

@@ -7,10 +7,12 @@ import {
   FaUsers,
   FaMoneyCheckAlt,
   FaBullhorn,
+  FaCalendarCheck, // ✅ Import for Manage Meetings
 } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import AdminTopBar from '@/components/AdminTopBar';
 
+// ✅ Add Manage Meetings entry to navItems
 const navItems = [
   { label: 'Dashboard', icon: FaTachometerAlt, to: '/admin/dashboard' },
   { label: 'Appointments', icon: FaCalendarAlt, to: '/admin/appointments' },
@@ -18,6 +20,7 @@ const navItems = [
   { label: 'Users', icon: FaUsers, to: '/admin/users' },
   { label: 'Payments', icon: FaMoneyCheckAlt, to: '/admin/payments' },
   { label: 'Complaints', icon: FaBullhorn, to: '/admin/complaints' },
+  { label: 'Manage Meetings', icon: FaCalendarCheck, to: '/admin/meetings' }, // ✅ New
 ];
 
 export default function AdminLayout() {

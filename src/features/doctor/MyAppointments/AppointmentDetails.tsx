@@ -1,4 +1,3 @@
-// File: src/features/doctors/MyAppointments/AppointmentDetails.tsx
 import { useEffect, useState, type ChangeEvent } from 'react';
 import type { Appointment } from '@/types/appointment';
 import type { User } from '@/types/user';
@@ -15,9 +14,9 @@ type Props = {
 };
 
 const AppointmentDetails = ({ appointment, onClose, onRefresh }: Props) => {
-  const [status, setStatus] = useState<'Pending' | 'Confirmed' | 'Cancelled'>(
-    appointment.appointment_status
-  );
+  const [status, setStatus] = useState<
+    'Pending' | 'Confirmed' | 'Cancelled' | 'Completed'
+  >(appointment.appointment_status);
   const [loading, setLoading] = useState(false);
   const [patient, setPatient] = useState<User | null>(null);
 
@@ -38,7 +37,7 @@ const AppointmentDetails = ({ appointment, onClose, onRefresh }: Props) => {
     try {
       setLoading(true);
       await updateAppointmentStatus(appointment.appointment_id, {
-        status, // ✅ backend expects this
+        status,
       });
       onRefresh?.();
       onClose();
@@ -50,8 +49,7 @@ const AppointmentDetails = ({ appointment, onClose, onRefresh }: Props) => {
   };
 
   const handleDelete = async () => {
-    const confirm = window.confirm('Are you sure you want to delete this appointment?');
-    if (!confirm) return;
+    if (!window.confirm('Are you sure you want to delete this appointment?')) return;
 
     try {
       setLoading(true);
@@ -66,18 +64,20 @@ const AppointmentDetails = ({ appointment, onClose, onRefresh }: Props) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg space-y-4">
+    <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50 overflow-auto p-4">
+      <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg space-y-4">
         <h2 className="text-xl font-bold">Appointment Details</h2>
 
         {patient ? (
           <div className="space-y-1">
             <img
-              src={patient.image_url}
+              src={patient.image_url ?? ''}
               alt={`${patient.first_name} ${patient.last_name}`}
               className="w-20 h-20 rounded-full object-cover"
             />
-            <p><strong>Name:</strong> {patient.first_name} {patient.last_name}</p>
+            <p>
+              <strong>Name:</strong> {patient.first_name} {patient.last_name}
+            </p>
             <p><strong>Email:</strong> {patient.email}</p>
             <p><strong>Phone:</strong> {patient.contact_phone}</p>
             <p><strong>Address:</strong> {patient.address}</p>
@@ -88,25 +88,32 @@ const AppointmentDetails = ({ appointment, onClose, onRefresh }: Props) => {
         )}
 
         <div className="space-y-1">
-          <p><strong>Date:</strong> {new Date(appointment.appointment_date).toLocaleDateString()}</p>
+          <p>
+            <strong>Date:</strong>{' '}
+            {new Date(appointment.appointment_date).toLocaleDateString()}
+          </p>
           <p><strong>Time:</strong> {appointment.time_slot}</p>
           <label className="block font-semibold mt-2">Status:</label>
           <select
             value={status}
             onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-              setStatus(e.target.value as 'Pending' | 'Confirmed' | 'Cancelled')
+              setStatus(e.target.value as
+                | 'Pending'
+                | 'Confirmed'
+                | 'Cancelled'
+                | 'Completed')
             }
             className="border p-2 w-full rounded"
+            disabled={loading}
           >
             <option value="Pending">Pending</option>
             <option value="Confirmed">Confirmed</option>
             <option value="Cancelled">Cancelled</option>
+            <option value="Completed">Completed</option>
           </select>
         </div>
 
-        {appointment.reason && (
-          <p><strong>Reason:</strong> {appointment.reason}</p>
-        )}
+        {appointment.reason && <p><strong>Reason:</strong> {appointment.reason}</p>}
 
         <div className="flex justify-between pt-4">
           <button
