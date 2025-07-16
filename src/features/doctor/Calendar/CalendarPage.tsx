@@ -6,6 +6,17 @@ import { fetchAppointmentsByDoctor } from '@/services/appointments';
 import type { Meeting } from '@/types/meeting';
 import type { Appointment } from '@/types/appointment';
 import { CalendarDays, Stethoscope } from 'lucide-react';
+import dayjs from 'dayjs';
+
+// Used to give consistent colors based on user_id
+const colors = ['pink', 'blue', 'green', 'red'] as const;
+
+const colorMap: Record<(typeof colors)[number], { bg: string; text: string }> = {
+  pink: { bg: 'bg-pink-100', text: 'text-pink-800' },
+  blue: { bg: 'bg-blue-100', text: 'text-blue-800' },
+  green: { bg: 'bg-green-100', text: 'text-green-800' },
+  red: { bg: 'bg-red-100', text: 'text-red-800' },
+};
 
 const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -41,7 +52,6 @@ const CalendarPage = () => {
     isSameDay(parseISO(a.appointment_date), selectedDate)
   );
 
-  // Combine meeting and appointment dates for current month
   const currentMonth = selectedDate.getMonth();
   const currentYear = selectedDate.getFullYear();
 
@@ -114,20 +124,46 @@ const CalendarPage = () => {
             {filteredAppointments.length === 0 ? (
               <p className="text-sm text-gray-500">No appointments for this day.</p>
             ) : (
-              filteredAppointments.map((a) => (
-                <div
-                  key={a.appointment_id}
-                  className="bg-white p-4 rounded-xl shadow-sm border text-sm"
-                >
-                  <p className="font-medium text-gray-800">
-                    Patient: {a.patient?.first_name} {a.patient?.last_name}
-                  </p>
-                  <p className="text-gray-500">Time: {a.appointment_time}</p>
-                  <p className="text-gray-600">
-                    Reason: {a.reason || 'N/A'}
-                  </p>
-                </div>
-              ))
+              filteredAppointments.map((a) => {
+                const user = a.user; // Safe check for user
+
+                if (!user) {
+                  return null; // If no user data, skip rendering this appointment
+                }
+
+                const name = `${user.first_name} ${user.last_name}`;
+                const initials = name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('');
+                const color = colors[user.user_id % colors.length];
+                const time = dayjs(`${a.appointment_date}T${a.time_slot}`).format('h:mm A');
+
+                return (
+                  <div
+                    key={a.appointment_id}
+                    className="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border text-sm"
+                  >
+                    {/* Avatar + Info */}
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-9 h-9 rounded-full font-bold text-sm flex items-center justify-center ${colorMap[color].bg} ${colorMap[color].text}`}
+                      >
+                        {initials}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 leading-tight">{name}</p>
+                        <p className="text-xs text-blue-400">{a.appointment_status}</p>
+                      </div>
+                    </div>
+
+                    {/* Time */}
+                    <span className="text-xs font-semibold bg-gray-100 text-gray-700 px-2.5 py-0.5 rounded-full">
+                      {time}
+                    </span>
+                  </div>
+                );
+              })
             )}
           </div>
         </div>

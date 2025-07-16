@@ -22,8 +22,10 @@ export const fetchAppointmentsByUserId = async (
 // ✅ Fetch appointments for the currently logged-in doctor
 export const fetchAppointmentsByDoctor = async (): Promise<Appointment[]> => {
   const response = await api.get('/appointments/doctor');
+  console.log(response.data);  // Log the response to check the data structure
   return response.data;
 };
+
 
 // ✅ Create a new appointment
 export const createAppointment = async (
