@@ -83,15 +83,17 @@ const Consultation = () => {
               {consultations.map((c) => (
                 <tr key={c.consultation_id} className="border-t hover:bg-gray-50">
                   <td className="px-4 py-2">
-                    {c.patient?.first_name} {c.patient?.last_name}
+                    {c.patient
+                      ? `${c.patient.first_name} ${c.patient.last_name}`
+                      : 'Unknown Patient'}
                   </td>
-                  <td className="px-4 py-2">{c.doctor?.name ?? '-'}</td>
+                  <td className="px-4 py-2">{c.doctor?.name ?? 'Unknown Doctor'}</td>
                   <td className="px-4 py-2">{c.diagnosis}</td>
                   <td className="px-4 py-2">
                     <span
                       className={`px-2 py-1 text-xs rounded-full ${c.status === 'Completed'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-yellow-100 text-yellow-800'
                         }`}
                     >
                       {c.status}

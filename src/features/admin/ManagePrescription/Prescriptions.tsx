@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchPrescriptions, updatePrescription, deletePrescription } from '@/services/prescription';
 import { fetchUserById } from '@/services/users'; // Fetch Patient Details
+import { getDoctorById } from '@/services/doctors'; // Fetch Doctor Details
 import type { Prescription, PrescriptionUpdatePayload } from '@/types/prescription';
 import PrescriptionTable from './PrescriptionTable';
 import PrescriptionModal from './PrescriptionModal';
@@ -19,8 +20,9 @@ const Prescriptions = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [prescriptionToDelete, setPrescriptionToDelete] = useState<Prescription | null>(null);
 
-  // Storing patient data only
+  // Storing patient and doctor data
   const [patients, setPatients] = useState<Record<number, string>>({});
+  const [doctors, setDoctors] = useState<Record<number, string>>({});
 
   useEffect(() => {
     const fetchAllPrescriptions = async () => {
@@ -28,21 +30,33 @@ const Prescriptions = () => {
       try {
         const data = await fetchPrescriptions();
         
-        // Fetch patient details for each prescription
+        // Fetch user details (doctor and patient) for each prescription
         const patientIds = [...new Set(data.map((p) => p.patient_id))];
+        const doctorIds = [...new Set(data.map((p) => p.doctor_id))];
 
         const patientPromises = patientIds.map((id) => fetchUserById(id));
+        const doctorPromises = doctorIds.map((id) => getDoctorById(id));
 
         // Wait for all fetches to resolve
-        const patientsData = await Promise.all(patientPromises);
+        const [patientsData, doctorsData] = await Promise.all([
+          Promise.all(patientPromises),
+          Promise.all(doctorPromises),
+        ]);
 
-        // Create name mapping for patients
+        // Create name mapping
         const patientNameMap = patientsData.reduce((acc, patient) => {
           acc[patient.user_id] = `${patient.first_name} ${patient.last_name}`;
           return acc;
         }, {} as Record<number, string>);
 
+        const doctorNameMap = doctorsData.reduce((acc, doctor) => {
+          acc[doctor.doctor_id] = `${doctor.user.first_name} ${doctor.user.last_name}`;
+          return acc;
+        }, {} as Record<number, string>);
+
         setPatients(patientNameMap);
+        setDoctors(doctorNameMap);
+
         setPrescriptions(data);
       } catch (err) {
         console.error('Failed to fetch prescriptions', err);
@@ -116,11 +130,9 @@ const Prescriptions = () => {
         prescriptions={prescriptions}
         loading={loading}
         patients={patients}
+        doctors={doctors}
         onEdit={handleSelectPrescription}
         onDelete={handleOpenDeleteModal}
-        currentPage={1} // Example: Add pagination logic here if needed
-        totalPages={1}  // Example: Add pagination logic here if needed
-        setCurrentPage={() => {}}
       />
 
       {isEditing && selectedPrescription && (
