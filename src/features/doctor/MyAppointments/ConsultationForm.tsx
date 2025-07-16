@@ -25,6 +25,7 @@ const ConsultationForm = ({
     additional_notes: '',
     duration_minutes: 30,
   });
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -36,6 +37,12 @@ const ConsultationForm = ({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    // Basic validation
+    if (!consultationData.diagnosis) {
+      setError('Diagnosis is required');
+      return;
+    }
 
     try {
       await createConsultation({
@@ -53,9 +60,9 @@ const ConsultationForm = ({
       alert('Consultation saved successfully!');
       onRefresh();
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       console.error('❌ Error saving consultation:', err);
-      alert('Failed to save consultation.');
+      setError(err?.response?.data?.error || 'Failed to save consultation.');
     }
   };
 
@@ -65,6 +72,9 @@ const ConsultationForm = ({
       className="space-y-4 p-4 border rounded bg-white max-w-md mx-auto"
     >
       <h3 className="text-lg font-semibold">Add Consultation</h3>
+
+      {/* Display error if any */}
+      {error && <div className="text-red-600 font-medium">{error}</div>}
 
       <div>
         <label className="block font-semibold mb-1">Diagnosis*</label>
