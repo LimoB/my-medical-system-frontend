@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { parseISO, isSameDay } from 'date-fns';
+import { parseISO, isSameDay, getMonth, getDate } from 'date-fns';
 import CalendarPanel from '@/features/doctor/Dashboard/components/CalendarPanel';
 import { getMeetings } from '@/services/meeting';
 import { fetchAppointmentsByDoctor } from '@/services/appointments';
@@ -41,6 +41,28 @@ const CalendarPage = () => {
     isSameDay(parseISO(a.appointment_date), selectedDate)
   );
 
+  // Combine meeting and appointment dates for current month
+  const currentMonth = selectedDate.getMonth();
+  const currentYear = selectedDate.getFullYear();
+
+  const meetingDays = meetings
+    .map((m) => parseISO(m.meeting_date))
+    .filter((d) => getMonth(d) === currentMonth && d.getFullYear() === currentYear)
+    .map((d) => getDate(d));
+
+  const appointmentDays = appointments
+    .map((a) => parseISO(a.appointment_date))
+    .filter((d) => getMonth(d) === currentMonth && d.getFullYear() === currentYear)
+    .map((d) => getDate(d));
+
+  const combinedMarkedDates = Array.from(
+    new Set([...meetingDays, ...appointmentDays])
+  ).map((day) => {
+    const hasMeeting = meetingDays.includes(day);
+    const hasAppointment = appointmentDays.includes(day);
+    return { day, hasMeeting, hasAppointment };
+  });
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 font-sans">
       {/* Left: Calendar */}
@@ -48,6 +70,7 @@ const CalendarPage = () => {
         <CalendarPanel
           selectedDate={selectedDate}
           onDateSelect={setSelectedDate}
+          markedDates={combinedMarkedDates}
         />
       </div>
 

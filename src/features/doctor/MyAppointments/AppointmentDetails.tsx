@@ -63,6 +63,10 @@ const AppointmentDetails = ({ appointment, onClose, onRefresh }: Props) => {
     }
   };
 
+  const appointmentDate = new Date(appointment.appointment_date);
+  const formattedDate = appointmentDate.toLocaleDateString();
+  const dayOfWeek = appointmentDate.toLocaleDateString('en-US', { weekday: 'long' });
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50 overflow-auto p-4">
       <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg space-y-4">
@@ -90,7 +94,7 @@ const AppointmentDetails = ({ appointment, onClose, onRefresh }: Props) => {
         <div className="space-y-1">
           <p>
             <strong>Date:</strong>{' '}
-            {new Date(appointment.appointment_date).toLocaleDateString()}
+            {formattedDate} ({dayOfWeek})
           </p>
           <p><strong>Time:</strong> {appointment.time_slot}</p>
           <label className="block font-semibold mt-2">Status:</label>

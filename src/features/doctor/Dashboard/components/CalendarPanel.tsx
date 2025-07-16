@@ -7,43 +7,39 @@ import {
   isAfter,
   compareAsc,
 } from 'date-fns';
-import { motion } from 'framer-motion';
 import { useMemo, useEffect, useState } from 'react';
 import { getMeetings } from '@/services/meeting';
 import type { Meeting } from '@/types/meeting';
 
+interface MarkedDate {
+  day: number;
+  hasMeeting?: boolean;
+  hasAppointment?: boolean;
+}
+
 interface CalendarPanelProps {
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
+  markedDates?: MarkedDate[];
 }
 
-const CalendarPanel = ({ selectedDate, onDateSelect }: CalendarPanelProps) => {
+const CalendarPanel = ({
+  selectedDate,
+  onDateSelect,
+  markedDates = [],
+}: CalendarPanelProps) => {
   const currentDate = new Date();
   const currentMonth = format(currentDate, 'MMMM yyyy');
   const daysInMonth = getDaysInMonth(currentDate);
-  const startWeekday = getDay(startOfMonth(currentDate)); // 0 = Sunday
+  const startWeekday = getDay(startOfMonth(currentDate));
 
   const [, setMeetings] = useState<Meeting[]>([]);
-  const [markedDates, setMarkedDates] = useState<number[]>([]);
   const [upcoming, setUpcoming] = useState<Meeting | null>(null);
 
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
         const allMeetings = await getMeetings();
-
-        const thisMonthMeetings = allMeetings.filter((meeting) => {
-          const date = parseISO(meeting.meeting_date);
-          return (
-            date.getMonth() === currentDate.getMonth() &&
-            date.getFullYear() === currentDate.getFullYear()
-          );
-        });
-
-        const days = thisMonthMeetings.map((m) =>
-          parseISO(m.meeting_date).getDate()
-        );
-        setMarkedDates([...new Set(days)]);
 
         const futureMeetings = allMeetings
           .filter((m) =>
@@ -72,21 +68,24 @@ const CalendarPanel = ({ selectedDate, onDateSelect }: CalendarPanelProps) => {
     return [...blanks, ...days];
   }, [daysInMonth, startWeekday]);
 
+  const getDayMark = (day: number): MarkedDate | undefined =>
+    markedDates.find((d) => d.day === day);
+
   return (
     <div className="bg-white rounded-2xl shadow-lg p-5 w-full h-full font-sans flex flex-col justify-between">
-      {/* 🗓️ Current Month */}
+      {/* Month Heading */}
       <div className="text-center mb-4">
         <p className="text-base font-bold text-gray-900">{currentMonth}</p>
       </div>
 
-      {/* Week Headers */}
+      {/* Weekdays Header */}
       <div className="grid grid-cols-7 text-center text-xs font-semibold text-gray-400 mb-2">
-        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day) => (
-          <div key={day}>{day}</div>
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, i) => (
+          <div key={i}>{day[0]}</div>
         ))}
       </div>
 
-      {/* Calendar Days */}
+      {/* Calendar Grid */}
       <div className="grid grid-cols-7 gap-y-3 text-center text-sm text-gray-800">
         {calendarDays.map((day, idx) =>
           day === null ? (
@@ -107,21 +106,32 @@ const CalendarPanel = ({ selectedDate, onDateSelect }: CalendarPanelProps) => {
                 }`}
             >
               {day}
-              {markedDates.includes(day) && (
-                <motion.span
-                  layoutId={`dot-${day}`}
-                  className="absolute bottom-1 left-1/2 -translate-x-1/2 h-1.5 w-1.5 rounded-full bg-emerald-500"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
-                />
-              )}
+              {/* Colored Ring Indicator */}
+              {(() => {
+                const mark = getDayMark(day);
+                if (!mark) return null;
+
+                let ringClass = '';
+                if (mark.hasMeeting && mark.hasAppointment) {
+                  ringClass = 'bg-gradient-to-br from-blue-400 via-purple-400 to-red-400 opacity-20';
+                } else if (mark.hasMeeting) {
+                  ringClass = 'bg-red-500/20';
+                } else if (mark.hasAppointment) {
+                  ringClass = 'bg-blue-500/20';
+                }
+
+                return (
+                  <div
+                    className={`absolute inset-0 rounded-full ${ringClass}`}
+                  />
+                );
+              })()}
             </div>
           )
         )}
       </div>
 
-      {/* 📌 Upcoming Event */}
+      {/* Upcoming Section */}
       <div className="mt-6">
         <h3 className="text-sm font-semibold text-gray-800 mb-2">Upcoming</h3>
         {upcoming ? (

@@ -30,6 +30,7 @@ const DoctorsListSection = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState<SanitizedDoctor | null>(null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [reason, setReason] = useState<string>('');  // Add reason state
 
   const navigate = useNavigate();
 
@@ -67,6 +68,11 @@ const DoctorsListSection = ({
     setIsModalOpen(true);
   };
 
+  // Handle reason change
+  const handleReasonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setReason(e.target.value);
+  };
+
   return (
     <section className="bg-[#f4f4f5] py-16 px-6 md:px-12">
       <div className="max-w-6xl mx-auto text-center">
@@ -101,6 +107,8 @@ const DoctorsListSection = ({
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)}
               doctor={selectedDoctor}
+              reason={reason}  // Pass reason
+              onReasonChange={handleReasonChange}  // Pass onReasonChange
             />
           )}
           <LoginPromptModal

@@ -21,17 +21,19 @@ const AppointmentCard = ({ appointment }: Props) => {
 
   const handleRefresh = () => window.location.reload();
 
-  // Construct a full User object with fallback defaults
   const fullPatient: User | null = patient
     ? {
-      ...patient,
-      image_url: patient.image_url ?? '',
-      role: (patient.role ?? 'user') as 'user' | 'admin' | 'doctor',
-      contact_phone: patient.contact_phone ?? '',
-      address: patient.address ?? '',
-    }
+        ...patient,
+        image_url: patient.image_url ?? '',
+        role: (patient.role ?? 'user') as 'user' | 'admin' | 'doctor',
+        contact_phone: patient.contact_phone ?? '',
+        address: patient.address ?? '',
+      }
     : null;
 
+  const dateObj = new Date(appointment.appointment_date);
+  const dateString = dateObj.toLocaleDateString();
+  const weekday = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
 
   return (
     <>
@@ -42,8 +44,7 @@ const AppointmentCard = ({ appointment }: Props) => {
         </div>
 
         <p className="text-sm">
-          <strong>Date:</strong>{' '}
-          {new Date(appointment.appointment_date).toLocaleDateString()}
+          <strong>Date:</strong> {dateString} ({weekday})
         </p>
         <p className="text-sm">
           <strong>Time:</strong> {appointment.time_slot}
