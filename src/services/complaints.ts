@@ -41,3 +41,10 @@ export const updateComplaintStatus = async (
 export const deleteComplaint = async (id: number | string): Promise<void> => {
   await api.delete(`/complaints/${id}`, getAuthHeaders());
 };
+
+
+// Fetch complaints for the currently logged-in user (any role)
+export const fetchComplaintsByCurrentUser = async (): Promise<Complaint[]> => {
+  const response = await api.get('/complaints/user', getAuthHeaders());
+  return response.data as Complaint[];
+};
