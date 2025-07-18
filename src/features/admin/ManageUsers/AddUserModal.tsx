@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -14,14 +15,28 @@ interface Props {
 }
 
 const AddUserModal = ({ formData, setFormData, closeModal, fetchUsers }: Props) => {
+  const [loading, setLoading] = useState(false);
+
+  const isFormValid = () =>
+    formData.first_name.trim() &&
+    formData.last_name.trim() &&
+    formData.email.trim() &&
+    formData.password.trim() &&
+    formData.role;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isFormValid()) return;
 
+    setLoading(true);
     try {
       await createUser(formData);
       toast.success('User created successfully');
       fetchUsers();
-      setTimeout(() => closeModal(), 300);
+      setTimeout(() => {
+        closeModal();
+        setLoading(false);
+      }, 400);
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.error ||
@@ -29,12 +44,13 @@ const AddUserModal = ({ formData, setFormData, closeModal, fetchUsers }: Props) 
         'Failed to create user. Please check your input.';
       toast.error(errorMessage);
       console.error('Create user error:', error?.response?.data || error.message);
+      setLoading(false);
     }
   };
 
   return (
     <AnimatePresence>
-      <Dialog open onClose={closeModal} className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
+      <Dialog open onClose={closeModal} className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="fixed inset-0 bg-black bg-opacity-30" aria-hidden="true" />
 
         <motion.div
@@ -96,6 +112,7 @@ const AddUserModal = ({ formData, setFormData, closeModal, fetchUsers }: Props) 
               required
               className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
             >
+              <option value="">Select Role</option>
               <option value="user">User</option>
               <option value="doctor">Doctor</option>
               <option value="admin">Admin</option>
@@ -107,17 +124,18 @@ const AddUserModal = ({ formData, setFormData, closeModal, fetchUsers }: Props) 
                 onClick={closeModal}
                 variant="outline"
                 className="!text-red-600 !border-red-600 hover:!bg-red-100 focus:!ring-red-300"
+                disabled={loading}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 className="bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600"
+                disabled={loading || !isFormValid()}
               >
-                Save
+                {loading ? 'Saving...' : 'Save'}
               </Button>
             </div>
-
           </form>
 
           <ToastContainer position="top-right" autoClose={4000} hideProgressBar />

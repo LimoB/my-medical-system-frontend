@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { loginUser } from '../services/auth';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '@/features/auth/authSlice';
-import type { DecodedToken } from '@/features/auth/authSlice';
+import { loginSuccess } from '@/features/slices/authSlice';
+import type { DecodedToken } from '@/features/slices/authSlice';
 import { Eye, EyeOff } from 'lucide-react';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -144,9 +144,8 @@ const LoginHeroSection = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2 rounded transition ${
-              loading ? 'bg-teal-300 cursor-not-allowed' : 'bg-teal-700 hover:bg-teal-800 text-white'
-            }`}
+            className={`w-full py-2 rounded transition ${loading ? 'bg-teal-300 cursor-not-allowed' : 'bg-teal-700 hover:bg-teal-800 text-white'
+              }`}
           >
             {loading ? 'Logging in...' : 'Log In'}
           </button>

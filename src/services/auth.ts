@@ -9,7 +9,7 @@ import type {
   ResetPasswordData,
 } from '../types/auth';
 
-import type { DecodedToken } from '@/features/auth/authSlice';
+import type { DecodedToken } from '@/features/slices/authSlice';
 
 // Register user
 export const registerUser = async (data: RegisterData) => {

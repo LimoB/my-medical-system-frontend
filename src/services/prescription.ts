@@ -29,6 +29,11 @@ export const fetchPrescriptionById = async (
   }
 };
 
+export const fetchPrescriptionsByUserId = async (userId: number) => {
+  const response = await api.get(`/prescriptions/user/${userId}`);
+  return response.data;
+};
+
 // 🔹 Create a new prescription (doctor only)
 export const createPrescription = async (
   payload: PrescriptionCreatePayload

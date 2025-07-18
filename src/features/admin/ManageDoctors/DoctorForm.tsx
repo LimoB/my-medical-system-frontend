@@ -3,12 +3,13 @@ import { toast } from 'react-toastify';
 import type { DoctorCreatePayload, SanitizedDoctor } from '@/types/doctor';
 
 interface Props {
-  initialData: SanitizedDoctor;
+  initialData?: SanitizedDoctor;
   onSubmit: (payload: DoctorCreatePayload) => void;
   onCancel: () => void;
 }
 
 const allDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
 const commonSpecializations = [
   'Cardiologist',
   'Dermatologist',
@@ -19,20 +20,17 @@ const commonSpecializations = [
   'General Practitioner',
 ];
 
-// Internal form structure
 type DoctorFormValues = {
   user_id: number;
   specialization: string;
   available_days: string;
-  available_hours: string; // comma-separated string
+  available_hours: string;
   payment_per_hour: number;
   description?: string;
 };
 
 const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
-  if (!initialData.user) {
-    return <p className="text-red-500">Invalid doctor data: User is missing.</p>;
-  }
+  const isEdit = !!initialData;
 
   const {
     register,
@@ -43,19 +41,17 @@ const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
     formState: { errors },
   } = useForm<DoctorFormValues>({
     defaultValues: {
-      user_id: initialData.user.user_id,
-      specialization: initialData.specialization || '',
-      available_days: initialData.available_days || '',
-      available_hours: initialData.available_hours?.join(', ') || '',
-      payment_per_hour: initialData.payment_per_hour || 0,
-      description: initialData.description || '',
+      user_id: initialData?.user?.user_id || 0,
+      specialization: initialData?.specialization || '',
+      available_days: initialData?.available_days || '',
+      available_hours: initialData?.available_hours?.join(', ') || '',
+      payment_per_hour: initialData?.payment_per_hour || 0,
+      description: initialData?.description || '',
     },
   });
 
   const availableDays = watch('available_days') || '';
-  const selectedDays = typeof availableDays === 'string'
-    ? availableDays.split(',').map((d) => d.trim()).filter(Boolean)
-    : [];
+  const selectedDays = availableDays.split(',').map((d) => d.trim()).filter(Boolean);
 
   const toggleDay = (day: string) => {
     const updated = selectedDays.includes(day)
@@ -72,8 +68,8 @@ const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
 
     const payload: DoctorCreatePayload = {
       user_id: data.user_id,
-      specialization: data.specialization,
-      available_days: data.available_days,
+      specialization: data.specialization.trim(),
+      available_days: data.available_days.trim(),
       available_hours: data.available_hours
         .split(',')
         .map((h) => h.trim())
@@ -90,18 +86,18 @@ const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
       onSubmit={handleSubmit(submitForm)}
       className="space-y-5 p-6 bg-white rounded-xl shadow-lg border border-gray-200"
     >
-      {/* Read-only user name display */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">User</label>
-        <input
-          type="text"
-          disabled
-          value={`${initialData.user.first_name} ${initialData.user.last_name}`}
-          className="w-full border border-gray-300 bg-gray-100 rounded-md px-3 py-2 text-sm"
-        />
-      </div>
+      {initialData?.user && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">User</label>
+          <input
+            type="text"
+            disabled
+            value={`${initialData.user.first_name} ${initialData.user.last_name}`}
+            className="w-full border border-gray-300 bg-gray-100 rounded-md px-3 py-2 text-sm"
+          />
+        </div>
+      )}
 
-      {/* Specialization input */}
       <div>
         <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-1">
           Specialization
@@ -122,7 +118,6 @@ const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
         )}
       </div>
 
-      {/* Available Days Checkboxes */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Available Days</label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -140,14 +135,12 @@ const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
         </div>
       </div>
 
-      {/* Hidden input for available_days */}
       <Controller
         name="available_days"
         control={control}
         render={({ field }) => <input type="hidden" {...field} />}
       />
 
-      {/* Available Hours input */}
       <div>
         <label htmlFor="available_hours" className="block text-sm font-medium text-gray-700 mb-1">
           Available Hours (comma-separated)
@@ -160,7 +153,6 @@ const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
         />
       </div>
 
-      {/* Payment per hour input */}
       <div>
         <label htmlFor="payment_per_hour" className="block text-sm font-medium text-gray-700 mb-1">
           Payment Per Hour (KSh)
@@ -176,7 +168,6 @@ const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
         )}
       </div>
 
-      {/* Description textarea */}
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
           Description
@@ -190,7 +181,6 @@ const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
         />
       </div>
 
-      {/* Actions */}
       <div className="flex justify-end gap-3 pt-4">
         <button
           type="button"
@@ -203,7 +193,7 @@ const DoctorForm = ({ initialData, onSubmit, onCancel }: Props) => {
           type="submit"
           className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded-md hover:bg-black hover:text-white transition-colors"
         >
-          Update
+          {isEdit ? 'Update Doctor' : 'Add Doctor'}
         </button>
       </div>
     </form>

@@ -25,21 +25,14 @@ const UserTable = ({
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gradient-to-r from-teal-100 to-blue-100">
           <tr>
-            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-              Profile
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-              Name
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-              Email
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-              Role
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-              Actions
-            </th>
+            {['Profile', 'Name', 'Email', 'Role', 'Actions'].map((heading) => (
+              <th
+                key={heading}
+                className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+              >
+                {heading}
+              </th>
+            ))}
           </tr>
         </thead>
 
@@ -67,9 +60,7 @@ const UserTable = ({
               </td>
 
               {/* 📧 Email */}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {user.email}
-              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.email}</td>
 
               {/* 🔄 Role */}
               <td className="px-6 py-4 whitespace-nowrap text-sm">

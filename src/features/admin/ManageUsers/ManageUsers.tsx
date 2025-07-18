@@ -1,31 +1,30 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Loader } from 'lucide-react';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { Button } from '@/components/ui/button';
-import { useUsers } from './useUsers';
 import UserTable from './UserTable';
 import AddUserModal from './AddUserModal';
 import EditUserModal from './EditUserModal';
-import type { CreateUserPayload, User } from '@/types/user';
-import { updateUser } from '@/services/users';
+import type { CreateUserPayload, User, UserRole } from '@/types/user';
+
+import { fetchUsers } from '@/features/slices/usersSlice';
+import { deleteUser, fetchUserById, updateUser } from '@/services/users';
+import type { RootState, AppDispatch } from '@/store/store';
+
+const USERS_PER_PAGE = 5;
 
 const ManageUsers = () => {
-  const {
-    loading,
-    error,
-    searchTerm,
-    setSearchTerm,
-    currentPage,
-    setCurrentPage,
-    totalPages,
-    currentUsers,
-    handleRoleChange,
-    handleDelete,
-    fetchUsers,
-  } = useUsers();
+  const dispatch = useDispatch<AppDispatch>();
 
+  const users = useSelector((state: RootState) => state.users.data);
+  const loading = useSelector((state: RootState) => state.users.loading);
+  const error = useSelector((state: RootState) => state.users.error);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -39,6 +38,22 @@ const ManageUsers = () => {
     contact_phone: '',
     address: '',
   });
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
+  const filteredUsers = useMemo(() => {
+    return users.filter((user) =>
+      `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [users, searchTerm]);
+
+  const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
+  const currentUsers = filteredUsers.slice(
+    (currentPage - 1) * USERS_PER_PAGE,
+    currentPage * USERS_PER_PAGE
+  );
 
   const openAddModal = () => {
     setFormData({
@@ -73,8 +88,6 @@ const ManageUsers = () => {
 
   const handleSaveEditedUser = async (updatedUser: Partial<User>) => {
     try {
-      console.log('📝 Saving edited user:', updatedUser);
-
       if (!updatedUser.user_id) throw new Error('User ID missing for update');
 
       const payload = {
@@ -83,7 +96,7 @@ const ManageUsers = () => {
         email: updatedUser.email,
         contact_phone: updatedUser.contact_phone,
         address: updatedUser.address,
-        image_url: updatedUser.image_url, // ✅ include image
+        image_url: updatedUser.image_url,
         role: updatedUser.role,
         is_verified: updatedUser.is_verified,
       };
@@ -91,9 +104,46 @@ const ManageUsers = () => {
       await updateUser(updatedUser.user_id.toString(), payload);
       setEditModalOpen(false);
       setSelectedUser(null);
-      fetchUsers(); // 🔄 Refresh list
+      dispatch(fetchUsers()); // ✅ refetch updated list
+      toast.success('User updated successfully');
     } catch (err) {
       console.error('❌ Failed to update user:', err);
+      toast.error('Failed to update user');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteUser(id.toString());
+      toast.success('User deleted');
+      dispatch(fetchUsers());
+    } catch (err) {
+      console.error(`❌ Error deleting user ${id}:`, err);
+      toast.error('Failed to delete user');
+    }
+  };
+
+  const handleRoleChange = async (id: number, newRole: UserRole) => {
+    try {
+      const user = await fetchUserById(id.toString());
+      if (!user) throw new Error('User not found');
+
+      await updateUser(id.toString(), {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        contact_phone: user.contact_phone || '',
+        address: user.address || '',
+        image_url: user.image_url || '',
+        is_verified: user.is_verified ?? true,
+        role: newRole,
+      });
+
+      toast.success(`Role updated to "${newRole}"`);
+      dispatch(fetchUsers());
+    } catch (err) {
+      console.error(`❌ Failed to update role for user ID ${id}:`, err);
+      toast.error('Failed to update role');
     }
   };
 
@@ -143,7 +193,7 @@ const ManageUsers = () => {
             users={currentUsers}
             onRoleChange={handleRoleChange}
             onDelete={handleDelete}
-            onEdit={handleEdit} // ✅ Edit button triggers modal
+            onEdit={handleEdit}
             currentPage={currentPage}
             totalPages={totalPages}
             setCurrentPage={setCurrentPage}
@@ -156,7 +206,7 @@ const ManageUsers = () => {
             formData={formData}
             setFormData={setFormData}
             closeModal={closeAddModal}
-            fetchUsers={fetchUsers}
+            fetchUsers={() => dispatch(fetchUsers())}
           />
         )}
 

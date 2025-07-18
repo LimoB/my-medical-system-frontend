@@ -1,5 +1,8 @@
 // -- Prescription type returned from API --
 export interface Prescription {
+  appointment_title: string;
+  doctor_name: string;
+  id: Key | null | undefined;
   prescription_id: number;      // Matches DB primary key
   appointment_id: number;
   doctor_id: number;

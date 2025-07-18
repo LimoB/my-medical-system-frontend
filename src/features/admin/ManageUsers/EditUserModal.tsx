@@ -18,6 +18,8 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
   const [role, setRole] = useState<User['role']>('user');
   const [imageUrl, setImageUrl] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
@@ -29,14 +31,18 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
       setEmail(user.email);
       setRole(user.role);
       setImageUrl(user.image_url || '');
+      setError('');
     }
   }, [user]);
+
+  const isFormValid = firstName.trim() && lastName.trim() && email.trim();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setUploading(true);
+    setError('');
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', uploadPreset);
@@ -48,23 +54,29 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
       );
       setImageUrl(res.data.secure_url);
     } catch (err) {
-      alert('Image upload failed. Please try again.');
+      setError('Image upload failed. Please try again.');
     } finally {
       setUploading(false);
     }
   };
 
-  const handleSubmit = () => {
-    if (user) {
+  const handleSubmit = async () => {
+    if (!user || !isFormValid) return;
+    setSaving(true);
+    try {
       onSave({
         user_id: user.user_id,
-        first_name: firstName,
-        last_name: lastName,
-        email,
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        email: email.trim(),
         role,
         image_url: imageUrl,
       });
       onClose();
+    } catch (err) {
+      setError('Failed to save user. Please try again.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -81,7 +93,7 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
           </Dialog.Title>
 
           <div className="space-y-4">
-            {/* 🖼️ Image Upload */}
+            {/* 🖼️ Profile Picture */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
               <input
@@ -95,11 +107,15 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
                 <img
                   src={imageUrl}
                   alt="Profile"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/default-avatar.png';
+                  }}
                   className="mt-2 w-24 h-24 object-cover rounded-full border"
                 />
               )}
             </div>
 
+            {/* 📝 First Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700">First Name</label>
               <input
@@ -110,6 +126,7 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
               />
             </div>
 
+            {/* 📝 Last Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Last Name</label>
               <input
@@ -120,6 +137,7 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
               />
             </div>
 
+            {/* 📧 Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Email</label>
               <input
@@ -130,6 +148,7 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
               />
             </div>
 
+            {/* 🛡️ Role */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Role</label>
               <select
@@ -142,14 +161,20 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
                 <option value="admin">Admin</option>
               </select>
             </div>
+
+            {/* ❌ Error */}
+            {error && (
+              <p className="text-sm text-red-600 font-medium">{error}</p>
+            )}
           </div>
 
+          {/* 🔘 Actions */}
           <div className="mt-6 flex justify-end gap-3">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} disabled={saving || uploading}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit} disabled={uploading}>
-              Save Changes
+            <Button onClick={handleSubmit} disabled={uploading || saving || !isFormValid}>
+              {saving ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
         </Dialog.Panel>
