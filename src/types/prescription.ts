@@ -1,3 +1,5 @@
+import type { Key } from "react";
+
 // -- Prescription type returned from API --
 export interface Prescription {
   appointment_title: string;

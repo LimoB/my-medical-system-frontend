@@ -4,7 +4,6 @@ import type { Prescription } from '@/types/prescription';
 
 interface PrescriptionTableProps {
   prescriptions: Prescription[];
-  loading: boolean;
   patients: Record<number, string>;
   doctors: Record<number, string>;
   onEdit: (prescription: Prescription) => void;
@@ -16,7 +15,6 @@ interface PrescriptionTableProps {
 
 const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
   prescriptions,
-  loading,
   patients,
   doctors,
   onEdit,
@@ -57,27 +55,18 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
               key={prescription.prescription_id}
               className="hover:bg-gray-50 transition"
             >
-              {/* 👤 Patient Name */}
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                 {patients[prescription.patient_id] || 'Loading...'}
               </td>
-
-              {/* 💊 Prescription Details */}
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                 {prescription.notes || 'No details available'}
               </td>
-
-              {/* 🩺 Doctor */}
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 {doctors[prescription.doctor_id] || 'Loading...'}
               </td>
-
-              {/* 📝 Notes */}
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 {prescription.notes || 'No notes available'}
               </td>
-
-              {/* 🖼️ Image URL */}
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 {prescription.image_url ? (
                   <a
@@ -92,8 +81,6 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
                   'No image available'
                 )}
               </td>
-
-              {/* 🛠️ Actions */}
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex flex-wrap gap-2">
                   <Button
@@ -105,11 +92,12 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
                   </Button>
                   <Button
                     size="sm"
-                    onClick={() => onDelete(prescription.prescription_id)}
+                    onClick={() => onDelete(prescription)}  // ✅ fixed
                     className="text-red-600 border border-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 px-3 py-1 text-sm rounded-md transition"
                   >
                     Delete
                   </Button>
+
                 </div>
               </td>
             </tr>
@@ -117,7 +105,6 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
         </tbody>
       </table>
 
-      {/* 📄 Pagination */}
       {totalPages > 1 && (
         <div className="flex flex-wrap justify-end items-center px-6 py-4 border-t bg-gray-50 gap-2">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -125,11 +112,10 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
               key={`page-${page}`}
               size="sm"
               onClick={() => setCurrentPage(page)}
-              className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-all duration-300 ${
-                page === currentPage
+              className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-all duration-300 ${page === currentPage
                   ? 'bg-gradient-to-r from-green-500 to-sky-500 text-white shadow-md'
                   : 'bg-white border border-gray-300 text-gray-700 hover:bg-blue-50'
-              }`}
+                }`}
               aria-current={page === currentPage ? 'page' : undefined}
             >
               {page}

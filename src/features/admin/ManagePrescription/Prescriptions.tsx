@@ -15,7 +15,7 @@ const Prescriptions = () => {
     notes: '',
     image_url: '',
   });
-  const [loading, setLoading] = useState<boolean>(false);
+  const [, setLoading] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [prescriptionToDelete, setPrescriptionToDelete] = useState<Prescription | null>(null);
@@ -29,7 +29,7 @@ const Prescriptions = () => {
       setLoading(true);
       try {
         const data = await fetchPrescriptions();
-        
+
         // Fetch user details (doctor and patient) for each prescription
         const patientIds = [...new Set(data.map((p) => p.patient_id))];
         const doctorIds = [...new Set(data.map((p) => p.doctor_id))];
@@ -128,12 +128,15 @@ const Prescriptions = () => {
 
       <PrescriptionTable
         prescriptions={prescriptions}
-        loading={loading}
         patients={patients}
         doctors={doctors}
         onEdit={handleSelectPrescription}
         onDelete={handleOpenDeleteModal}
+        currentPage={1} // If you're not paginating, just pass static values
+        totalPages={1}
+        setCurrentPage={() => { }}
       />
+
 
       {isEditing && selectedPrescription && (
         <PrescriptionModal
