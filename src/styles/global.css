@@ -1,0 +1,8 @@
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; transform: translateX(0.5rem); }
+  10%, 90% { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-in-out {
+  animation: fadeInOut 3s ease-in-out forwards;
+}
