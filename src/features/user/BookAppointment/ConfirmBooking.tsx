@@ -1,12 +1,12 @@
-// File: src/features/user/BookAppointment/ConfirmBooking.tsx
-
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import type { RootState } from '@/store/store';
 import { createAppointment } from '@/services/appointments';
+import { createStripeCheckoutSession } from '@/services/payments';
 import type { SanitizedDoctor } from '@/types/doctor';
-import ConfirmationModal from '@/components/ConfirmationModal';
+import ConfirmationModal from '@/features/user/BookAppointment/ConfirmationModal';
 
 const ConfirmBooking = () => {
     const { state } = useLocation();
@@ -14,7 +14,7 @@ const ConfirmBooking = () => {
     const user = useSelector((state: RootState) => state.auth.user);
 
     const { doctor, selectedDate, selectedHour } = state || {};
-    const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'stripe' | 'cash' | 'paypal' | ''>('');
+    const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'stripe' | 'cash' | ''>('');
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
@@ -27,39 +27,68 @@ const ConfirmBooking = () => {
     }
 
     const handleConfirm = async () => {
-        if (!paymentMethod) return;
+        if (!paymentMethod) {
+            toast.warn('Please select a payment method');
+            return;
+        }
 
         const userId = user.id ?? user.user_id;
         if (!userId) {
-            alert('User info missing. Please login again.');
+            toast.error('User info missing. Please login again.');
             return;
         }
 
         try {
             setLoading(true);
+            const toastId = toast.loading('Booking appointment...');
 
             const appointmentPayload = {
                 user_id: userId,
                 doctor_id: (doctor as SanitizedDoctor).doctor_id,
-                appointment_date: new Date(selectedDate).toISOString(), // Valid ISO string
-                time_slot: selectedHour.slice(0, 5), // Ensure "HH:MM"
+                appointment_date: new Date(selectedDate).toISOString(),
+                time_slot: selectedHour.slice(0, 5),
                 total_amount: Number(doctor.payment_per_hour),
                 payment_per_hour: Number(doctor.payment_per_hour),
-                payment_method: paymentMethod, // ✅ Include the selected payment method
+                payment_method: paymentMethod,
             };
 
-            console.log('📦 Payload:', appointmentPayload);
+            const appointment = await createAppointment(appointmentPayload);
+            console.log('🧪 Appointment response:', appointment);
 
-            await createAppointment(appointmentPayload);
-            setShowModal(true);
+            const appointmentId = Number(appointment?.appointment_id);
+
+            if (!appointmentId || isNaN(appointmentId)) {
+                throw new Error('Failed to create appointment or missing ID.');
+            }
+
+            if (paymentMethod === 'stripe') {
+                const { url } = await createStripeCheckoutSession({ appointmentId });
+                toast.update(toastId, {
+                    render: 'Redirecting to Stripe...',
+                    type: 'success',
+                    isLoading: false,
+                    autoClose: 2000,
+                });
+                // redirect to Stripe checkout
+                window.location.href = url;
+            } else {
+                toast.update(toastId, {
+                    render: 'Appointment booked successfully!',
+                    type: 'success',
+                    isLoading: false,
+                    autoClose: 3000,
+                });
+                setShowModal(true);
+            }
         } catch (error: any) {
             const msg =
                 error?.response?.data?.error ||
                 error?.response?.data?.message ||
                 error?.message ||
                 'Booking failed';
+            toast.dismiss();
+            toast.error(`Booking failed. ${msg}`);
             console.error('❌ Booking failed:', msg);
-            alert(`Booking failed. ${msg}`);
         } finally {
             setLoading(false);
         }
@@ -130,7 +159,11 @@ const ConfirmBooking = () => {
             </div>
 
             {/* Confirmation Modal */}
-            <ConfirmationModal isOpen={showModal} onClose={handleModalClose} />
+            <ConfirmationModal
+                isOpen={showModal}
+                onClose={handleModalClose}
+                paymentMethod={paymentMethod}
+            />
         </div>
     );
 };

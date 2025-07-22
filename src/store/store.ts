@@ -14,6 +14,8 @@ import storage from "redux-persist/lib/storage";
 import authReducer from "@/features/slices/authSlice";
 import usersReducer from '@/features/slices/usersSlice';
 import doctorsReducer from '@/features/slices/doctorsSlice';
+import paymentsReducer from '@/features/slices/paymentsSlice';
+
 
 
 // You may need to create this if missing
@@ -30,6 +32,7 @@ const rootReducer = combineReducers({
   // Add admin-specific slices here, like:
   users: usersReducer,
   doctors: doctorsReducer,
+   payments: paymentsReducer,
   // complaints: complaintsReducer,
 });
 

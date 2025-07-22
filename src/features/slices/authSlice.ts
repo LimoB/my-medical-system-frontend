@@ -3,6 +3,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 // Extend JWT-decoded payload with optional doctorId
 export interface DecodedToken {
+  token: any;
   specialization: string;
   id: number; // From JWT payload
   user_id?: number; // optional alias for id

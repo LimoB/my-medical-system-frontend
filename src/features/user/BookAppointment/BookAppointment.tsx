@@ -19,13 +19,14 @@ const BookAppointment = () => {
   const userId = useSelector((state: RootState) => state.auth.user?.user_id);
 
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [selectedDoctor, setSelectedDoctor] = useState<SanitizedDoctor | null>(null);  // Typed as SanitizedDoctor | null
+  const [selectedDoctor, setSelectedDoctor] = useState<SanitizedDoctor | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [view, setView] = useState<'book' | 'upcoming' | 'history'>('book');
   const [filter, setFilter] = useState('');
   const [page, setPage] = useState(1);
   const [reason, setReason] = useState('');
 
+  // Load appointments when userId changes or view changes (optional: add filter or page)
   useEffect(() => {
     const loadAppointments = async () => {
       if (!userId) return;
@@ -40,31 +41,57 @@ const BookAppointment = () => {
     loadAppointments();
   }, [userId]);
 
+  // Open booking modal when a doctor is selected via DoctorsListSection
+  const handleBookDoctor = (doctor: SanitizedDoctor) => {
+    setSelectedDoctor(doctor);
+    setIsModalOpen(true);
+  };
+
+  // Handle submit appointment - update with actual selected date/time as needed
   const handleSubmitAppointment = async () => {
-    if (!selectedDoctor || !reason) {
-      alert("Please provide a reason for the appointment.");
+    if (!selectedDoctor) {
+      alert('Please select a doctor first.');
+      return;
+    }
+    if (!reason.trim()) {
+      alert('Please provide a reason for the appointment.');
+      return;
+    }
+    if (!userId) {
+      alert('User info missing. Please login again.');
       return;
     }
 
+    // TODO: Replace hardcoded date/time with user selected ones or dynamic values
     const appointmentData = {
-      user_id: userId!,
+      user_id: userId,
       doctor_id: selectedDoctor.doctor_id,
-      appointment_date: "2025-07-13", // Example date
-      time_slot: "10:00",            // Example time
-      total_amount: 100,            // Example amount
-      payment_per_hour: 50,         // Example amount
-      reason: reason,               // Add the reason field here
+      appointment_date: new Date().toISOString().slice(0, 10), // Today as YYYY-MM-DD
+      time_slot: '10:00', // Placeholder time slot, customize as needed
+      total_amount: Number(selectedDoctor.payment_per_hour),
+      payment_per_hour: Number(selectedDoctor.payment_per_hour),
+      reason: reason.trim(),
+      payment_method: 'cash' as 'cash' | 'mpesa' | 'stripe' | 'paypal',
     };
 
     try {
       const response = await createAppointment(appointmentData);
-      console.log("Appointment created:", response);
+      console.log('Appointment created:', response);
+      // Close modal and reset reason
       setIsModalOpen(false);
+      setReason('');
+      // Refresh appointments list after new creation
+      if (userId) {
+        const updatedAppointments = await fetchAppointmentsByUserId(userId);
+        setAppointments(updatedAppointments);
+      }
     } catch (error) {
-      console.error("Error creating appointment:", error);
+      console.error('Error creating appointment:', error);
+      alert('Failed to create appointment. Please try again.');
     }
   };
 
+  // Filter appointments for upcoming & history with pagination
   const filteredUpcoming = appointments
     .filter((appt) => appt.appointment_status !== 'Cancelled')
     .slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -93,11 +120,13 @@ const BookAppointment = () => {
       {view === 'book' && (
         <>
           <AppointmentFilter filter={filter} setFilter={setFilter} />
-          <DoctorsListSection onBookDoctor={setSelectedDoctor} />
+          <DoctorsListSection onBookDoctor={handleBookDoctor} />
         </>
       )}
 
-      {view === 'book' && <ReasonInput reason={reason} setReason={setReason} />}
+      {view === 'book' && (
+        <ReasonInput reason={reason} setReason={setReason} />
+      )}
 
       {view === 'upcoming' && (
         <AppointmentCardList appointments={filteredUpcoming} />
@@ -107,10 +136,11 @@ const BookAppointment = () => {
         <AppointmentCardList appointments={filteredHistory} />
       )}
 
-      {view === 'upcoming' || view === 'history' ? (
+      {(view === 'upcoming' || view === 'history') && (
         <AppointmentPagination totalPages={totalPages(view)} page={page} setPage={setPage} />
-      ) : null}
+      )}
 
+      {/* Booking Modal controlled by selectedDoctor and modal state */}
       {selectedDoctor && (
         <BookingModal
           isOpen={isModalOpen}
@@ -121,6 +151,7 @@ const BookAppointment = () => {
         />
       )}
 
+      {/* Submit Appointment button shown only when booking */}
       {view === 'book' && (
         <div className="text-center">
           <button

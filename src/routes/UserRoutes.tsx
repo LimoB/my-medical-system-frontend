@@ -8,6 +8,8 @@ import UserPayments from '../features/user/Payments/UserPayments';
 import UserComplaints from '../features/user/Complaints/UserComplaints';
 import UserProfile from '../features/user/Profile/UserProfile';
 import UserNotifications from '../features/user/Notifications/UserNotifications';
+import PaymentSuccess from '../features/user/Payments/payment-success';
+import PaymentCancel from '../features/user/Payments/payment-cancel';
 
 import UserLayout from '../layouts/UserLayout';
 import ProtectedRoute from './ProtectedRoute';
@@ -27,6 +29,11 @@ const UserRoutes = () => {
         {/* ✅ Booking flow */}
         <Route path="book-appointment" element={<BookAppointment />} />
         <Route path="book-appointment/confirm" element={<ConfirmBooking />} />
+
+            {/* Payment result pages */}
+        <Route path="payment-success" element={<PaymentSuccess />} />
+        <Route path="payment-cancel" element={<PaymentCancel />} />
+
 
         {/* ✅ Other user routes */}
         <Route path="appointments" element={<MyAppointments />} />

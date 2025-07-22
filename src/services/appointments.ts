@@ -32,8 +32,9 @@ export const createAppointment = async (
   payload: AppointmentCreatePayload
 ): Promise<Appointment> => {
   const response = await api.post('/appointments', payload);
-  return response.data;
+  return response.data.appointment; // ✅ Only return the nested appointment
 };
+
 
 // ✅ Update appointment status (e.g., from pending to confirmed)
 export const updateAppointmentStatus = async (
