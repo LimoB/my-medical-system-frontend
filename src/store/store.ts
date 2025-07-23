@@ -15,6 +15,7 @@ import authReducer from "@/features/slices/authSlice";
 import usersReducer from '@/features/slices/usersSlice';
 import doctorsReducer from '@/features/slices/doctorsSlice';
 import paymentsReducer from '@/features/slices/paymentsSlice';
+import appointmentsReducer from '@/features/slices/appointmentSlice';
 
 
 
@@ -32,8 +33,9 @@ const rootReducer = combineReducers({
   // Add admin-specific slices here, like:
   users: usersReducer,
   doctors: doctorsReducer,
-   payments: paymentsReducer,
+  payments: paymentsReducer,
   // complaints: complaintsReducer,
+  appointments: appointmentsReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

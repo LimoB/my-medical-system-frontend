@@ -1,7 +1,14 @@
+import type { Key, ReactNode } from "react";
+
 export type PaymentMethod = 'cash' | 'card' | 'mpesa';
 export type PaymentStatus = 'pending' | 'paid' | 'failed';
 
 export interface SanitizedPayment {
+  id: Key | null | undefined;
+  appointment_id: ReactNode;
+  transaction_id: ReactNode;
+  payment_date: any;
+  total_amount: any;
   payment_status: string;
   payment_method: any;
   payment_id: number;

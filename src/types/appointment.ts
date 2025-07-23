@@ -12,7 +12,7 @@ export interface Appointment {
   appointment_time: string;              // ISO date string, e.g. "2025-07-13"
   time_slot: string;                       // e.g. "10:00" or "10:00:00"
   total_amount?: string;                   // stored as decimal string from DB
-  appointment_status: 'Pending' | 'Confirmed' | 'Cancelled';
+appointment_status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed' | 'Failed';
   created_at: string;                      // ISO timestamp string
   updated_at: string;
 
@@ -57,8 +57,9 @@ export type AppointmentCreatePayload = {
 
 // === Payload for updating appointment status (PUT) ===
 export interface AppointmentStatusUpdatePayload {
-  status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';
+  status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed' | 'Failed';
 }
+
 
 // === Alias type for frontend sanitized views ===
 export type SanitizedAppointment = Appointment;

@@ -15,7 +15,7 @@ type Props = {
 
 const AppointmentDetails = ({ appointment, onClose, onRefresh }: Props) => {
   const [status, setStatus] = useState<
-    'Pending' | 'Confirmed' | 'Cancelled' | 'Completed'
+    'Pending' | 'Confirmed' | 'Cancelled' | 'Completed' | 'Failed'
   >(appointment.appointment_status);
   const [loading, setLoading] = useState(false);
   const [patient, setPatient] = useState<User | null>(null);

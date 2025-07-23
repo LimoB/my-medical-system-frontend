@@ -37,12 +37,12 @@ export default function BaseTopBar({ onToggleSidebar }: BaseTopBarProps) {
   const basePath = `/${role}`;
 
   return (
-    <header className="px-6 md:px-12 flex items-center justify-between h-20 sticky top-0 z-50 bg-transparent">
+    <header className="px-4 md:px-12 flex items-center justify-between h-20 sticky top-0 z-50 bg-transparent w-full">
       {/* Left: Sidebar toggle */}
       <div className="flex items-center gap-4">
         <button
           onClick={onToggleSidebar}
-          className="md:hidden p-3 rounded-full hover:bg-gray-100"
+          className="block lg:hidden p-3 rounded-full hover:bg-gray-100"
         >
           <Menu className="w-6 h-6 text-gray-700" />
         </button>
@@ -58,19 +58,19 @@ export default function BaseTopBar({ onToggleSidebar }: BaseTopBarProps) {
       </div>
 
       {/* Right: Icons & Profile */}
-      <div className="flex items-center gap-5">
-        <button className="p-3 rounded-full hover:bg-gray-100 transition">
-          <MessageSquare className="w-6 h-6 text-gray-700" />
+      <div className="flex items-center gap-2 sm:gap-4">
+        <button className="p-2 sm:p-3 rounded-full hover:bg-gray-100 transition">
+          <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
         </button>
-        <button className="p-3 rounded-full hover:bg-gray-100 transition">
-          <Bell className="w-6 h-6 text-gray-700" />
+        <button className="p-2 sm:p-3 rounded-full hover:bg-gray-100 transition">
+          <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
         </button>
 
         {/* Profile dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen((prev) => !prev)}
-            className="flex items-center gap-4 p-2 pr-4 transition"
+            className="flex items-center gap-2 sm:gap-4 p-2 pr-3 transition"
           >
             <img
               src={user?.image_url || '/default-avatar.jpg'}
@@ -78,9 +78,9 @@ export default function BaseTopBar({ onToggleSidebar }: BaseTopBarProps) {
               onError={(e) => {
                 (e.target as HTMLImageElement).src = '/default-avatar.jpg';
               }}
-              className="w-12 h-12 object-cover rounded-full border border-gray-300"
+              className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-full border border-gray-300"
             />
-            <span className="text-base font-medium text-gray-800 truncate max-w-[150px]">
+            <span className="hidden sm:block text-sm sm:text-base font-medium text-gray-800 truncate max-w-[100px] sm:max-w-[150px]">
               {user?.first_name
                 ? `${user.first_name} ${user.last_name}`
                 : user?.email || 'User'}

@@ -43,3 +43,20 @@ export const updatePayment = async (
 ) => {
   await api.put(`/payments/${id}`, data, getAuthHeaders());
 };
+
+
+
+
+// ✅ Fetch payments by user ID (for self or admin)
+// ✅ Fix: extract the payments array
+export const fetchPaymentsByUserId = async (userId: number): Promise<SanitizedPayment[]> => {
+  const res = await api.get(`/payments/user/${userId}`, getAuthHeaders());
+
+  if (!Array.isArray(res.data.payments)) {
+    console.warn('⚠️ Unexpected payments shape:', res.data);
+    return [];
+  }
+
+  return res.data.payments;
+};
+
