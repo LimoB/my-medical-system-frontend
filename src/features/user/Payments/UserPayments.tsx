@@ -33,34 +33,43 @@ const UserPayments = () => {
     fetchData();
   }, [userId]);
 
-  if (loading) return <p>Loading payments...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (loading) return <p className="p-4 text-gray-600">Loading payments...</p>;
+  if (error) return <p className="p-4 text-red-500">{error}</p>;
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Your Payment History</h2>
+    <div className="p-4 sm:p-6 w-full h-full">
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">
+        Your Payment History
+      </h2>
+
       {payments.length === 0 ? (
-        <p>No payments found.</p>
+        <p className="text-gray-600">No payments found.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-300">
-            <thead className="bg-gray-100">
+        <div className="w-full overflow-x-auto">
+          <table className="min-w-[800px] text-sm border border-gray-300">
+            <thead className="bg-gray-100 text-left">
               <tr>
-                <th className="py-2 px-4 border">Date</th>
-                <th className="py-2 px-4 border">Amount</th>
-                <th className="py-2 px-4 border">Transaction ID</th>
-                <th className="py-2 px-4 border">Status</th>
+                <th className="py-2 px-4 border-b border-gray-300">Date</th>
+                <th className="py-2 px-4 border-b border-gray-300">Amount</th>
+                <th className="py-2 px-4 border-b border-gray-300">Transaction ID</th>
+                <th className="py-2 px-4 border-b border-gray-300">Status</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-white">
               {payments.map((payment) => (
-                <tr key={payment.payment_id}>
-                  <td className="py-2 px-4 border">{formatDate(payment.created_at)}</td>
-                  <td className="py-2 px-4 border">
+                <tr key={payment.payment_id} className="hover:bg-gray-50">
+                  <td className="py-2 px-4 border-b">
+                    {formatDate(payment.created_at)}
+                  </td>
+                  <td className="py-2 px-4 border-b">
                     ${Number(payment.amount).toFixed(2)}
                   </td>
-                  <td className="py-2 px-4 border">{payment.transaction_id || 'N/A'}</td>
-                  <td className="py-2 px-4 border">{payment.payment_status || 'Unknown'}</td>
+                  <td className="py-2 px-4 border-b">
+                    {payment.transaction_id || 'N/A'}
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    {payment.payment_status || 'Unknown'}
+                  </td>
                 </tr>
               ))}
             </tbody>

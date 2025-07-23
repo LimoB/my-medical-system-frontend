@@ -5,4 +5,9 @@
 /* Optional: Add global styles */
 body {
   @apply bg-white text-gray-800 font-sans;
+  overflow-x: auto; /* enable horizontal scroll */
+}
+
+html {
+  overflow-x: auto; /* ensure html allows it too */
 }

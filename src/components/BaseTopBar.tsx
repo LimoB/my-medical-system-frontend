@@ -20,7 +20,6 @@ export default function BaseTopBar({ onToggleSidebar }: BaseTopBarProps) {
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
   const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
@@ -37,40 +36,40 @@ export default function BaseTopBar({ onToggleSidebar }: BaseTopBarProps) {
   const basePath = `/${role}`;
 
   return (
-    <header className="px-4 md:px-12 flex items-center justify-between h-20 sticky top-0 z-50 bg-transparent w-full">
-      {/* Left: Sidebar toggle */}
-      <div className="flex items-center gap-4">
+    <header className="fixed top-0 left-0 right-0 z-50 h-16 sm:h-20 px-4 sm:px-8 flex items-center justify-between bg-transparent">
+      {/* Sidebar Toggle (Mobile) */}
+      <div className="flex items-center gap-2 sm:gap-4">
         <button
           onClick={onToggleSidebar}
-          className="block lg:hidden p-3 rounded-full hover:bg-gray-100"
+          className="block sm:hidden p-2 rounded-full hover:bg-[#f0fdfa] focus:outline-none"
         >
-          <Menu className="w-6 h-6 text-gray-700" />
+          <Menu className="w-5 h-5 text-[#0f766e]" />
         </button>
       </div>
 
-      {/* Center: Search */}
+      {/* Center: Search Bar (Desktop only) */}
       <div className="hidden lg:flex flex-1 justify-center max-w-md">
         <input
           type="text"
           placeholder="Search..."
-          className="w-full px-5 py-3 border border-gray-300 rounded-full text-base focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          className="w-full px-5 py-2.5 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#0f766e] bg-white/80 backdrop-blur-sm"
         />
       </div>
 
-      {/* Right: Icons & Profile */}
-      <div className="flex items-center gap-2 sm:gap-4">
-        <button className="p-2 sm:p-3 rounded-full hover:bg-gray-100 transition">
-          <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
+      {/* Right Side: Icons + User */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        <button className="p-2 rounded-full hover:bg-[#f0fdfa] transition">
+          <MessageSquare className="w-5 h-5 text-[#0f766e]" />
         </button>
-        <button className="p-2 sm:p-3 rounded-full hover:bg-gray-100 transition">
-          <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
+        <button className="p-2 rounded-full hover:bg-[#f0fdfa] transition">
+          <Bell className="w-5 h-5 text-[#0f766e]" />
         </button>
 
-        {/* Profile dropdown */}
+        {/* Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen((prev) => !prev)}
-            className="flex items-center gap-2 sm:gap-4 p-2 pr-3 transition"
+            className="flex items-center gap-2 p-1.5 sm:p-2 pr-2 sm:pr-3"
           >
             <img
               src={user?.image_url || '/default-avatar.jpg'}
@@ -78,34 +77,34 @@ export default function BaseTopBar({ onToggleSidebar }: BaseTopBarProps) {
               onError={(e) => {
                 (e.target as HTMLImageElement).src = '/default-avatar.jpg';
               }}
-              className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-full border border-gray-300"
+              className="w-9 h-9 sm:w-10 sm:h-10 object-cover rounded-full border border-gray-300"
             />
-            <span className="hidden sm:block text-sm sm:text-base font-medium text-gray-800 truncate max-w-[100px] sm:max-w-[150px]">
+            <span className="hidden sm:block text-sm font-medium text-gray-800 truncate max-w-[100px] sm:max-w-[140px]">
               {user?.first_name
                 ? `${user.first_name} ${user.last_name}`
                 : user?.email || 'User'}
             </span>
           </button>
 
-          {/* Dropdown menu */}
+          {/* Dropdown Content */}
           <AnimatePresence>
             {dropdownOpen && (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 top-full w-52 bg-white border border-gray-200 z-50"
+                className="absolute right-0 top-full mt-1 w-52 bg-white border border-gray-200 rounded-md shadow-md z-50"
               >
-                <div className="flex flex-col py-2 text-[15px] text-gray-700">
+                <div className="flex flex-col py-2 text-sm text-gray-700">
                   <div
                     onClick={() => {
                       navigate(`${basePath}/profile`);
                       setDropdownOpen(false);
                     }}
-                    className="px-5 py-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3"
+                    className="px-5 py-3 hover:bg-[#f0fdfa] cursor-pointer flex items-center gap-3"
                   >
-                    <UserIcon className="w-5 h-5" />
+                    <UserIcon className="w-5 h-5 text-[#0f766e]" />
                     <span>Profile</span>
                   </div>
                   <div
@@ -113,12 +112,12 @@ export default function BaseTopBar({ onToggleSidebar }: BaseTopBarProps) {
                       navigate(`${basePath}/settings`);
                       setDropdownOpen(false);
                     }}
-                    className="px-5 py-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3"
+                    className="px-5 py-3 hover:bg-[#f0fdfa] cursor-pointer flex items-center gap-3"
                   >
-                    <Settings className="w-5 h-5" />
+                    <Settings className="w-5 h-5 text-[#0f766e]" />
                     <span>Settings</span>
                   </div>
-                  <LogoutButton className="text-left px-5 py-3 hover:bg-gray-100 w-full" />
+                  <LogoutButton className="text-left px-5 py-3 hover:bg-[#f0fdfa] w-full" />
                 </div>
               </motion.div>
             )}

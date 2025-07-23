@@ -7,12 +7,10 @@ import {
   FaUsers,
   FaMoneyCheckAlt,
   FaBullhorn,
-  FaCalendarCheck, // ✅ Import for Manage Meetings
+  FaCalendarCheck,
 } from 'react-icons/fa';
-import { Tooltip } from 'react-tooltip';
 import AdminTopBar from '@/components/AdminTopBar';
 
-// ✅ Add Manage Meetings entry to navItems
 const navItems = [
   { label: 'Dashboard', icon: FaTachometerAlt, to: '/admin/dashboard' },
   { label: 'Appointments', icon: FaCalendarAlt, to: '/admin/appointments' },
@@ -20,60 +18,73 @@ const navItems = [
   { label: 'Users', icon: FaUsers, to: '/admin/users' },
   { label: 'Payments', icon: FaMoneyCheckAlt, to: '/admin/payments' },
   { label: 'Complaints', icon: FaBullhorn, to: '/admin/complaints' },
-  { label: 'Manage Meetings', icon: FaCalendarCheck, to: '/admin/meetings' }, // ✅ New
+  { label: 'Manage Meetings', icon: FaCalendarCheck, to: '/admin/meetings' },
 ];
 
-export default function AdminLayout() {
+const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
-
   return (
-    <div className="flex h-screen bg-[#f8f9fa] font-sans">
+    <div className="flex h-screen font-sans bg-[#f8f9fa] overflow-hidden">
       {/* Sidebar */}
       <aside
-        className={`group transition-all duration-500 ease-in-out
-        ${sidebarOpen ? 'w-56' : 'w-0 sm:w-[4.5rem] hover:w-56'}
-        bg-gradient-to-b from-teal-600 to-emerald-500 text-white flex flex-col py-6 px-2 
-        rounded-tr-[2rem] rounded-br-[2rem] shadow-xl overflow-hidden fixed sm:relative z-50`}
+        className={`
+          group bg-[#0f766e] text-white flex flex-col py-6 px-2
+          rounded-tr-[2rem] rounded-br-[2rem] shadow-xl overflow-hidden z-40
+          fixed sm:relative top-0 left-0 h-full transition-all duration-500 ease-in-out
+          ${sidebarOpen ? 'w-56' : 'w-[4.5rem]'}
+          ${!sidebarOpen ? 'sm:hover:w-56' : ''}
+        `}
       >
-        <nav className="flex flex-col gap-6 mt-12">
+        <nav className="flex flex-col gap-6 mt-16">
           {navItems.map(({ to, icon: Icon, label }, idx) => (
             <NavLink
               key={idx}
               to={to}
               className={({ isActive }) =>
-                `flex items-center gap-4 py-2 px-4 rounded-xl transition-all duration-300 whitespace-nowrap
-                ${isActive
-                  ? 'bg-white text-[#0f766e] shadow-md'
-                  : 'hover:bg-[#0e6b64] text-white'}`
+                `flex items-center gap-4 py-2 px-4 rounded-xl transition-all duration-300
+                ${isActive ? 'bg-white text-[#0f766e] shadow-md' : 'hover:bg-[#0e6b64] text-white'}`
               }
               onClick={() => setSidebarOpen(false)}
-              data-tooltip-id={sidebarOpen ? undefined : `tip-${label}`}
-              data-tooltip-content={sidebarOpen ? undefined : label}
             >
               <Icon className="w-5 h-5 shrink-0" />
-              <span className="hidden lg:inline group-hover:inline opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out text-sm">
+              <span
+                className={`
+                  text-sm whitespace-nowrap transition-opacity duration-300 ease-in-out
+                  ${sidebarOpen ? 'opacity-100 inline' : 'opacity-0 hidden sm:inline sm:group-hover:opacity-100'}
+                `}
+              >
                 {label}
               </span>
-              {!sidebarOpen && (
-                <Tooltip id={`tip-${label}`} place="right" className="z-50" />
-              )}
             </NavLink>
           ))}
         </nav>
       </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden ml-0 sm:ml-[4.5rem]">
-        {/* Top Bar */}
-        <AdminTopBar onToggleSidebar={toggleSidebar} />
+      {/* Main Content Area */}
+      <div
+        className={`
+          flex-1 flex flex-col transition-all duration-500 ease-in-out h-screen
+          ${sidebarOpen ? 'ml-56' : 'ml-[4.5rem] sm:hover:ml-56'}
+        `}
+      >
+        {/* Fixed TopBar */}
+        <div className="shrink-0">
+          <AdminTopBar onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
+        </div>
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-6 bg-[#f8f9fa]">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto pt-20 px-4 sm:px-6 pb-6">
           <Outlet />
-        </main>
+          <footer className="mt-10 text-center text-sm">
+            <p className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent font-semibold tracking-wide">
+              © {new Date().getFullYear()} Harmony Health Clinic – Admin Portal
+            </p>
+          </footer>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default AdminLayout;

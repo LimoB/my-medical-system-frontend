@@ -1,14 +1,13 @@
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import AppRoutes from './routes';  // Import AppRoutes that contains all your route definitions
-
+import AppRoutes from './routes';
 import './App.css';
 
 function App() {
   return (
-    <>
-      {/* All routes are handled through AppRoutes */}
+    <div className="w-screen h-screen overflow-x-auto overflow-y-auto font-sans bg-white text-gray-800">
+      {/* All routes */}
       <AppRoutes />
 
       {/* Toast notifications container */}
@@ -23,7 +22,7 @@ function App() {
         draggable 
         pauseOnHover 
       />
-    </>
+    </div>
   );
 }
 
