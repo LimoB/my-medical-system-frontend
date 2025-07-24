@@ -1,0 +1,13 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/api/*"]
+  },
+  "routes": [
+    {
+      "route": "/api/*",
+      "rewrite": "https://medicalappoinment.azurewebsites.net/api/:path*",
+      "allowedRoles": ["anonymous"]
+    }
+  ]
+}
