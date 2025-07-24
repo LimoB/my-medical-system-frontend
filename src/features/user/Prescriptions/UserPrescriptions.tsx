@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Loader2 } from 'lucide-react';
 import api from '@/services/axios';
 import type { RootState } from '@/store/store';
-import type { DecodedToken } from '@/features/slices/authSlice';
+import type { DecodedToken } from '@/types/auth';
 import type { Prescription } from '@/types/prescription';
 
 const UserPrescriptions = () => {

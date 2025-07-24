@@ -1,42 +1,59 @@
 // src/types/auth.ts
 
-// Register data interface, used for user registration
+// 🔐 User registration payload
 export interface RegisterData {
-  first_name: string;  // First name of the user
-  last_name: string;   // Last name of the user
-  email: string;       // User email (must be unique)
-  password: string;    // Password for user authentication
-  contact_phone?: string;  // Optional phone number for the user
-  address?: string;        // Optional address for the user
-  role?: 'user' | 'admin' | 'doctor';  // Optional user role (default is 'user')
-  image_url?: string;  // Optional user profile image URL (can be provided during registration)
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  contact_phone?: string;
+  address?: string;
+  date_of_birth?: string;
+  role?: 'user' | 'admin' | 'doctor';
+  image_url?: string;
 }
 
-// Login data interface, used when a user logs in
+// 🔐 User login payload
 export interface LoginData {
-  email: string;    // User email for authentication
-  password: string; // Password for authentication
+  email: string;
+  password: string;
 }
 
-// Verify email interface, used for email verification
+// 📧 Email verification
 export interface VerifyEmailData {
-  email: string;    // The email to verify
-  code: string;     // Verification code sent to the user
+  email: string;
+  code: string;
 }
 
-// Reset password data interface, used when resetting the password
+// 🔑 Reset password
 export interface ResetPasswordData {
-  code: string;         // The code sent to the user for password reset
-  newPassword: string;  // New password for the user
+  code: string;
+  newPassword: string;
 }
 
-// Decoded Token Interface, includes image_url and name for profile
+// 🧾 JWT Decoded Token structure used in frontend state
 export interface DecodedToken {
-  userId: string;      // User's unique identifier (ID)
-  email: string;       // User email
-  role: string;        // User's role (admin, doctor, or user)
-  name?: string;       // User's full name (can be `first_name + last_name`)
-  image_url?: string;  // User's profile image URL
-  exp: number;         // JWT expiration timestamp
-  iat: number;         // JWT issued at timestamp
+  token?: any;                   // Optional token (for local state)
+  id: number;                    // Numeric ID
+  user_id?: number;              // Alias for id
+  doctorId?: number | null;      // If doctor, include doctor ID
+  specialization?: string;       // If doctor, include specialization
+
+  email: string;
+  role: 'admin' | 'doctor' | 'user';
+  first_name: string;
+  last_name: string;
+  name: string;
+
+  image_url?: string;
+  contact_phone?: string;
+  address?: string;
+  date_of_birth?: string;
+  is_verified?: boolean;
+
+  created_at: string;
+  updated_at: string;
+
+  exp: number;
+  iat?: number;
 }

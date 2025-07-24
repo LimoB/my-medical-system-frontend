@@ -10,6 +10,8 @@ import UserProfile from '../features/user/Profile/UserProfile';
 import UserNotifications from '../features/user/Notifications/UserNotifications';
 import PaymentSuccess from '../features/user/Payments/payment-success';
 import PaymentCancel from '../features/user/Payments/payment-cancel';
+import UserConsultations from '../features/user/Consultation/UserConsultations';
+
 
 import UserLayout from '../layouts/UserLayout';
 import ProtectedRoute from './ProtectedRoute';
@@ -42,6 +44,8 @@ const UserRoutes = () => {
         <Route path="complaints" element={<UserComplaints />} />
         <Route path="profile" element={<UserProfile />} />
         <Route path="notifications" element={<UserNotifications />} />
+        <Route path="consultations" element={<UserConsultations />} />
+
       </Route>
 
       {/* Redirect unknown paths to dashboard */}

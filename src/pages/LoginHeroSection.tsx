@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { loginUser } from '../services/auth';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '@/features/slices/authSlice';
-import type { DecodedToken } from '@/features/slices/authSlice';
+import type { DecodedToken } from '@/types/auth';
 import { Eye, EyeOff } from 'lucide-react';
 import 'react-toastify/dist/ReactToastify.css';
 

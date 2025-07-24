@@ -4,21 +4,26 @@ import {
   LayoutDashboard,
   CalendarCheck2,
   FileText,
+  ClipboardList,
   CreditCard,
   MessageSquare,
-  Bell,
+  // Bell,
+  NotebookPen,
 } from 'lucide-react';
+
 import UserTopBar from '@/components/UserTopBar';
 
 const navItems = [
   { to: '/user', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/user/book-appointment', icon: CalendarCheck2, label: 'Book Appointment' },
-  { to: '/user/appointments', icon: CalendarCheck2, label: 'My Appointments' },
+  { to: '/user/appointments', icon: ClipboardList, label: 'My Appointments' },     
   { to: '/user/prescriptions', icon: FileText, label: 'Prescriptions' },
+  { to: '/user/consultations', icon: NotebookPen, label: 'Consultations' },        
   { to: '/user/payments', icon: CreditCard, label: 'Payments' },
   { to: '/user/complaints', icon: MessageSquare, label: 'Complaints' },
-  { to: '/user/notifications', icon: Bell, label: 'Notifications' },
+  // { to: '/user/notifications', icon: Bell, label: 'Notifications' },
 ];
+
 
 const UserLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

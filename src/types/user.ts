@@ -22,6 +22,7 @@ export type UpdateUserPayload = {
   contact_phone?: string;
   address?: string;
   image_url?: string;
+  date_of_birth?: string; // ✅ ADDED
   is_verified?: boolean;
   role: 'admin' | 'doctor' | 'user';
 };
@@ -29,18 +30,18 @@ export type UpdateUserPayload = {
 
 // 🔹 Full user object returned from backend (includes sensitive & audit data)
 export interface User {
-  image_url: string;
   user_id: number;
   first_name: string;
   last_name: string;
   email: string;
   contact_phone?: string;
   address?: string;
+  image_url: string;
+  date_of_birth?: string; // ✅ ADDED
   role: UserRole;
   is_verified?: boolean;
   created_at?: string;
   updated_at?: string;
-  // password and token fields should NOT be exposed to frontend
 }
 
 // 🔹 Sanitized version of user (safe for frontend use in relational fields)
