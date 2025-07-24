@@ -24,15 +24,14 @@ const UserLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen font-sans bg-[#f8f9fa] overflow-hidden">
-      {/* Sidebar */}
+    <div className="flex h-screen font-sans bg-[#f8f9fa] overflow-y-hidden overflow-x-auto">
+      {/* Sidebar as a group for hover */}
       <aside
         className={`
           group bg-[#0f766e] text-white flex flex-col py-6 px-2
           rounded-tr-[2rem] rounded-br-[2rem] shadow-xl overflow-hidden z-40
-          fixed sm:relative top-0 left-0 h-full transition-all duration-500 ease-in-out
-          ${sidebarOpen ? 'w-56' : 'w-[4.5rem]'}
-          ${!sidebarOpen ? 'sm:hover:w-56' : ''}
+          fixed sm:relative top-0 left-0 h-full transition-all duration-300 ease-in-out
+          ${sidebarOpen ? 'w-56' : 'w-[4.5rem] sm:hover:w-56'}
         `}
       >
         <nav className="flex flex-col gap-6 mt-16">
@@ -50,7 +49,10 @@ const UserLayout = () => {
               <span
                 className={`
                   text-sm whitespace-nowrap transition-opacity duration-300 ease-in-out
-                  ${sidebarOpen ? 'opacity-100 inline' : 'opacity-0 hidden sm:inline sm:group-hover:opacity-100'}
+                  ${sidebarOpen
+                    ? 'opacity-100 inline'
+                    : 'opacity-0 hidden sm:group-hover:inline sm:group-hover:opacity-100'
+                  }
                 `}
               >
                 {label}
@@ -63,11 +65,11 @@ const UserLayout = () => {
       {/* Main Content Area */}
       <div
         className={`
-          flex-1 flex flex-col transition-all duration-500 ease-in-out h-screen
-          ${sidebarOpen ? 'ml-56' : 'ml-[4.5rem] sm:hover:ml-56'}
+          flex-1 flex flex-col transition-all duration-300 ease-in-out h-screen
+          ${sidebarOpen ? 'ml-56' : 'ml-[4.5rem] sm:group-hover:ml-56'}
         `}
       >
-        {/* Fixed TopBar */}
+        {/* TopBar */}
         <div className="shrink-0">
           <UserTopBar onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
         </div>

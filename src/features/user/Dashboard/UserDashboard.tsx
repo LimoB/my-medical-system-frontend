@@ -1,8 +1,6 @@
-// src/pages/user/UserDashboard.tsx
-
 const UserDashboard = () => {
   return (
-    <div className="p-6 space-y-10">
+    <div className="w-full p-6 space-y-10">
       {/* Header */}
       <header className="mb-6">
         <h1 className="text-4xl font-bold text-teal-700 mb-2">Welcome Back!</h1>

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 import { fetchComplaintsByCurrentUser } from '@/services/complaints';
 import { fetchAppointmentsByUserId } from '@/services/appointments';
 import api from '@/services/axios';
 import type { Complaint, ComplaintStatus } from '@/types/complaints';
 import type { Appointment } from '@/types/appointment';
-import { useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
 
 const statusColorMap: Record<ComplaintStatus, string> = {
@@ -27,12 +27,9 @@ const UserComplaints = () => {
 
   const fetchUserComplaints = async () => {
     try {
-      console.log('📡 Fetching user complaints...');
       const data = await fetchComplaintsByCurrentUser();
-      console.log('✅ Complaints fetched:', data);
       setComplaints(data);
     } catch (err) {
-      console.error('❌ Failed to fetch complaints:', err);
       toast.error('Failed to load complaints');
     }
   };
@@ -40,12 +37,9 @@ const UserComplaints = () => {
   const fetchUserAppointments = async () => {
     if (!userId) return;
     try {
-      console.log('📡 Fetching appointments for user:', userId);
       const data = await fetchAppointmentsByUserId(userId);
-      console.log('✅ Appointments fetched:', data);
       setAppointments(data);
     } catch (err) {
-      console.error('❌ Failed to fetch appointments:', err);
       toast.error('Failed to load appointments');
     }
   };
@@ -63,19 +57,15 @@ const UserComplaints = () => {
       related_appointment_id: relatedAppointmentId || null,
     };
 
-    console.log('📤 Submitting complaint with payload:', payload);
-
     try {
       setLoading(true);
-      const response = await api.post('/complaints', payload);
-      console.log('✅ Complaint submitted:', response.data);
-      toast.success('Complaint submitted');
+      await api.post('/complaints', payload);
+      toast.success('Complaint submitted successfully');
       setSubject('');
       setDescription('');
       setRelatedAppointmentId('');
       await fetchUserComplaints();
     } catch (err) {
-      console.error('❌ Error submitting complaint:', err);
       toast.error('Error submitting complaint');
     } finally {
       setLoading(false);
@@ -83,7 +73,6 @@ const UserComplaints = () => {
   };
 
   useEffect(() => {
-    console.log('👤 Detected user ID:', userId);
     fetchUserComplaints();
     fetchUserAppointments();
   }, [userId]);
@@ -159,9 +148,7 @@ const UserComplaints = () => {
                 className="bg-white border rounded-lg p-4 shadow-sm"
               >
                 <div className="flex justify-between items-center mb-1">
-                  <h4 className="text-lg font-medium text-teal-800">
-                    {complaint.subject}
-                  </h4>
+                  <h4 className="text-lg font-medium text-teal-800">{complaint.subject}</h4>
                   <span
                     className={`text-xs font-semibold px-2 py-1 rounded ${statusColorMap[complaint.status]}`}
                   >

@@ -39,7 +39,7 @@ const AppointmentDetails = ({ appointment, onClose, onRefresh }: Props) => {
       await updateAppointmentStatus(appointment.appointment_id, {
         status,
       });
-      onRefresh?.();
+      onRefresh();
       onClose();
     } catch (err) {
       console.error('Error updating status:', err);
@@ -50,11 +50,10 @@ const AppointmentDetails = ({ appointment, onClose, onRefresh }: Props) => {
 
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete this appointment?')) return;
-
     try {
       setLoading(true);
       await deleteAppointment(appointment.appointment_id);
-      onRefresh?.();
+      onRefresh();
       onClose();
     } catch (err) {
       console.error('Error deleting appointment:', err);
@@ -69,74 +68,78 @@ const AppointmentDetails = ({ appointment, onClose, onRefresh }: Props) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50 overflow-auto p-4">
-      <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg space-y-4">
-        <h2 className="text-xl font-bold">Appointment Details</h2>
+      <div className="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-xl space-y-5 animate-fade-in">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-400 text-transparent bg-clip-text">
+          Appointment Details
+        </h2>
 
         {patient ? (
-          <div className="space-y-1">
+          <div className="flex gap-4 items-center border p-4 rounded-lg bg-gray-50">
             <img
               src={patient.image_url ?? ''}
               alt={`${patient.first_name} ${patient.last_name}`}
-              className="w-20 h-20 rounded-full object-cover"
+              className="w-20 h-20 rounded-full object-cover border shadow"
             />
-            <p>
-              <strong>Name:</strong> {patient.first_name} {patient.last_name}
-            </p>
-            <p><strong>Email:</strong> {patient.email}</p>
-            <p><strong>Phone:</strong> {patient.contact_phone}</p>
-            <p><strong>Address:</strong> {patient.address}</p>
-            <p><strong>Role:</strong> {patient.role}</p>
+            <div className="space-y-1 text-sm">
+              <p><strong>Name:</strong> {patient.first_name} {patient.last_name}</p>
+              <p><strong>Email:</strong> {patient.email}</p>
+              <p><strong>Phone:</strong> {patient.contact_phone}</p>
+              <p><strong>Address:</strong> {patient.address}</p>
+              <p><strong>Role:</strong> {patient.role}</p>
+            </div>
           </div>
         ) : (
-          <p>Loading patient info...</p>
+          <p className="text-sm text-gray-500">Loading patient info...</p>
         )}
 
-        <div className="space-y-1">
-          <p>
-            <strong>Date:</strong>{' '}
-            {formattedDate} ({dayOfWeek})
-          </p>
+        <div className="space-y-2 text-sm">
+          <p><strong>Date:</strong> {formattedDate} ({dayOfWeek})</p>
           <p><strong>Time:</strong> {appointment.time_slot}</p>
-          <label className="block font-semibold mt-2">Status:</label>
-          <select
-            value={status}
-            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-              setStatus(e.target.value as
-                | 'Pending'
-                | 'Confirmed'
-                | 'Cancelled'
-                | 'Completed')
-            }
-            className="border p-2 w-full rounded"
-            disabled={loading}
-          >
-            <option value="Pending">Pending</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="Cancelled">Cancelled</option>
-            <option value="Completed">Completed</option>
-          </select>
-        </div>
 
-        {appointment.reason && <p><strong>Reason:</strong> {appointment.reason}</p>}
+          {appointment.reason && (
+            <p><strong>Reason:</strong> {appointment.reason}</p>
+          )}
+
+          <div>
+            <label className="block font-medium mt-2 mb-1">Status</label>
+            <select
+              value={status}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                setStatus(e.target.value as
+                  | 'Pending'
+                  | 'Confirmed'
+                  | 'Cancelled'
+                  | 'Completed')
+              }
+              disabled={loading}
+              className="w-full border rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="Pending">Pending</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Cancelled">Cancelled</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+        </div>
 
         <div className="flex justify-between pt-4">
           <button
             onClick={handleDelete}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
             disabled={loading}
           >
             Delete
           </button>
-          <div>
+          <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 mr-2"
+              className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition"
             >
               Close
             </button>
             <button
               onClick={handleStatusChange}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
               disabled={loading}
             >
               Update Status

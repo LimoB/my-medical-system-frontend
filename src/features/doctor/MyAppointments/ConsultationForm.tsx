@@ -2,6 +2,7 @@ import { useState, type ChangeEvent, type FormEvent } from 'react';
 import type { Appointment } from '@/types/appointment';
 import type { User } from '@/types/user';
 import { createConsultation } from '@/services/consultations';
+import { toast } from 'react-toastify';
 
 type Props = {
   appointment: Appointment;
@@ -38,9 +39,8 @@ const ConsultationForm = ({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
-    if (!consultationData.diagnosis) {
-      setError('Diagnosis is required');
+    if (!consultationData.diagnosis.trim()) {
+      setError('Diagnosis is required.');
       return;
     }
 
@@ -50,14 +50,14 @@ const ConsultationForm = ({
         doctor_id: appointment.doctor_id,
         patient_id: patient?.user_id ?? 0,
         symptoms: consultationData.symptoms || undefined,
-        diagnosis: consultationData.diagnosis,
+        diagnosis: consultationData.diagnosis.trim(),
         treatment_plan: consultationData.treatment_plan || undefined,
         additional_notes: consultationData.additional_notes || undefined,
         duration_minutes: consultationData.duration_minutes,
         status: 'Completed',
       });
 
-      alert('Consultation saved successfully!');
+      toast.success('✅ Consultation saved successfully!');
       onRefresh();
       onClose();
     } catch (err: any) {
@@ -69,68 +69,80 @@ const ConsultationForm = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 p-4 border rounded bg-white max-w-md mx-auto"
+      className="space-y-6 p-6 border rounded-2xl bg-white shadow-xl max-w-2xl mx-auto animate-fade-in"
     >
-      <h3 className="text-lg font-semibold">Add Consultation</h3>
+      <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-blue-500 to-teal-400 text-transparent bg-clip-text">
+        Add Consultation
+      </h3>
 
-      {/* Display error if any */}
-      {error && <div className="text-red-600 font-medium">{error}</div>}
+      {error && (
+        <div className="text-red-600 font-medium border border-red-300 bg-red-50 rounded p-2">
+          {error}
+        </div>
+      )}
 
+      {/* Diagnosis */}
       <div>
-        <label className="block font-semibold mb-1">Diagnosis*</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Diagnosis <span className="text-red-500">*</span>
+        </label>
         <input
           type="text"
           name="diagnosis"
           value={consultationData.diagnosis}
           onChange={handleChange}
-          required
           disabled={disabled}
-          className="border p-2 rounded w-full"
+          required
           placeholder="Enter diagnosis"
+          className="w-full border rounded-lg px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
         />
       </div>
 
+      {/* Symptoms */}
       <div>
-        <label className="block font-semibold mb-1">Symptoms</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Symptoms</label>
         <textarea
           name="symptoms"
           value={consultationData.symptoms}
           onChange={handleChange}
           disabled={disabled}
-          className="border p-2 rounded w-full"
-          placeholder="e.g. Headache, fatigue"
           rows={2}
+          placeholder="e.g. Headache, fatigue"
+          className="w-full border rounded-lg px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
         />
       </div>
 
+      {/* Treatment Plan */}
       <div>
-        <label className="block font-semibold mb-1">Treatment Plan</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Treatment Plan</label>
         <textarea
           name="treatment_plan"
           value={consultationData.treatment_plan}
           onChange={handleChange}
           disabled={disabled}
-          className="border p-2 rounded w-full"
-          placeholder="e.g. Take antimalarials for 5 days"
           rows={2}
+          placeholder="e.g. Take antimalarials for 5 days"
+          className="w-full border rounded-lg px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
         />
       </div>
 
+      {/* Additional Notes */}
       <div>
-        <label className="block font-semibold mb-1">Additional Notes</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Additional Notes</label>
         <textarea
           name="additional_notes"
           value={consultationData.additional_notes}
           onChange={handleChange}
           disabled={disabled}
-          className="border p-2 rounded w-full"
-          placeholder="Any additional observations"
           rows={2}
+          placeholder="Any additional observations"
+          className="w-full border rounded-lg px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
         />
       </div>
 
+      {/* Duration */}
       <div>
-        <label className="block font-semibold mb-1">Duration (minutes)</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
         <input
           type="number"
           name="duration_minutes"
@@ -138,16 +150,17 @@ const ConsultationForm = ({
           onChange={handleChange}
           min={1}
           disabled={disabled}
-          className="border p-2 rounded w-full"
-          placeholder="Duration in minutes"
+          placeholder="e.g. 30"
+          className="w-full border rounded-lg px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
         />
       </div>
 
-      <div className="flex justify-end space-x-2 pt-2">
+      {/* Actions */}
+      <div className="flex justify-end gap-3 pt-4">
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+          className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition"
           disabled={disabled}
         >
           Cancel
@@ -155,7 +168,7 @@ const ConsultationForm = ({
         <button
           type="submit"
           disabled={disabled}
-          className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+          className="px-4 py-2 rounded text-white bg-gradient-to-r from-teal-600 to-emerald-500 hover:brightness-110 transition"
         >
           Save Consultation
         </button>
