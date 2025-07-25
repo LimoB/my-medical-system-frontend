@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -7,7 +7,6 @@ import {
   ClipboardList,
   CreditCard,
   MessageSquare,
-  // Bell,
   NotebookPen,
 } from 'lucide-react';
 
@@ -16,27 +15,63 @@ import UserTopBar from '@/components/UserTopBar';
 const navItems = [
   { to: '/user', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/user/book-appointment', icon: CalendarCheck2, label: 'Book Appointment' },
-  { to: '/user/appointments', icon: ClipboardList, label: 'My Appointments' },     
+  { to: '/user/appointments', icon: ClipboardList, label: 'My Appointments' },
   { to: '/user/prescriptions', icon: FileText, label: 'Prescriptions' },
-  { to: '/user/consultations', icon: NotebookPen, label: 'Consultations' },        
+  { to: '/user/consultations', icon: NotebookPen, label: 'Consultations' },
   { to: '/user/payments', icon: CreditCard, label: 'Payments' },
   { to: '/user/complaints', icon: MessageSquare, label: 'Complaints' },
-  // { to: '/user/notifications', icon: Bell, label: 'Notifications' },
 ];
-
 
 const UserLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const updateSize = () => setWindowWidth(window.innerWidth);
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
+  const isMobile = windowWidth < 640;
+
+  const sidebarWidth = sidebarOpen
+    ? windowWidth >= 1280
+      ? 'w-60'
+      : windowWidth >= 1024
+      ? 'w-56'
+      : windowWidth >= 768
+      ? 'w-52'
+      : 'w-48'
+    : 'w-[4.5rem] sm:hover:w-56';
+
+  const contentMargin = sidebarOpen
+    ? windowWidth >= 1280
+      ? 'ml-60'
+      : windowWidth >= 1024
+      ? 'ml-56'
+      : windowWidth >= 768
+      ? 'ml-52'
+      : 'ml-48'
+    : 'ml-[4.5rem] sm:group-hover:ml-56';
 
   return (
-    <div className="flex h-screen font-sans bg-[#f8f9fa] overflow-y-hidden overflow-x-auto">
-      {/* Sidebar as a group for hover */}
+    <div className="relative flex min-h-screen font-sans bg-[#f8f9fa]">
+      {/* Mobile Blur Backdrop */}
+      {isMobile && sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
       <aside
         className={`
           group bg-[#0f766e] text-white flex flex-col py-6 px-2
           rounded-tr-[2rem] rounded-br-[2rem] shadow-xl overflow-hidden z-40
-          fixed sm:relative top-0 left-0 h-full transition-all duration-300 ease-in-out
-          ${sidebarOpen ? 'w-56' : 'w-[4.5rem] sm:hover:w-56'}
+          fixed sm:relative top-0 left-0 min-h-screen transition-all duration-300 ease-in-out
+          ${sidebarWidth}
         `}
       >
         <nav className="flex flex-col gap-6 mt-16">
@@ -48,7 +83,7 @@ const UserLayout = () => {
                 `flex items-center gap-4 py-2 px-4 rounded-xl transition-all duration-300
                 ${isActive ? 'bg-white text-[#0f766e] shadow-md' : 'hover:bg-[#0e6b64] text-white'}`
               }
-              onClick={() => setSidebarOpen(false)}
+              onClick={() => isMobile && setSidebarOpen(false)}
             >
               <Icon className="w-5 h-5 shrink-0" />
               <span
@@ -67,16 +102,16 @@ const UserLayout = () => {
         </nav>
       </aside>
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <div
         className={`
-          flex-1 flex flex-col transition-all duration-300 ease-in-out h-screen
-          ${sidebarOpen ? 'ml-56' : 'ml-[4.5rem] sm:group-hover:ml-56'}
+          flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out
+          ${contentMargin}
         `}
       >
-        {/* TopBar */}
+        {/* Top Bar */}
         <div className="shrink-0">
-          <UserTopBar onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
+          <UserTopBar onToggleSidebar={() => setSidebarOpen(prev => !prev)} />
         </div>
 
         {/* Scrollable Content */}

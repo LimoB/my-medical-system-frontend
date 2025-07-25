@@ -35,6 +35,24 @@ export default function BaseTopBar({ onToggleSidebar }: BaseTopBarProps) {
   const role = user?.role || 'user';
   const basePath = `/${role}`;
 
+  // Your role-based notification navigation function
+  const handleNotificationClick = () => {
+    if (!user?.role) return; // safety check
+
+    switch (user.role) {
+      case 'admin':
+        navigate('/admin/notifications');
+        break;
+      case 'doctor':
+        navigate('/doctor/notifications');
+        break;
+      case 'user':
+      default:
+        navigate('/user/notifications');
+        break;
+    }
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-16 sm:h-20 px-4 sm:px-8 flex items-center justify-between bg-transparent">
       {/* Sidebar Toggle (Mobile) */}
@@ -58,10 +76,16 @@ export default function BaseTopBar({ onToggleSidebar }: BaseTopBarProps) {
 
       {/* Right Side: Icons + User */}
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Message icon (no change) */}
         <button className="p-2 rounded-full hover:bg-[#f0fdfa] transition">
           <MessageSquare className="w-5 h-5 text-[#0f766e]" />
         </button>
-        <button className="p-2 rounded-full hover:bg-[#f0fdfa] transition">
+
+        {/* Notification icon with role-based navigation */}
+        <button
+          onClick={handleNotificationClick}
+          className="p-2 rounded-full hover:bg-[#f0fdfa] transition"
+        >
           <Bell className="w-5 h-5 text-[#0f766e]" />
         </button>
 

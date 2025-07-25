@@ -1,20 +1,34 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+
+const navLinks = [
+  { to: '/', label: 'Home' },
+  { to: '/about', label: 'About Us' },
+  { to: '/doctors', label: 'Doctors' },
+  { to: '/service', label: 'Service' },
+  { to: '/contact', label: 'Contact Us' },
+  { to: '/help', label: 'Help' },
+  { to: '/insights', label: 'Health Insights' },
+];
 
 const Header = () => {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
+  const isActive = useMemo(
+    () => (path: string) => location.pathname === path,
+    [location.pathname]
+  );
+
   const linkClasses = (path: string) =>
     `transition font-medium ${
-      location.pathname === path
+      isActive(path)
         ? 'text-teal-600 underline underline-offset-4'
         : 'text-black hover:text-teal-500'
     }`;
 
-  // Close on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -26,7 +40,7 @@ const Header = () => {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/30 backdrop-blur-md">
+    <header className="sticky top-0 z-50 bg-white/30 backdrop-blur-md shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between relative">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
@@ -38,17 +52,15 @@ const Header = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex space-x-6">
-          <Link to="/" className={linkClasses('/')}>Home</Link>
-          <Link to="/about" className={linkClasses('/about')}>About Us</Link>
-          <Link to="/doctors" className={linkClasses('/doctors')}>Doctors</Link>
-          <Link to="/service" className={linkClasses('/service')}>Service</Link>
-          <Link to="/contact" className={linkClasses('/contact')}>Contact Us</Link>
-          <Link to="/help" className={linkClasses('/help')}>Help</Link>
-          <Link to="/insights" className={linkClasses('/insights')}>Health Insights</Link>
+          {navLinks.map(({ to, label }) => (
+            <Link key={to} to={to} className={linkClasses(to)}>
+              {label}
+            </Link>
+          ))}
         </nav>
 
-        {/* Auth Buttons */}
-        <div className="hidden md:flex items-center space-x-3">
+        {/* Desktop Auth Buttons */}
+        <div className="hidden md:flex items-center space-x-4">
           <Link to="/register" className="text-black hover:underline">Sign Up</Link>
           <Link
             to="/login"
@@ -58,10 +70,12 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* Hamburger Icon */}
+        {/* Mobile Menu Toggle */}
         <button
+          aria-label="Toggle Menu"
+          aria-expanded={menuOpen}
           className="md:hidden text-black focus:outline-none"
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={() => setMenuOpen((prev) => !prev)}
         >
           {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -70,17 +84,23 @@ const Header = () => {
         {menuOpen && (
           <div
             ref={menuRef}
-            className="absolute top-full left-0 w-full bg-white/40 backdrop-blur-md md:hidden animate-slide-down"
+            className="absolute top-full left-0 w-full bg-white/90 backdrop-blur-md md:hidden animate-slide-down border-t border-gray-200 shadow-md"
           >
             <div className="flex flex-col space-y-4 p-6 text-black">
-              <Link to="/" className={linkClasses('/')} onClick={() => setMenuOpen(false)}>Home</Link>
-              <Link to="/about" className={linkClasses('/about')} onClick={() => setMenuOpen(false)}>About Us</Link>
-              <Link to="/doctors" className={linkClasses('/doctors')} onClick={() => setMenuOpen(false)}>Doctors</Link>
-              <Link to="/service" className={linkClasses('/service')} onClick={() => setMenuOpen(false)}>Service</Link>
-              <Link to="/contact" className={linkClasses('/contact')} onClick={() => setMenuOpen(false)}>Contact Us</Link>
-              <Link to="/help" className={linkClasses('/help')} onClick={() => setMenuOpen(false)}>Help</Link>
-              <Link to="/insights" className={linkClasses('/insights')} onClick={() => setMenuOpen(false)}>Health Insights</Link>
-              <Link to="/register" className="hover:underline" onClick={() => setMenuOpen(false)}>Sign Up</Link>
+              {navLinks.map(({ to, label }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  className={linkClasses(to)}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {label}
+                </Link>
+              ))}
+              <hr className="border-gray-300" />
+              <Link to="/register" className="hover:underline" onClick={() => setMenuOpen(false)}>
+                Sign Up
+              </Link>
               <Link
                 to="/login"
                 className="bg-teal-600 text-white text-center py-2 rounded-full hover:bg-teal-700 transition"
