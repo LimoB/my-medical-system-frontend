@@ -1,4 +1,3 @@
-// File: src/services/doctors.ts
 import api from './axios';
 import type {
   SanitizedDoctor,
@@ -157,6 +156,32 @@ export const deletePatientAppointment = async (
     console.error('❌ Failed to delete patient appointment history:', error);
     throw new Error(
       error?.response?.data?.message || 'Failed to delete patient appointment history'
+    );
+  }
+};
+
+/**
+ * 🔹 Get available time slots for a doctor on a given date
+ */
+export const getDoctorAvailabilityByDate = async (
+  doctorId: number,
+  date: string
+): Promise<{
+  date: string;
+  availableSlots: string[];
+  fullyBooked: boolean;
+  length: number;
+}> => {
+  try {
+    const res = await api.get(`/doctors/${doctorId}/availability`, {
+      params: { date },
+    });
+
+    return res.data;
+  } catch (error: any) {
+    console.error(`❌ Failed to get availability for doctor ${doctorId}:`, error);
+    throw new Error(
+      error?.response?.data?.message || 'Could not fetch doctor availability'
     );
   }
 };

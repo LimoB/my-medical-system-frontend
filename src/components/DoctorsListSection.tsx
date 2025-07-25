@@ -28,7 +28,6 @@ const DoctorsListSection = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Local modal state ONLY if onBookDoctor NOT passed
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState<SanitizedDoctor | null>(null);
   const [reason, setReason] = useState<string>('');
@@ -54,12 +53,10 @@ const DoctorsListSection = ({
 
   const handleBookClick = (doctor: SanitizedDoctor) => {
     if (onBookDoctor) {
-      // Pass event to parent to handle modal & state
       onBookDoctor(doctor);
       return;
     }
 
-    // Local modal handling only if showModals enabled
     if (!showModals) return;
 
     const token = localStorage.getItem('token');
@@ -97,7 +94,13 @@ const DoctorsListSection = ({
             {doctors.map((doc) =>
               renderDoctorCard
                 ? renderDoctorCard(doc, handleBookClick)
-                : <DoctorCard key={doc.doctor_id} doctor={doc} onBook={handleBookClick} />
+                : (
+                    <DoctorCard
+                      key={doc.doctor_id}
+                      doctor={doc}
+                      onBook={handleBookClick}
+                    />
+                  )
             )}
           </div>
         )}
@@ -105,7 +108,6 @@ const DoctorsListSection = ({
 
       {showModals && !onBookDoctor && (
         <>
-          {/* Render local modal ONLY if onBookDoctor NOT passed */}
           {selectedDoctor && (
             <BookingModal
               isOpen={isModalOpen}
