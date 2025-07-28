@@ -52,3 +52,11 @@ export const createConsultation = async (
 export const deleteConsultation = async (consultationId: number): Promise<void> => {
   await api.delete(`/consultations/${consultationId}`);
 };
+
+
+
+// 🔹 Get doctor by associated user ID
+export const fetchDoctorByUserId = async (userId: number) => {
+  const response = await api.get(`/doctors/user/${userId}`);
+  return response.data;
+};

@@ -5,7 +5,7 @@ import { getMeetings } from '@/services/meeting';
 import { fetchAppointmentsByDoctor } from '@/services/appointments';
 import type { Meeting } from '@/types/meeting';
 import type { Appointment } from '@/types/appointment';
-import { CalendarDays, Stethoscope } from 'lucide-react';
+import { CalendarDays, Stethoscope, CircleAlert } from 'lucide-react';
 import dayjs from 'dayjs';
 
 // Used to give consistent colors based on user_id
@@ -31,7 +31,6 @@ const CalendarPage = () => {
           getMeetings(),
           fetchAppointmentsByDoctor(),
         ]);
-
         setMeetings(m);
         setAppointments(a);
       } catch (err) {
@@ -40,7 +39,6 @@ const CalendarPage = () => {
         setLoading(false);
       }
     };
-
     fetchAll();
   }, []);
 
@@ -82,6 +80,31 @@ const CalendarPage = () => {
           onDateSelect={setSelectedDate}
           markedDates={combinedMarkedDates}
         />
+
+        {/* Color Legend Buttons */}
+        <div className="mt-6 flex flex-wrap gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-emerald-300 shadow-inner" />
+            <span className="text-sm text-gray-600 flex items-center gap-1">
+              <CalendarDays className="w-4 h-4 text-emerald-600" />
+              Meetings
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-cyan-300 shadow-inner" />
+            <span className="text-sm text-gray-600 flex items-center gap-1">
+              <Stethoscope className="w-4 h-4 text-cyan-700" />
+              Appointments
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-purple-300 shadow-inner" />
+            <span className="text-sm text-gray-600 flex items-center gap-1">
+              <CircleAlert className="w-4 h-4 text-purple-600" />
+              Both
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Right: Daily Breakdown */}
@@ -90,7 +113,7 @@ const CalendarPage = () => {
           Schedule for {selectedDate.toDateString()}
         </h2>
 
-        {/* Meetings Section */}
+        {/* Meetings */}
         <div>
           <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
             <CalendarDays className="w-4 h-4 text-emerald-500" />
@@ -114,7 +137,7 @@ const CalendarPage = () => {
           </div>
         </div>
 
-        {/* Appointments Section */}
+        {/* Appointments */}
         <div>
           <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
             <Stethoscope className="w-4 h-4 text-cyan-600" />
@@ -125,11 +148,8 @@ const CalendarPage = () => {
               <p className="text-sm text-gray-500">No appointments for this day.</p>
             ) : (
               filteredAppointments.map((a) => {
-                const user = a.user; // Safe check for user
-
-                if (!user) {
-                  return null; // If no user data, skip rendering this appointment
-                }
+                const user = a.user;
+                if (!user) return null;
 
                 const name = `${user.first_name} ${user.last_name}`;
                 const initials = name
@@ -144,7 +164,6 @@ const CalendarPage = () => {
                     key={a.appointment_id}
                     className="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border text-sm"
                   >
-                    {/* Avatar + Info */}
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-9 h-9 rounded-full font-bold text-sm flex items-center justify-center ${colorMap[color].bg} ${colorMap[color].text}`}
@@ -157,7 +176,6 @@ const CalendarPage = () => {
                       </div>
                     </div>
 
-                    {/* Time */}
                     <span className="text-xs font-semibold bg-gray-100 text-gray-700 px-2.5 py-0.5 rounded-full">
                       {time}
                     </span>

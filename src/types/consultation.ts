@@ -3,6 +3,7 @@
 import type { Appointment } from './appointment';
 import type { User } from './user';
 import type { SanitizedDoctor as Doctor } from './doctor';
+import type { Key } from 'react';
 
 // Enums for consultation type and status
 export type ConsultationStatus = 'Ongoing' | 'Completed';
@@ -10,6 +11,7 @@ export type ConsultationType = 'initial' | 'follow-up' | 'review';
 
 // Main Consultation interface
 export interface Consultation {
+  id: Key | null | undefined;
   consultation_id: number;
   appointment_id: number;
   doctor_id: number;

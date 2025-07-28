@@ -35,6 +35,8 @@ export interface User {
   last_name: string;
   email: string;
   contact_phone?: string;
+    full_name: string; // ✅ Add this line
+
   address?: string;
   image_url: string;
   gender?: 'Male' | 'Female' | 'Other'; // ← Add this line
