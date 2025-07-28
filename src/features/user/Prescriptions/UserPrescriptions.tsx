@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Loader2 } from 'lucide-react';
+import { Loader2, FileText } from 'lucide-react';
 import api from '@/services/axios';
 import type { RootState } from '@/store/store';
 import type { DecodedToken } from '@/types/auth';
@@ -10,7 +10,7 @@ const UserPrescriptions = () => {
   const user = useSelector((state: RootState) => state.auth.user as DecodedToken | null);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -30,8 +30,9 @@ const UserPrescriptions = () => {
   }, [user?.id]);
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <h2 className="text-3xl font-bold bg-gradient-to-r from-teal-600 to-blue-500 bg-clip-text text-transparent">
+    <div className="p-6 max-w-5xl mx-auto space-y-6">
+      <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-sky-600 flex items-center gap-2">
+        <FileText className="w-6 h-6 text-sky-600" />
         My Prescriptions
       </h2>
 
@@ -42,52 +43,66 @@ const UserPrescriptions = () => {
         </div>
       )}
 
-      {error && (
-        <p className="text-red-600 font-medium border border-red-200 bg-red-50 p-3 rounded">
-          {error}
+      {!loading && prescriptions.length === 0 && (
+        <p className="text-gray-500 italic border border-blue-100 bg-blue-50 p-4 rounded-lg text-center">
+          No prescriptions yet. Please wait for your doctor to issue one.
         </p>
       )}
 
-      {!loading && prescriptions.length === 0 && (
-        <p className="text-gray-600 text-sm italic">No prescriptions found.</p>
-      )}
-
-      <div className="grid gap-4">
+      <div className="grid sm:grid-cols-2 gap-6">
         {prescriptions.map((prescription) => (
           <div
             key={prescription.id}
-            className="border border-gray-200 p-5 rounded-2xl shadow-sm bg-white space-y-2 transition hover:shadow-md"
+            className="relative p-[2px] rounded-2xl bg-gradient-to-tr from-sky-400 via-cyan-400 to-blue-500"
           >
-            <p className="text-sm">
-              <span className="font-semibold text-gray-700">Appointment:</span>{' '}
-              {prescription.appointment_title || `#${prescription.appointment_id}`}
-            </p>
-
-            <p className="text-sm">
-              <span className="font-semibold text-gray-700">Doctor:</span>{' '}
-              {prescription.doctor_name || `Doctor #${prescription.doctor_id}`}
-            </p>
-
-            {prescription.notes && (
-              <p className="text-sm text-wrap text-balance">
-                <span className="font-semibold text-gray-700">Notes:</span>{' '}
-                {prescription.notes}
-              </p>
-            )}
-
-            {prescription.image_url && (
-              <div className="mt-2">
-                <img
-                  src={prescription.image_url}
-                  alt="Prescription"
-                  className="w-full max-w-xs rounded-lg border"
-                />
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl p-5 shadow-xl space-y-4 transition-transform hover:scale-[1.015] duration-300">
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-gray-700">
+                  Appointment:{' '}
+                  <span className="text-sky-600">
+                    {prescription.appointment_title || `#${prescription.appointment_id}`}
+                  </span>
+                </p>
+                <span className="text-xs text-gray-400">
+                  {new Date(prescription.created_at).toLocaleDateString()}
+                </span>
               </div>
-            )}
 
-            <p className="text-xs text-gray-500 pt-2">
-              Issued on: {new Date(prescription.created_at).toLocaleString()}
-            </p>
+              {/* Doctor */}
+              <p className="text-sm">
+                <span className="font-semibold text-gray-700">Doctor:</span>{' '}
+                <span className="text-blue-700 font-medium">
+                  {prescription.doctor_name || `Doctor #${prescription.doctor_id}`}
+                </span>
+              </p>
+
+              {/* Notes */}
+              {prescription.notes && (
+                <p className="text-sm text-gray-700 text-wrap text-balance">
+                  <span className="font-semibold">Notes:</span> {prescription.notes}
+                </p>
+              )}
+
+              {/* Image */}
+              {prescription.image_url && (
+                <div className="mt-2">
+                  <img
+                    src={prescription.image_url}
+                    alt="Prescription"
+                    className="w-full max-w-xs rounded-lg border border-cyan-200 shadow"
+                  />
+                </div>
+              )}
+
+              {/* Footer */}
+              <p className="text-xs text-gray-500 pt-2">
+                Issued on:{' '}
+                <span className="text-gray-700 font-medium">
+                  {new Date(prescription.created_at).toLocaleString()}
+                </span>
+              </p>
+            </div>
           </div>
         ))}
       </div>
