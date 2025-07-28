@@ -1,21 +1,32 @@
+// src/components/LogoutButton.tsx
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { logout } from '@/features/slices/authSlice';
 
 const LogoutButton = ({ className = '' }: { className?: string }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
-    // Clear all possible user-related data
-    localStorage.removeItem('token');
-    localStorage.removeItem('savedEmail');
-    localStorage.removeItem('user');
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('user');
+    try {
+      // 🔴 Clear token/user from storage
+      localStorage.removeItem('token');
+      localStorage.removeItem('savedEmail');
+      localStorage.removeItem('user');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
 
-    // Optionally: clear entire storage if you're sure nothing else is needed
-    // localStorage.clear();
-    // sessionStorage.clear();
+      // 🔄 Update Redux state
+      dispatch(logout());
 
-    navigate('/login');
+      // ✅ Show feedback and redirect
+      toast.success('Logged out successfully');
+      navigate('/login');
+    } catch (error) {
+      toast.error('Logout failed');
+      console.error('Logout Error:', error);
+    }
   };
 
   return (

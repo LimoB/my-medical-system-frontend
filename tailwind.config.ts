@@ -22,9 +22,9 @@ export default {
         'footer-background': '#007E85',
 
         // Semantic Colors
-        success: '#4ade80',   // green-400
-        error: '#f87171',     // red-400
-        muted: '#6b7280',     // gray-500
+        success: '#4ade80', // green-400
+        error: '#f87171',   // red-400
+        muted: '#6b7280',   // gray-500
         card: '#ffffff',
         background: '#f9f9f9',
 
@@ -93,5 +93,12 @@ export default {
       '2xl': '1536px',
     },
   },
-  plugins: [],
+plugins: [
+  require('@tailwindcss/forms'),
+  require('@tailwindcss/typography'),
+  require('@tailwindcss/aspect-ratio'),
+],
+
+
+
 };

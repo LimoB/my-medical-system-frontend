@@ -25,7 +25,7 @@ const BookAppointment = () => {
   const [filter, setFilter] = useState('');
   const [page, setPage] = useState(1);
 
-  const today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
+  const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     const loadAppointments = async () => {
@@ -63,35 +63,64 @@ const BookAppointment = () => {
     return Math.ceil(total / ITEMS_PER_PAGE);
   };
 
-  // 🔍 Find doctor IDs that are booked today and not cancelled
   const fullyBookedDoctorIds = appointments
     .filter((appt) => appt.date === today && appt.appointment_status !== 'Cancelled')
     .map((appt) => appt.doctor_id);
 
   return (
-    <div className="p-6 space-y-10">
+    <div className="p-6 space-y-10 max-w-5xl mx-auto animate-fade-in">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-teal-700 mb-1">Book Appointment</h1>
-        <p className="text-gray-600">Choose a doctor and book your visit in seconds.</p>
+        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-teal-600 via-blue-500 to-purple-600 text-transparent bg-clip-text">
+          Book Appointment
+        </h1>
+        <p className="text-gray-600 mt-1 text-sm">
+          Choose a doctor and book your visit in seconds.
+        </p>
       </div>
 
-      <AppointmentTabs view={view} setView={setView} setPage={setPage} />
+      {/* Tabs */}
+      <div className="border rounded-xl shadow-md p-4 bg-white">
+        <AppointmentTabs view={view} setView={setView} setPage={setPage} />
+      </div>
 
+      {/* Booking Section */}
       {view === 'book' && (
-        <>
-          <AppointmentFilter filter={filter} setFilter={setFilter} />
-          <DoctorsListSection
-            onBookDoctor={handleBookDoctor}
-            fullyBookedDoctorIds={fullyBookedDoctorIds}
-          />
-        </>
+        <div className="space-y-6">
+          <div className="border rounded-xl shadow-md p-4 bg-white">
+            <AppointmentFilter filter={filter} setFilter={setFilter} />
+          </div>
+          <div className="border rounded-xl shadow-md p-4 bg-white">
+            <DoctorsListSection
+              onBookDoctor={handleBookDoctor}
+              fullyBookedDoctorIds={fullyBookedDoctorIds}
+            />
+          </div>
+        </div>
       )}
 
-      {view === 'upcoming' && <AppointmentCardList appointments={filteredUpcoming} />}
-      {view === 'history' && <AppointmentCardList appointments={filteredHistory} />}
+      {/* Upcoming Appointments */}
+      {view === 'upcoming' && (
+        <div className="border rounded-xl shadow-md p-4 bg-white">
+          <AppointmentCardList appointments={filteredUpcoming} />
+        </div>
+      )}
 
+      {/* History */}
+      {view === 'history' && (
+        <div className="border rounded-xl shadow-md p-4 bg-white">
+          <AppointmentCardList appointments={filteredHistory} />
+        </div>
+      )}
+
+      {/* Pagination */}
       {(view === 'upcoming' || view === 'history') && (
-        <AppointmentPagination totalPages={totalPages(view)} page={page} setPage={setPage} />
+        <div className="flex justify-center">
+          <AppointmentPagination
+            totalPages={totalPages(view)}
+            page={page}
+            setPage={setPage}
+          />
+        </div>
       )}
 
       {/* Booking Modal */}

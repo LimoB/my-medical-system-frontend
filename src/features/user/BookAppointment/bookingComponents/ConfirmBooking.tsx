@@ -2,10 +2,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { FaMoneyBillWave, FaCreditCard, FaMobileAlt } from 'react-icons/fa';
+
 import type { RootState } from '@/store/store';
+import type { SanitizedDoctor } from '@/types/doctor';
 import { createAppointment } from '@/services/appointments';
 import { createStripeCheckoutSession } from '@/services/payments';
-import type { SanitizedDoctor } from '@/types/doctor';
 import ConfirmationModal from '@/features/user/BookAppointment/bookingComponents/ConfirmationModal';
 
 type LocationState = {
@@ -27,8 +29,8 @@ const ConfirmBooking = () => {
 
   if (!doctor || !selectedDate || !selectedHour || !user) {
     return (
-      <div className="p-8 max-w-xl mx-auto text-center text-red-500 font-medium">
-        Invalid booking data. Please restart the process.
+      <div className="p-8 max-w-xl mx-auto text-center text-red-500 font-medium animate-fade-in">
+        ⚠️ Invalid booking data. Please restart the process.
       </div>
     );
   }
@@ -85,13 +87,8 @@ const ConfirmBooking = () => {
         setShowModal(true);
       }
     } catch (error: any) {
-      const msg =
-        error?.response?.data?.error ||
-        error?.response?.data?.message ||
-        error?.message ||
-        'Booking failed';
-
       toast.dismiss();
+      const msg = error?.response?.data?.error || error?.message || 'Booking failed';
 
       if (msg.toLowerCase().includes('already booked')) {
         toast.error('This doctor is already booked at this time. Please choose another slot.');
@@ -111,8 +108,7 @@ const ConfirmBooking = () => {
   };
 
   return (
-    <div className="p-6 sm:p-10 max-w-3xl mx-auto">
-      {/* Back Button */}
+    <div className="p-4 sm:p-10 max-w-3xl mx-auto animate-fade-in">
       <button
         onClick={() => navigate(-1)}
         className="mb-6 text-sm text-teal-600 hover:underline"
@@ -120,47 +116,44 @@ const ConfirmBooking = () => {
         ← Back
       </button>
 
-      <h1 className="text-3xl font-bold text-center text-teal-700 mb-8">
+      <h1 className="text-3xl font-extrabold text-center text-teal-700 mb-8">
         Confirm Your Booking
       </h1>
 
-      <div className="bg-white shadow-lg rounded-xl p-6 space-y-6 border border-gray-100">
-        {/* Appointment Info */}
-        <div className="space-y-2 text-gray-700">
-          <p>
-            <span className="font-medium">Doctor:</span> Dr. {doctor.name}
-          </p>
-          <p>
-            <span className="font-medium">Date:</span>{' '}
-            {new Date(selectedDate).toLocaleDateString()}
-          </p>
-          <p>
-            <span className="font-medium">Time:</span> {selectedHour}
-          </p>
-          <p>
-            <span className="font-medium">Amount:</span> KSh {doctor.payment_per_hour}
-          </p>
+      <div className="bg-gradient-to-br from-white to-teal-50 rounded-2xl shadow-xl p-6 space-y-6 border border-gray-100">
+        {/* Info */}
+        <div className="text-gray-800 space-y-2">
+          <p><strong>Doctor:</strong> Dr. {doctor.name}</p>
+          <p><strong>Date:</strong> {new Date(selectedDate).toLocaleDateString()}</p>
+          <p><strong>Time:</strong> {selectedHour}</p>
+          <p><strong>Amount:</strong> KSh {doctor.payment_per_hour}</p>
         </div>
 
         {/* Payment Method */}
         <div>
           <h2 className="text-lg font-semibold text-gray-800 mb-3">Select Payment Method</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {(['mpesa', 'stripe', 'cash'] as const).map((method) => (
+            {([
+              { method: 'mpesa', icon: <FaMobileAlt className="text-green-600" /> },
+              { method: 'stripe', icon: <FaCreditCard className="text-indigo-600" /> },
+              { method: 'cash', icon: <FaMoneyBillWave className="text-yellow-600" /> },
+            ] as const).map(({ method, icon }) => (
               <label
                 key={method}
-                className={`flex items-center justify-center gap-2 p-4 border rounded-lg cursor-pointer transition hover:shadow ${paymentMethod === method ? 'bg-teal-50 border-teal-600' : 'bg-white'
-                  }`}
+                className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border cursor-pointer transition shadow-sm hover:shadow-md text-center ${
+                  paymentMethod === method ? 'bg-teal-100 border-teal-600' : 'bg-white'
+                }`}
               >
                 <input
                   type="radio"
                   name="payment"
                   value={method}
-                  className="hidden"
                   checked={paymentMethod === method}
                   onChange={() => setPaymentMethod(method)}
+                  className="hidden"
                 />
-                <span className="text-gray-700 capitalize font-medium">{method}</span>
+                <div className="text-2xl">{icon}</div>
+                <span className="capitalize font-medium text-gray-700">{method}</span>
               </label>
             ))}
           </div>
@@ -170,8 +163,9 @@ const ConfirmBooking = () => {
         <button
           onClick={handleConfirm}
           disabled={loading || !paymentMethod}
-          className={`w-full py-3 text-white rounded-full font-medium transition ${paymentMethod ? 'bg-teal-600 hover:bg-teal-700' : 'bg-gray-400 cursor-not-allowed'
-            }`}
+          className={`w-full py-3 text-white rounded-full font-semibold text-lg transition ${
+            paymentMethod ? 'bg-teal-600 hover:bg-teal-700' : 'bg-gray-400 cursor-not-allowed'
+          }`}
         >
           {loading ? 'Processing...' : 'Confirm & Pay'}
         </button>

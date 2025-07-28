@@ -1,9 +1,9 @@
-// src/features/user/MyAppointments/MyAppointments.tsx
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '@/store/store';
 import { getAppointmentsByUserId } from '@/features/slices/appointmentSlice';
 import AppointmentCard from './AppointmentCard';
+import { motion } from 'framer-motion';
 
 const MyAppointments = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -17,36 +17,68 @@ const MyAppointments = () => {
   }, [dispatch, userId]);
 
   return (
-    <section className="p-4 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6 text-teal-700">My Appointments</h2>
+    <motion.section
+      className="p-6 sm:p-8 max-w-4xl mx-auto bg-white shadow-xl rounded-2xl mt-10"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
+      <h2 className="text-3xl font-extrabold text-center mb-4 text-teal-700">My Appointments</h2>
+      <p className="text-center text-gray-500 mb-6">All your upcoming and past bookings in one place</p>
 
       {loading && (
-        <p className="text-center text-gray-500" aria-live="polite">
-          Loading appointments...
+        <p className="text-center text-gray-500 animate-pulse" aria-live="polite">
+          Fetching your appointments...
         </p>
       )}
 
       {error && (
-        <p className="text-center text-red-600 font-medium" role="alert">
+        <motion.p
+          className="text-center text-red-600 font-medium"
+          role="alert"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
           {error}
-        </p>
+        </motion.p>
       )}
 
       {!loading && !error && appointments.length === 0 && (
-        <p className="text-gray-600 text-center">No appointments found.</p>
+        <motion.p
+          className="text-gray-600 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          You haven't booked any appointments yet.
+        </motion.p>
       )}
 
       {!loading && appointments.length > 0 && (
-        <div className="grid gap-4">
+        <motion.div
+          className="grid gap-6"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.1,
+              },
+            },
+          }}
+        >
           {appointments.map((appointment) => (
-            <AppointmentCard
+            <motion.div
               key={appointment.appointment_id}
-              appointment={appointment}
-            />
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <AppointmentCard appointment={appointment} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
-    </section>
+    </motion.section>
   );
 };
 

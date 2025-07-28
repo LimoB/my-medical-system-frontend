@@ -1,13 +1,16 @@
 import AppointmentCard from '@/features/user/MyAppointments/AppointmentCard';
+import type { Appointment } from '@/types/appointment'; // Replace `any` with the actual type
 
 interface AppointmentCardListProps {
-  appointments: any[];  // Replace with the actual type of Appointment
+  appointments: Appointment[];
 }
 
 const AppointmentCardList = ({ appointments }: AppointmentCardListProps) => (
-  <div className="space-y-4">
+  <div className="space-y-4 animate-fade-in">
     {appointments.length === 0 ? (
-      <p className="text-gray-500">No appointments to display.</p>
+      <div className="text-center py-6 text-gray-500 text-sm">
+        📭 No appointments to display.
+      </div>
     ) : (
       appointments.map((appt) => (
         <AppointmentCard key={appt.appointment_id} appointment={appt} />

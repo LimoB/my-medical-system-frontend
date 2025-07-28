@@ -1,20 +1,30 @@
+import { useEffect, useState } from 'react';
 import { CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import Confetti from 'react-confetti';
 
 type Props = {
-  onClose?: () => void;         // Optional: for closing modal
-  isModal?: boolean;            // If true, use modal-specific styling and logic
-  paymentMethod?: 'stripe' | 'cash' | 'mpesa' | ''; // Customize success message
+  onClose?: () => void;
+  isModal?: boolean;
+  paymentMethod?: 'stripe' | 'cash' | 'mpesa' | '';
+  redirectTo?: string; // allow dynamic redirect
 };
 
 const BookingConfirmation = ({
   onClose,
   isModal = false,
   paymentMethod = '',
+  redirectTo = '/user/my-appointments',
 }: Props) => {
   const navigate = useNavigate();
+  const [showConfetti, setShowConfetti] = useState(true);
 
-  // Determine message based on payment method
+  useEffect(() => {
+    const timer = setTimeout(() => setShowConfetti(false), 3000); // stop confetti after 3s
+    return () => clearTimeout(timer);
+  }, []);
+
   const getMessage = () => {
     switch (paymentMethod) {
       case 'stripe':
@@ -27,40 +37,48 @@ const BookingConfirmation = ({
     }
   };
 
-  // Modal button click handler
-  const handleGoToAppointments = () => {
-    if (onClose) onClose(); // Close modal first (optional)
-    navigate('/user/my-appointments');
+  const handleRedirect = () => {
+    if (onClose) onClose();
+    navigate(redirectTo);
   };
 
   return (
-    <div
-      className={`${
-        isModal
-          ? 'p-6 max-w-md mx-auto bg-white rounded-lg shadow-lg text-center'
-          : 'p-10 max-w-xl mx-auto text-center'
-      }`}
-    >
-      <CheckCircle className="text-green-500 w-16 h-16 mx-auto mb-6" />
-      <h2 className="text-3xl font-bold mb-4 text-teal-700">Appointment Confirmed!</h2>
-      <p className="text-gray-700 mb-6 text-lg">{getMessage()}</p>
+    <>
+      {showConfetti && <Confetti numberOfPieces={200} recycle={false} />}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className={`${
+          isModal
+            ? 'p-6 sm:p-8 max-w-md bg-white rounded-2xl shadow-2xl text-center mx-auto'
+            : 'p-10 sm:p-12 max-w-2xl bg-gradient-to-br from-teal-50 via-white to-emerald-100 rounded-2xl shadow-2xl text-center mx-auto'
+        }`}
+      >
+        <CheckCircle className="text-green-500 w-20 h-20 mx-auto mb-6 drop-shadow-md" />
+        <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-emerald-700">
+          Appointment Confirmed!
+        </h2>
+        <p className="text-gray-700 mb-3 text-base sm:text-lg">{getMessage()}</p>
+        <p className="text-gray-500 text-sm mb-6">We'll send you a reminder before your visit.</p>
 
-      {isModal ? (
-        <button
-          onClick={handleGoToAppointments}
-          className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-full font-semibold transition"
-        >
-          Go to My Appointments
-        </button>
-      ) : (
-        <a
-          href="/user/my-appointments"
-          className="inline-block bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-full font-semibold transition"
-        >
-          Go to My Appointments
-        </a>
-      )}
-    </div>
+        {isModal ? (
+          <button
+            onClick={handleRedirect}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-full font-semibold transition duration-300 shadow-md hover:shadow-lg"
+          >
+            Go to My Appointments
+          </button>
+        ) : (
+          <a
+            href={redirectTo}
+            className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-full font-semibold transition duration-300 shadow-md hover:shadow-lg"
+          >
+            Go to My Appointments
+          </a>
+        )}
+      </motion.div>
+    </>
   );
 };
 

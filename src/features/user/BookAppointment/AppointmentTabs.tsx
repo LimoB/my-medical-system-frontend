@@ -4,23 +4,30 @@ interface AppointmentTabsProps {
   setPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
+const tabs = [
+  { key: 'book', label: 'Make Appointment' },
+  { key: 'upcoming', label: 'Upcoming' },
+  { key: 'history', label: 'History' },
+] as const;
+
 const AppointmentTabs = ({ view, setView, setPage }: AppointmentTabsProps) => (
-  <div className="flex justify-center gap-6 mb-6 border-b">
-    {['book', 'upcoming', 'history'].map((tab) => (
+  <div className="flex justify-center gap-6">
+    {tabs.map((tab) => (
       <button
-        key={tab}
+        key={tab.key}
         onClick={() => {
-          setView(tab as any);
+          setView(tab.key);
           setPage(1);
         }}
-        className={`relative pb-2 px-4 font-medium transition-colors ${view === tab
-            ? 'text-teal-600'
-            : 'text-gray-500 hover:text-teal-500'
+        className={`relative pb-3 px-4 font-semibold text-sm uppercase tracking-wide transition-all duration-200
+          ${view === tab.key
+            ? 'text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-500'
+            : 'text-gray-500 hover:text-teal-600'
           }`}
       >
-        {tab === 'book' ? 'Make Appointment' : tab === 'upcoming' ? 'Upcoming' : 'History'}
-        {view === tab && (
-          <span className="absolute left-0 bottom-0 w-full h-1 bg-teal-600 rounded-full transition-all duration-300" />
+        {tab.label}
+        {view === tab.key && (
+          <span className="absolute left-0 bottom-0 w-full h-[3px] rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-all duration-300" />
         )}
       </button>
     ))}

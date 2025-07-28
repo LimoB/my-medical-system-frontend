@@ -1,5 +1,6 @@
 import type { SanitizedDoctor } from '@/types/doctor';
-import { CalendarDays, Clock, Wallet } from 'lucide-react';
+import { CalendarDays, Clock, Wallet, Ban, XCircle } from 'lucide-react';
+import { cn } from '@/lib/utils'; // optional: if you use clsx/cn helpers
 
 type DoctorCardProps = {
   doctor: SanitizedDoctor;
@@ -34,12 +35,12 @@ const DoctorCard = ({
     : 'Book Appointment';
 
   return (
-    <div className="group bg-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-transform duration-300 overflow-hidden flex flex-col items-center text-center px-6 pt-6 pb-8">
+    <div className="group bg-white rounded-2xl shadow-md hover:shadow-lg transform hover:scale-[1.02] transition-transform duration-300 overflow-hidden flex flex-col items-center text-center px-6 pt-6 pb-8 relative border border-gray-100">
       <img
         src={image || '/default-doctor.jpg'}
         alt={`Portrait of Dr. ${name}`}
         loading="lazy"
-        className="w-24 h-24 object-cover rounded-full ring-2 ring-white ring-offset-2 ring-offset-teal-500 mb-4 shadow-md transition-transform duration-300 group-hover:scale-105"
+        className="w-24 h-24 object-cover rounded-full ring-2 ring-white ring-offset-2 ring-offset-teal-500 mb-4 shadow-sm transition-transform duration-300 group-hover:scale-105"
       />
 
       <h3 className="text-lg font-semibold text-teal-700 mb-1">Dr. {name}</h3>
@@ -89,11 +90,12 @@ const DoctorCard = ({
       </div>
 
       <button
-        className={`mt-6 w-full py-2 px-6 rounded-full font-medium transition duration-300 ${
+        className={cn(
+          'mt-6 w-full py-2 px-6 rounded-full font-medium transition duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500',
           isDisabled
-            ? 'bg-gray-400 text-white cursor-not-allowed'
+            ? 'bg-gray-300 text-white cursor-not-allowed'
             : 'bg-teal-600 text-white hover:bg-teal-700'
-        }`}
+        )}
         onClick={() => !isDisabled && onBook(doctor)}
         disabled={isDisabled}
         aria-label={`Book appointment with Dr. ${name}`}
@@ -102,17 +104,17 @@ const DoctorCard = ({
       </button>
 
       {notAvailableToday && (
-        <p className="text-red-500 text-xs mt-2">
-          This doctor is <strong>not available today</strong>.<br />
-          Please check the calendar to book an upcoming available day.
-        </p>
+        <div className="flex items-center text-xs text-red-600 mt-2 gap-1">
+          <XCircle className="w-4 h-4" />
+          <span>Not available today. Try another day.</span>
+        </div>
       )}
 
       {isFullyBookedToday && !notAvailableToday && (
-        <p className="text-yellow-600 text-xs mt-2">
-          This doctor is <strong>fully booked today</strong>.<br />
-          Try booking on another day.
-        </p>
+        <div className="flex items-center text-xs text-yellow-600 mt-2 gap-1">
+          <Ban className="w-4 h-4" />
+          <span>Fully booked today. Try tomorrow.</span>
+        </div>
       )}
     </div>
   );
