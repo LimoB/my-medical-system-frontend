@@ -170,6 +170,7 @@ export const getDoctorAvailabilityByDate = async (
   date: string;
   availableSlots: string[];
   fullyBooked: boolean;
+  notAvailableToday: boolean;
   length: number;
 }> => {
   try {

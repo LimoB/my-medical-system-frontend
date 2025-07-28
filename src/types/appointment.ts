@@ -2,6 +2,7 @@ import type { Key } from "react";
 
 // === Appointment object returned from backend ===
 export interface Appointment {
+  date: string;
   patient: any;
   reason: any;
   id: Key | null | undefined;              // For React list keys, optional
@@ -63,3 +64,12 @@ export interface AppointmentStatusUpdatePayload {
 
 // === Alias type for frontend sanitized views ===
 export type SanitizedAppointment = Appointment;
+
+
+export type AppointmentReschedulePayload = {
+  appointmentId: number;
+  userId: number;
+  newDate: string;
+  newTimeSlot: string;
+  role?: 'admin' | 'doctor' | 'user'; // Optional: helpful for permission checks
+};

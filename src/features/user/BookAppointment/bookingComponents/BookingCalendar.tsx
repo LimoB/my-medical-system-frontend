@@ -1,20 +1,26 @@
-// BookingCalendar.tsx
 import { useState, useMemo } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import type { SanitizedDoctor } from '@/types/doctor';
 
+type AppointmentSlot = {
+  date: string; // Format: 'YYYY-MM-DD'
+  time: string; // Format: 'HH:mm'
+};
+
 type Props = {
   doctor: SanitizedDoctor;
   onConfirm: (date: Date, time: string) => void;
+  bookedSlots: AppointmentSlot[]; // Pass this from parent
 };
 
-const BookingCalendar = ({ doctor, onConfirm }: Props) => {
+const BookingCalendar = ({ doctor, onConfirm, bookedSlots }: Props) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedHour, setSelectedHour] = useState<string>('');
 
+  // Map available day names to numeric indices (0 = Sunday, ..., 6 = Saturday)
   const availableDayIndices = useMemo(() => {
-    const map: Record<string, number> = {
+    const dayMap: Record<string, number> = {
       Sunday: 0,
       Monday: 1,
       Tuesday: 2,
@@ -23,10 +29,11 @@ const BookingCalendar = ({ doctor, onConfirm }: Props) => {
       Friday: 5,
       Saturday: 6,
     };
+
     return doctor.available_days
       .split(',')
-      .map((d) => map[d.trim()])
-      .filter((d) => d !== undefined);
+      .map((day) => dayMap[day.trim()])
+      .filter((dayIndex) => dayIndex !== undefined);
   }, [doctor]);
 
   const isDayAvailable = (date: Date) => availableDayIndices.includes(date.getDay());
@@ -40,22 +47,37 @@ const BookingCalendar = ({ doctor, onConfirm }: Props) => {
     }).filter(Boolean) as Date[];
   }, [availableDayIndices]);
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (selectedDate && selectedHour) {
+      onConfirm(selectedDate, selectedHour);
+    }
+  };
+
+  // Filter available hours based on selected date
+  const availableHoursForDate = useMemo(() => {
+    if (!selectedDate) return [];
+
+    const selectedDateStr = selectedDate.toISOString().split('T')[0];
+
+    const bookedTimes = bookedSlots
+      .filter((slot) => slot.date === selectedDateStr)
+      .map((slot) => slot.time);
+
+    return doctor.available_hours.filter((hour) => !bookedTimes.includes(hour));
+  }, [selectedDate, bookedSlots, doctor.available_hours]);
+
   return (
-    <form
-      className="space-y-5"
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (selectedDate && selectedHour) {
-          onConfirm(selectedDate, selectedHour);
-        }
-      }}
-    >
-      {/* Date */}
+    <form className="space-y-5" onSubmit={handleSubmit}>
+      {/* Date Picker */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Select Date</label>
         <DatePicker
           selected={selectedDate}
-          onChange={(date) => setSelectedDate(date)}
+          onChange={(date) => {
+            setSelectedDate(date);
+            setSelectedHour(''); // reset hour when changing date
+          }}
           filterDate={isDayAvailable}
           placeholderText="Choose a date"
           highlightDates={[
@@ -67,7 +89,7 @@ const BookingCalendar = ({ doctor, onConfirm }: Props) => {
         />
       </div>
 
-      {/* Time */}
+      {/* Time Picker */}
       {selectedDate && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Select Time</label>
@@ -78,16 +100,20 @@ const BookingCalendar = ({ doctor, onConfirm }: Props) => {
             required
           >
             <option value="">-- Choose Time Slot --</option>
-            {doctor.available_hours.map((hour) => (
-              <option key={hour} value={hour}>
-                {hour}
-              </option>
-            ))}
+            {availableHoursForDate.length > 0 ? (
+              availableHoursForDate.map((hour) => (
+                <option key={hour} value={hour}>
+                  {hour}
+                </option>
+              ))
+            ) : (
+              <option disabled>No available slots</option>
+            )}
           </select>
         </div>
       )}
 
-      {/* Button */}
+      {/* Confirm Button */}
       <button
         type="submit"
         disabled={!selectedDate || !selectedHour}

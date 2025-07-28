@@ -17,7 +17,6 @@ const BookingModal = ({ isOpen, onClose, doctor, reason, onReasonChange }: Booki
   const user = useSelector((state: RootState) => state.auth.user);
   const navigate = useNavigate();
 
-  // Early return if modal is closed or doctor is not available
   if (!isOpen || !doctor) return null;
 
   const handleContinue = (selectedDate: Date, selectedHour: string) => {
@@ -26,7 +25,6 @@ const BookingModal = ({ isOpen, onClose, doctor, reason, onReasonChange }: Booki
       return;
     }
 
-    // Redirect to the confirmation page with booking details, including reason
     navigate('/user/book-appointment/confirm', {
       state: {
         doctor,
@@ -69,8 +67,8 @@ const BookingModal = ({ isOpen, onClose, doctor, reason, onReasonChange }: Booki
           />
         </div>
 
-        {/* Booking Calendar Component */}
-        <BookingCalendar doctor={doctor} onConfirm={handleContinue} />
+        {/* Booking Calendar */}
+        <BookingCalendar doctor={doctor} onConfirm={handleContinue} bookedSlots={[]} />
       </div>
     </div>
   );

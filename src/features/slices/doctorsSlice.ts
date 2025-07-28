@@ -2,11 +2,24 @@ import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/tool
 import type { SanitizedDoctor } from '@/types/doctor';
 import * as doctorService from '@/services/doctors';
 
+interface DoctorAvailability {
+  date: string;
+  availableSlots: string[];
+  fullyBooked: boolean;
+  notAvailableToday: boolean;
+  length: number;
+}
+
 interface DoctorsState {
   doctors: SanitizedDoctor[];
   selectedDoctor: SanitizedDoctor | null;
   loading: boolean;
   error: string | null;
+
+  // New state for availability
+  availability: DoctorAvailability | null;
+  availabilityLoading: boolean;
+  availabilityError: string | null;
 }
 
 const initialState: DoctorsState = {
@@ -14,6 +27,9 @@ const initialState: DoctorsState = {
   selectedDoctor: null,
   loading: false,
   error: null,
+  availability: null,
+  availabilityLoading: false,
+  availabilityError: null,
 };
 
 // 🔹 Async Thunks
@@ -66,6 +82,22 @@ export const updateDoctor = createAsyncThunk<
   }
 );
 
+// 🔹 NEW: Fetch doctor availability for a date
+export const fetchDoctorAvailabilityByDate = createAsyncThunk<
+  DoctorAvailability,
+  { doctorId: number; date: string }
+>(
+  'doctors/fetchAvailability',
+  async ({ doctorId, date }, thunkAPI) => {
+    try {
+      const data = await doctorService.getDoctorAvailabilityByDate(doctorId, date);
+      return data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
 // 🔹 Slice
 const doctorsSlice = createSlice({
   name: 'doctors',
@@ -75,6 +107,10 @@ const doctorsSlice = createSlice({
       state.doctors = [];
       state.selectedDoctor = null;
       state.error = null;
+    },
+    clearAvailability(state) {
+      state.availability = null;
+      state.availabilityError = null;
     },
   },
   extraReducers: (builder) => {
@@ -117,27 +153,36 @@ const doctorsSlice = createSlice({
       })
 
       // updateDoctor
-      .addCase(
-        updateDoctor.fulfilled,
-        (
-          state,
-          action: PayloadAction<{ id: number; data: Partial<SanitizedDoctor> }>
-        ) => {
-          const { id, data } = action.payload;
-          const index = state.doctors.findIndex((d) => d.doctor_id === id);
-          if (index !== -1) {
-            state.doctors[index] = {
-              ...state.doctors[index],
-              ...data,
-            };
-          }
+      .addCase(updateDoctor.fulfilled, (state, action: PayloadAction<{ id: number; data: Partial<SanitizedDoctor> }>) => {
+        const { id, data } = action.payload;
+        const index = state.doctors.findIndex((d) => d.doctor_id === id);
+        if (index !== -1) {
+          state.doctors[index] = {
+            ...state.doctors[index],
+            ...data,
+          };
         }
-      )
+      })
       .addCase(updateDoctor.rejected, (state, action) => {
         state.error = action.payload as string;
+      })
+
+      // fetchDoctorAvailabilityByDate
+      .addCase(fetchDoctorAvailabilityByDate.pending, (state) => {
+        state.availabilityLoading = true;
+        state.availabilityError = null;
+        state.availability = null;
+      })
+      .addCase(fetchDoctorAvailabilityByDate.fulfilled, (state, action: PayloadAction<DoctorAvailability>) => {
+        state.availabilityLoading = false;
+        state.availability = action.payload;
+      })
+      .addCase(fetchDoctorAvailabilityByDate.rejected, (state, action) => {
+        state.availabilityLoading = false;
+        state.availabilityError = action.payload as string;
       });
   },
 });
 
-export const { clearDoctors } = doctorsSlice.actions;
+export const { clearDoctors, clearAvailability } = doctorsSlice.actions;
 export default doctorsSlice.reducer;

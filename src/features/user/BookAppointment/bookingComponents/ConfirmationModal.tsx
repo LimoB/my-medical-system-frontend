@@ -1,4 +1,4 @@
-import BookingConfirmation from '@/components/BookingConfirmation';
+import BookingConfirmation from '@/features/user/BookAppointment/bookingComponents/BookingConfirmation';
 
 type Props = {
   isOpen: boolean;

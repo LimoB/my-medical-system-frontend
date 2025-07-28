@@ -1,154 +1,161 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import {
-    fetchAppointments,
-    fetchAppointmentsByUserId,
-    fetchAppointmentsByDoctor,
-    createAppointment,
-    updateAppointmentStatus,
-    deleteAppointment,
-} from '@/services/appointments';
 import type { Appointment, AppointmentCreatePayload, AppointmentStatusUpdatePayload } from '@/types/appointment';
+import {
+  fetchAppointments,
+  fetchAppointmentsByUserId,
+  fetchAppointmentsByDoctor,
+  createAppointment as createAppointmentAPI,
+  updateAppointmentStatus as updateAppointmentStatusAPI,
+  deleteAppointment as deleteAppointmentAPI
+} from '@/services/appointments';
 
-interface AppointmentState {
-    appointments: Appointment[];
-    loading: boolean;
-    error: string | null;
-}
-
-const initialState: AppointmentState = {
-    appointments: [],
-    loading: false,
-    error: null,
+type AppointmentsState = {
+  appointments: Appointment[];
+  loading: boolean;
+  error: string | null;
 };
 
-// ✅ Thunks
-export const getAllAppointments = createAsyncThunk(
-    'appointments/getAll',
-    async (_, thunkAPI) => {
-        try {
-            return await fetchAppointments();
-        } catch (error: any) {
-            return thunkAPI.rejectWithValue(error.message);
-        }
+const initialState: AppointmentsState = {
+  appointments: [],
+  loading: false,
+  error: null
+};
+
+// ✅ 1. Get all appointments (Admin)
+export const getAllAppointments = createAsyncThunk<Appointment[]>(
+  'appointments/getAll',
+  async (_, thunkAPI) => {
+    try {
+      return await fetchAppointments();
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.message);
     }
+  }
 );
 
-export const getAppointmentsByUserId = createAsyncThunk(
-    'appointments/getByUserId',
-    async (userId: number, thunkAPI) => {
-        try {
-            return await fetchAppointmentsByUserId(userId);
-        } catch (error: any) {
-            return thunkAPI.rejectWithValue(error.message);
-        }
+// ✅ 2. Get appointments by user ID
+export const getAppointmentsByUserId = createAsyncThunk<Appointment[], number>(
+  'appointments/getByUserId',
+  async (userId, thunkAPI) => {
+    try {
+      return await fetchAppointmentsByUserId(userId);
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.message);
     }
+  }
 );
 
-export const getAppointmentsByDoctor = createAsyncThunk(
-    'appointments/getByDoctor',
-    async (_, thunkAPI) => {
-        try {
-            return await fetchAppointmentsByDoctor();
-        } catch (error: any) {
-            return thunkAPI.rejectWithValue(error.message);
-        }
+// ✅ 3. Get appointments for the logged-in doctor
+export const getAppointmentsByDoctor = createAsyncThunk<Appointment[]>(
+  'appointments/getByDoctor',
+  async (_, thunkAPI) => {
+    try {
+      return await fetchAppointmentsByDoctor();
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.message);
     }
+  }
 );
 
-export const addAppointment = createAsyncThunk(
-    'appointments/create',
-    async (payload: AppointmentCreatePayload, thunkAPI) => {
-        try {
-            return await createAppointment(payload);
-        } catch (error: any) {
-            return thunkAPI.rejectWithValue(error.message);
-        }
+// ✅ 4. Create a new appointment
+export const createAppointment = createAsyncThunk<Appointment, AppointmentCreatePayload>(
+  'appointments/create',
+  async (payload, thunkAPI) => {
+    try {
+      return await createAppointmentAPI(payload);
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.message);
     }
+  }
 );
 
-export const changeAppointmentStatus = createAsyncThunk(
-    'appointments/updateStatus',
-    async (
-        {
-            appointmentId,
-            payload,
-        }: { appointmentId: number; payload: AppointmentStatusUpdatePayload },
-        thunkAPI
-    ) => {
-        try {
-            await updateAppointmentStatus(appointmentId, payload);
-            return { appointmentId, status: payload.status };
-        } catch (error: any) {
-            return thunkAPI.rejectWithValue(error.message);
-        }
+// ✅ 5. Update appointment status
+export const updateAppointmentStatus = createAsyncThunk<
+  void,
+  { appointmentId: number; payload: AppointmentStatusUpdatePayload }
+>(
+  'appointments/updateStatus',
+  async ({ appointmentId, payload }, thunkAPI) => {
+    try {
+      await updateAppointmentStatusAPI(appointmentId, payload);
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.message);
     }
+  }
 );
 
-export const removeAppointment = createAsyncThunk(
-    'appointments/delete',
-    async (appointmentId: number, thunkAPI) => {
-        try {
-            await deleteAppointment(appointmentId);
-            return appointmentId;
-        } catch (error: any) {
-            return thunkAPI.rejectWithValue(error.message);
-        }
+// ✅ 6. Delete an appointment
+export const deleteAppointment = createAsyncThunk<void, number>(
+  'appointments/delete',
+  async (appointmentId, thunkAPI) => {
+    try {
+      await deleteAppointmentAPI(appointmentId);
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.message);
     }
+  }
 );
 
-// ✅ Slice
 const appointmentSlice = createSlice({
-    name: 'appointments',
-    initialState,
-    reducers: {},
-    extraReducers: (builder) => {
-        builder
-            // Fetch all
-            .addCase(getAllAppointments.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(getAllAppointments.fulfilled, (state, action) => {
-                state.loading = false;
-                state.appointments = action.payload;
-            })
-            .addCase(getAllAppointments.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-            })
+  name: 'appointments',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      // Shared reducers
+      .addCase(getAllAppointments.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAppointmentsByUserId.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAppointmentsByDoctor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createAppointment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
 
-            // Fetch by user
-            .addCase(getAppointmentsByUserId.fulfilled, (state, action) => {
-                state.loading = false;
-                state.appointments = action.payload;
-            })
+      // Fulfilled
+      .addCase(getAllAppointments.fulfilled, (state, action) => {
+        state.appointments = action.payload;
+        state.loading = false;
+      })
+      .addCase(getAppointmentsByUserId.fulfilled, (state, action) => {
+        state.appointments = action.payload;
+        state.loading = false;
+      })
+      .addCase(getAppointmentsByDoctor.fulfilled, (state, action) => {
+        state.appointments = action.payload;
+        state.loading = false;
+      })
+      .addCase(createAppointment.fulfilled, (state, action) => {
+        state.appointments.push(action.payload);
+        state.loading = false;
+      })
+      .addCase(updateAppointmentStatus.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(deleteAppointment.fulfilled, (state, action) => {
+        state.loading = false;
+        state.appointments = state.appointments.filter(
+          (a) => a.appointment_id !== action.meta.arg
+        );
+      })
 
-            // Fetch by doctor
-            .addCase(getAppointmentsByDoctor.fulfilled, (state, action) => {
-                state.loading = false;
-                state.appointments = action.payload;
-            })
-
-            // Create
-            .addCase(addAppointment.fulfilled, (state, action) => {
-                state.appointments.push(action.payload);
-            })
-
-            // Update status
-            .addCase(changeAppointmentStatus.fulfilled, (state, action) => {
-                const { appointmentId, status } = action.payload;
-                const appointment = state.appointments.find((a) => a.id === appointmentId);
-                if (appointment) {
-                    appointment.appointment_status = status;
-                }
-            })
-
-
-            // Delete
-            .addCase(removeAppointment.fulfilled, (state, action) => {
-                state.appointments = state.appointments.filter((a) => a.id !== action.payload);
-            });
-    },
+      // Rejected
+      .addMatcher(
+        (action) => action.type.endsWith('/rejected'),
+        (state, action: any) => {
+          state.loading = false;
+          state.error = action.payload || 'Something went wrong';
+        }
+      );
+  }
 });
 
 export default appointmentSlice.reducer;

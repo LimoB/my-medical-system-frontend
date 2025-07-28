@@ -10,7 +10,7 @@ import AppointmentTabs from './AppointmentTabs';
 import AppointmentFilter from './AppointmentFilter';
 import AppointmentCardList from './AppointmentCardList';
 import AppointmentPagination from './AppointmentPagination';
-import BookingModal from '@/components/BookingModal';
+import BookingModal from '@/features/user/BookAppointment/bookingComponents/BookingModal';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -20,9 +20,12 @@ const BookAppointment = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<SanitizedDoctor | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [reason, setReason] = useState('');
   const [view, setView] = useState<'book' | 'upcoming' | 'history'>('book');
   const [filter, setFilter] = useState('');
   const [page, setPage] = useState(1);
+
+  const today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
 
   useEffect(() => {
     const loadAppointments = async () => {
@@ -41,6 +44,7 @@ const BookAppointment = () => {
   const handleBookDoctor = (doctor: SanitizedDoctor) => {
     setSelectedDoctor(doctor);
     setIsModalOpen(true);
+    setReason('');
   };
 
   const filteredUpcoming = appointments
@@ -59,6 +63,11 @@ const BookAppointment = () => {
     return Math.ceil(total / ITEMS_PER_PAGE);
   };
 
+  // 🔍 Find doctor IDs that are booked today and not cancelled
+  const fullyBookedDoctorIds = appointments
+    .filter((appt) => appt.date === today && appt.appointment_status !== 'Cancelled')
+    .map((appt) => appt.doctor_id);
+
   return (
     <div className="p-6 space-y-10">
       <div className="text-center">
@@ -71,30 +80,29 @@ const BookAppointment = () => {
       {view === 'book' && (
         <>
           <AppointmentFilter filter={filter} setFilter={setFilter} />
-          <DoctorsListSection onBookDoctor={handleBookDoctor} />
+          <DoctorsListSection
+            onBookDoctor={handleBookDoctor}
+            fullyBookedDoctorIds={fullyBookedDoctorIds}
+          />
         </>
       )}
 
-      {view === 'upcoming' && (
-        <AppointmentCardList appointments={filteredUpcoming} />
-      )}
-
-      {view === 'history' && (
-        <AppointmentCardList appointments={filteredHistory} />
-      )}
+      {view === 'upcoming' && <AppointmentCardList appointments={filteredUpcoming} />}
+      {view === 'history' && <AppointmentCardList appointments={filteredHistory} />}
 
       {(view === 'upcoming' || view === 'history') && (
         <AppointmentPagination totalPages={totalPages(view)} page={page} setPage={setPage} />
       )}
 
-      {/* Booking Modal controlled by selectedDoctor and modal state */}
+      {/* Booking Modal */}
       {selectedDoctor && (
         <BookingModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          doctor={selectedDoctor} reason={''} onReasonChange={function (_e: React.ChangeEvent<HTMLTextAreaElement>): void {
-            throw new Error('Function not implemented.');
-          } }        />
+          doctor={selectedDoctor}
+          reason={reason}
+          onReasonChange={(e) => setReason(e.target.value)}
+        />
       )}
     </div>
   );

@@ -1,7 +1,7 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
 import UserDashboard from '../features/user/Dashboard/UserDashboard';
 import BookAppointment from '../features/user/BookAppointment/BookAppointment';
-import ConfirmBooking from '../features/user/BookAppointment/ConfirmBooking'; // ✅ import this
+import ConfirmBooking from '../features/user/BookAppointment/bookingComponents/ConfirmBooking'; // ✅ import this
 import MyAppointments from '../features/user/MyAppointments/MyAppointments';
 import UserPrescriptions from '../features/user/Prescriptions/UserPrescriptions';
 import UserPayments from '../features/user/Payments/UserPayments';
@@ -32,7 +32,7 @@ const UserRoutes = () => {
         <Route path="book-appointment" element={<BookAppointment />} />
         <Route path="book-appointment/confirm" element={<ConfirmBooking />} />
 
-            {/* Payment result pages */}
+        {/* Payment result pages */}
         <Route path="payment-success" element={<PaymentSuccess />} />
         <Route path="payment-cancel" element={<PaymentCancel />} />
 
