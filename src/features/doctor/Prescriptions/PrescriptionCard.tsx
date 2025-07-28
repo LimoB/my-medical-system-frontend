@@ -17,45 +17,53 @@ const PrescriptionCard: React.FC<PrescriptionCardProps> = ({
   onDelete,
 }) => {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-4 flex flex-col justify-between h-full">
-      <div className="space-y-2">
+    <div className="bg-white p-5 rounded-2xl shadow-lg w-full h-full transition-all hover:shadow-xl">
+      <h2 className="text-base font-semibold text-gray-800 mb-4">Prescription</h2>
+
+      <div className="bg-gray-50 p-5 rounded-xl space-y-4 shadow-inner">
         {/* 👤 Patient Name */}
-        <h2 className="text-lg font-semibold text-gray-800">{patientName}</h2>
+        <div>
+          <p className="text-sm text-gray-500">Patient</p>
+          <p className="text-base font-medium text-gray-800">{patientName}</p>
+        </div>
 
         {/* 📝 Notes */}
-        <p className="text-sm text-gray-600">
-          <span className="font-medium text-gray-700">Notes:</span>{' '}
-          {prescription.notes || 'No notes provided'}
-        </p>
+        <div>
+          <p className="text-sm text-gray-500">Notes</p>
+          <p className="text-sm text-gray-700">
+            {prescription.notes || <span className="italic text-gray-400">No notes provided</span>}
+          </p>
+        </div>
 
         {/* 🖼️ Image */}
-        {prescription.image_url ? (
-          <div className="mt-2">
+        <div>
+          <p className="text-sm text-gray-500">Image</p>
+          {prescription.image_url ? (
             <img
               src={prescription.image_url}
               alt="Prescription"
               className="w-full h-40 object-cover rounded-lg border border-gray-300"
             />
-          </div>
-        ) : (
-          <p className="text-sm text-gray-400 italic mt-2">No image available</p>
-        )}
+          ) : (
+            <p className="text-sm italic text-gray-400">No image available</p>
+          )}
+        </div>
       </div>
 
       {/* 🛠️ Actions */}
-      <div className="mt-4 flex flex-col sm:flex-row justify-between gap-2">
+      <div className="mt-5 flex flex-col sm:flex-row gap-3">
         <Button
           onClick={onEdit}
-          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white hover:from-yellow-500 hover:to-yellow-600 transition"
+          className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-white hover:from-yellow-500 hover:to-yellow-600 transition shadow-md"
         >
-          <Pencil className="w-4 h-4" />
+          <Pencil className="w-4 h-4 mr-2" />
           Edit
         </Button>
         <Button
           onClick={onDelete}
-          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 text-white hover:from-red-600 hover:to-pink-600 transition"
+          className="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white hover:from-red-600 hover:to-pink-600 transition shadow-md"
         >
-          <Trash2 className="w-4 h-4" />
+          <Trash2 className="w-4 h-4 mr-2" />
           Delete
         </Button>
       </div>

@@ -4,6 +4,7 @@ import type { RootState, AppDispatch } from '@/store/store';
 import { getAppointmentsByUserId } from '@/features/slices/appointmentSlice';
 import AppointmentCard from './AppointmentCard';
 import { motion } from 'framer-motion';
+import type { Appointment } from '@/types/appointment';
 
 const MyAppointments = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -66,7 +67,7 @@ const MyAppointments = () => {
             },
           }}
         >
-          {appointments.map((appointment) => (
+          {appointments.map((appointment: Appointment) => (
             <motion.div
               key={appointment.appointment_id}
               initial={{ opacity: 0, y: 10 }}

@@ -3,7 +3,17 @@ import type { Appointment } from '@/types/appointment';
 import type { User } from '@/types/user';
 import { createConsultation } from '@/services/consultations';
 import { toast } from 'react-toastify';
-import { FileText, Stethoscope, ClipboardCheck, Clock, StickyNote, FileSignature } from 'lucide-react';
+import {
+  FileText,
+  Stethoscope,
+  ClipboardCheck,
+  Clock,
+  StickyNote,
+  FileSignature,
+  User as UserIcon,
+  Syringe,
+  NotebookText,
+} from 'lucide-react';
 
 type Props = {
   appointment: Appointment;
@@ -25,6 +35,8 @@ const ConsultationForm = ({
     symptoms: '',
     treatment_plan: '',
     additional_notes: '',
+    observation: '',
+    prescription: '',
     duration_minutes: 30,
   });
 
@@ -51,10 +63,12 @@ const ConsultationForm = ({
         appointment_id: appointment.appointment_id,
         doctor_id: appointment.doctor_id,
         patient_id: patient?.user_id ?? 0,
-        symptoms: consultationData.symptoms || undefined,
+        symptoms: consultationData.symptoms,
         diagnosis: consultationData.diagnosis.trim(),
         treatment_plan: consultationData.treatment_plan || undefined,
         additional_notes: consultationData.additional_notes || undefined,
+        observation: consultationData.observation || undefined,
+        prescription: consultationData.prescription || undefined,
         duration_minutes: consultationData.duration_minutes,
         status: 'Completed',
         consultation_type: 'initial',
@@ -84,6 +98,19 @@ const ConsultationForm = ({
         </div>
       )}
 
+      {/* Patient Info */}
+      {patient && (
+        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg shadow-sm">
+          <UserIcon className="w-5 h-5 text-gray-600" />
+          <div>
+            <p className="text-sm font-semibold">{patient.first_name} {patient.last_name}</p>
+            <p className="text-xs text-gray-500">
+              {patient.gender || 'N/A'} · DOB: {patient.date_of_birth || 'Unknown'}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Diagnosis */}
       <div>
         <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
@@ -97,7 +124,7 @@ const ConsultationForm = ({
           onChange={handleChange}
           disabled={disabled}
           required
-          placeholder="Enter diagnosis"
+          placeholder="e.g. Malaria"
           className="w-full border rounded-xl px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
         />
       </div>
@@ -114,8 +141,42 @@ const ConsultationForm = ({
           onChange={handleChange}
           disabled={disabled}
           rows={2}
-          placeholder="e.g. Headache, fatigue"
+          placeholder="e.g. Fever, cough, fatigue"
           className="w-full border rounded-xl px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
+        />
+      </div>
+
+      {/* Observation */}
+      <div>
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+          <NotebookText className="w-4 h-4 text-gray-500" />
+          Observation
+        </label>
+        <textarea
+          name="observation"
+          value={consultationData.observation}
+          onChange={handleChange}
+          disabled={disabled}
+          rows={2}
+          placeholder="Notes from physical check or lab results"
+          className="w-full border rounded-xl px-4 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+        />
+      </div>
+
+      {/* Prescription */}
+      <div>
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+          <Syringe className="w-4 h-4 text-gray-500" />
+          Prescription
+        </label>
+        <textarea
+          name="prescription"
+          value={consultationData.prescription}
+          onChange={handleChange}
+          disabled={disabled}
+          rows={2}
+          placeholder="e.g. Paracetamol 500mg, twice daily"
+          className="w-full border rounded-xl px-4 py-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
 
@@ -131,7 +192,7 @@ const ConsultationForm = ({
           onChange={handleChange}
           disabled={disabled}
           rows={2}
-          placeholder="e.g. Take antimalarials for 5 days"
+          placeholder="e.g. Rest, hydration, medication"
           className="w-full border rounded-xl px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
         />
       </div>
@@ -148,7 +209,7 @@ const ConsultationForm = ({
           onChange={handleChange}
           disabled={disabled}
           rows={2}
-          placeholder="Any additional observations"
+          placeholder="e.g. Recommend follow-up in 7 days"
           className="w-full border rounded-xl px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
         />
       </div>

@@ -1,4 +1,4 @@
-//DeleteConfirmationModal.tsx
+// DeleteConfirmationModal.tsx
 import { Dialog } from '@headlessui/react';
 import { Fragment } from 'react';
 
@@ -12,27 +12,28 @@ type Props = {
 const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, name }: Props) => {
   return (
     <Dialog open={isOpen} onClose={onClose} as={Fragment}>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-        <Dialog.Panel className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-          <Dialog.Title className="text-lg font-bold text-red-600 mb-2">
-            Confirm Deletion
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm px-4">
+        <Dialog.Panel className="bg-white p-6 rounded-2xl shadow-2xl max-w-md w-full animate-fade-in">
+          <Dialog.Title className="text-xl font-bold text-gray-800 flex items-center gap-2 mb-3">
+            🗑️ Confirm Deletion
           </Dialog.Title>
-          <Dialog.Description className="text-sm text-gray-700 mb-4">
-            Are you sure you want to delete <strong>{name}</strong>'s record? This action cannot be undone.
+
+          <Dialog.Description className="text-sm text-gray-600 mb-6">
+            Are you sure you want to permanently delete <strong>{name}</strong>'s record? This action cannot be undone.
           </Dialog.Description>
 
-          <div className="flex justify-end gap-4">
+          <div className="flex justify-end gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-gray-100 text-gray-800 rounded hover:bg-gray-200"
+              className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm text-gray-700 transition"
             >
               Cancel
             </button>
             <button
               onClick={onConfirm}
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              className="px-4 py-2 rounded-lg text-sm text-white bg-gradient-to-r from-red-500 to-pink-500 hover:brightness-110 transition"
             >
-              Delete
+              Yes, Delete
             </button>
           </div>
         </Dialog.Panel>

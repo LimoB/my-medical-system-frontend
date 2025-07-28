@@ -85,7 +85,9 @@ const Patients = () => {
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6">Patient Records</h2>
+      <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-sky-600 mb-6">
+        Patient Records
+      </h2>
 
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -94,12 +96,12 @@ const Patients = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name or email"
-          className="flex-1 px-4 py-2 border rounded-lg shadow-sm"
+          className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-sky-300 outline-none"
         />
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="w-full md:w-56 px-4 py-2 border rounded-lg shadow-sm"
+          className="w-full md:w-56 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-sky-300 outline-none"
         >
           <option value="">All Statuses</option>
           <option value="pending">Pending</option>
@@ -139,7 +141,7 @@ const Patients = () => {
                   key={i}
                   className={`px-4 py-2 rounded-md transition font-medium ${
                     currentPage === i + 1
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-sky-600 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                   onClick={() => setCurrentPage(i + 1)}
@@ -161,7 +163,8 @@ const Patients = () => {
           setConfirmModal({ open: false, userId: null });
         }}
         name={
-          patients.find((p) => p.user.user_id === confirmModal.userId)?.user.first_name || 'this patient'
+          patients.find((p) => p.user.user_id === confirmModal.userId)?.user.first_name ||
+          'this patient'
         }
       />
     </div>

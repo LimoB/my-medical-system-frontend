@@ -37,6 +37,8 @@ export interface User {
   contact_phone?: string;
   address?: string;
   image_url: string;
+  gender?: 'Male' | 'Female' | 'Other'; // ← Add this line
+
   date_of_birth?: string; // ✅ ADDED
   role: UserRole;
   is_verified?: boolean;

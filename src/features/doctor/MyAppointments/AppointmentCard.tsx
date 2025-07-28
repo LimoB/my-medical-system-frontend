@@ -1,151 +1,3 @@
-// import { useState } from 'react';
-// import { toast } from 'react-toastify';
-// import { FilePlus, ClipboardCheck, Eye } from 'lucide-react';
-// import type { Appointment } from '@/types/appointment';
-// import type { User } from '@/types/user';
-// import AppointmentDetails from './AppointmentDetails';
-// import ConsultationForm from './ConsultationForm';
-// import PrescriptionForm from './PrescriptionForm';
-
-// type Props = {
-//   appointment: Appointment;
-// };
-
-// const AppointmentCard = ({ appointment }: Props) => {
-//   const [showDetails, setShowDetails] = useState(false);
-//   const [showConsultationForm, setShowConsultationForm] = useState(false);
-//   const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
-
-//   const patient = appointment.user ?? null;
-//   const patientName = patient
-//     ? `${patient.first_name} ${patient.last_name}`
-//     : 'Unknown';
-
-//   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-//     toast[type](message);
-//   };
-
-//   const handleRefresh = () => {
-//     showToast('Refreshed!');
-//     // Reload logic can go here or be handled by parent
-//   };
-
-//   const fullPatient: User | null = patient
-//     ? {
-//         ...patient,
-//         image_url: patient.image_url ?? '',
-//         role: (patient.role ?? 'user') as 'user' | 'admin' | 'doctor',
-//         contact_phone: patient.contact_phone ?? '',
-//         address: patient.address ?? '',
-//       }
-//     : null;
-
-//   const dateObj = new Date(appointment.appointment_date);
-//   const dateString = dateObj.toLocaleDateString();
-//   const weekday = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
-
-//   const statusColor = {
-//     Pending: 'bg-yellow-100 text-yellow-800',
-//     Confirmed: 'bg-blue-100 text-blue-800',
-//     Completed: 'bg-green-100 text-green-800',
-//     Cancelled: 'bg-red-100 text-red-800',
-//     Failed: 'bg-gray-200 text-gray-700',
-//   }[appointment.appointment_status] ?? 'bg-gray-100 text-gray-800';
-
-//   return (
-//     <>
-//       <div className="bg-white p-5 rounded-xl shadow-md border space-y-3 transition duration-300 hover:shadow-lg">
-//         <div className="flex justify-between items-center">
-//           <h3 className="text-lg font-semibold">{patientName}</h3>
-//           <span
-//             className={`px-3 py-1 text-xs rounded-full font-medium ${statusColor}`}
-//           >
-//             {appointment.appointment_status}
-//           </span>
-//         </div>
-
-//         <div className="space-y-1 text-sm text-gray-700">
-//           <p><strong>Date:</strong> {dateString} ({weekday})</p>
-//           <p><strong>Time:</strong> {appointment.time_slot}</p>
-//           {appointment.reason && (
-//             <p><strong>Reason:</strong> {appointment.reason}</p>
-//           )}
-//         </div>
-
-//         <div className="flex flex-wrap gap-2 pt-2">
-//           <button
-//             onClick={() => setShowDetails(true)}
-//             className="flex items-center gap-1 text-blue-600 text-sm underline hover:text-blue-800 transition"
-//           >
-//             <Eye className="w-4 h-4" /> View Details
-//           </button>
-
-//           <button
-//             onClick={() => {
-//               setShowConsultationForm(true);
-//               setShowPrescriptionForm(false);
-//             }}
-//             className="flex items-center gap-1 bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition"
-//           >
-//             <ClipboardCheck className="w-4 h-4" /> Make Consultation
-//           </button>
-
-//           <button
-//             onClick={() => {
-//               setShowPrescriptionForm(true);
-//               setShowConsultationForm(false);
-//             }}
-//             className="flex items-center gap-1 bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700 transition"
-//           >
-//             <FilePlus className="w-4 h-4" /> Make Prescription
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* Modals/Forms */}
-//       {showDetails && (
-//         <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-30 transition-opacity duration-300">
-//           <AppointmentDetails
-//             appointment={appointment}
-//             onClose={() => setShowDetails(false)}
-//             onRefresh={handleRefresh}
-//           />
-//         </div>
-//       )}
-
-//       {showConsultationForm && fullPatient && (
-//         <div className="mt-4 animate-fadeIn">
-//           <ConsultationForm
-//             appointment={appointment}
-//             patient={fullPatient}
-//             onClose={() => setShowConsultationForm(false)}
-//             onRefresh={handleRefresh}
-//             disabled={false}
-//           />
-//         </div>
-//       )}
-
-//       {showPrescriptionForm && fullPatient && (
-//         <div className="mt-4 animate-fadeIn">
-//           <PrescriptionForm
-//             appointment={appointment}
-//             patient={fullPatient}
-//             onClose={() => setShowPrescriptionForm(false)}
-//             onRefresh={handleRefresh}
-//             disabled={false}
-//           />
-//         </div>
-//       )}
-//     </>
-//   );
-// };
-
-// export default AppointmentCard;
-
-
-
-
-
 import { useState, useEffect, type ChangeEvent } from 'react';
 import { FilePlus, ClipboardCheck } from 'lucide-react';
 import type { Appointment } from '@/types/appointment';
@@ -163,10 +15,16 @@ type Props = {
   appointment: Appointment;
 };
 
+const statusColors: Record<string, string> = {
+  Pending: 'bg-yellow-100 text-yellow-800',
+  Confirmed: 'bg-blue-100 text-blue-800',
+  Cancelled: 'bg-red-100 text-red-800',
+  Completed: 'bg-green-100 text-green-800',
+  Failed: 'bg-gray-300 text-gray-600',
+};
+
 const AppointmentCard = ({ appointment }: Props) => {
-  const [status, setStatus] = useState<
-    'Pending' | 'Confirmed' | 'Cancelled' | 'Completed' | 'Failed'
-  >(appointment.appointment_status);
+  const [status, setStatus] = useState<'Pending' | 'Confirmed' | 'Cancelled' | 'Completed' | 'Failed'>(appointment.appointment_status);
   const [loading, setLoading] = useState(false);
   const [patient, setPatient] = useState<User | null>(null);
   const [showConsultationForm, setShowConsultationForm] = useState(false);
@@ -175,21 +33,6 @@ const AppointmentCard = ({ appointment }: Props) => {
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     toast[type](message);
   };
-
-  const handleRefresh = () => {
-    showToast('Refreshed!');
-    // Optionally re-fetch data
-  };
-
-  const fullPatient: User | null = patient
-    ? {
-        ...patient,
-        image_url: patient.image_url ?? '',
-        role: (patient.role ?? 'user') as 'user' | 'admin' | 'doctor',
-        contact_phone: patient.contact_phone ?? '',
-        address: patient.address ?? '',
-      }
-    : null;
 
   useEffect(() => {
     const loadUser = async () => {
@@ -235,19 +78,29 @@ const AppointmentCard = ({ appointment }: Props) => {
 
   return (
     <>
-      <div className="bg-white p-5 rounded-xl shadow-md border space-y-4 transition duration-300 hover:shadow-lg w-full">
-        <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-teal-400 text-transparent bg-clip-text">
+      <div className="relative bg-white p-6 rounded-2xl shadow-xl border border-gray-200 transition duration-300 hover:shadow-2xl animate-fade-in space-y-5">
+        
+        {/* Status Badge */}
+        <div className="absolute top-4 right-4">
+          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[status]}`}>
+            {status}
+          </span>
+        </div>
+
+        {/* Title */}
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-teal-500 to-green-400 text-transparent bg-clip-text">
           Appointment Details
         </h2>
 
+        {/* Patient Info */}
         {patient ? (
-          <div className="flex gap-4 items-center border p-4 rounded-lg bg-gray-50">
+          <div className="flex gap-4 items-center border p-4 rounded-xl bg-gray-50 shadow-inner">
             <img
               src={patient.image_url ?? ''}
               alt={`${patient.first_name} ${patient.last_name}`}
-              className="w-20 h-20 rounded-full object-cover border shadow"
+              className="w-20 h-20 rounded-full object-cover border shadow-sm"
             />
-            <div className="space-y-1 text-sm">
+            <div className="space-y-1 text-sm text-gray-700">
               <p><strong>Name:</strong> {patient.first_name} {patient.last_name}</p>
               <p><strong>Email:</strong> {patient.email}</p>
               <p><strong>Phone:</strong> {patient.contact_phone}</p>
@@ -259,28 +112,24 @@ const AppointmentCard = ({ appointment }: Props) => {
           <p className="text-sm text-gray-500">Loading patient info...</p>
         )}
 
-        <div className="space-y-2 text-sm text-gray-700">
+        {/* Appointment Info */}
+        <div className="space-y-2 text-sm text-gray-800">
           <p><strong>Date:</strong> {formattedDate} ({dayOfWeek})</p>
           <p><strong>Time:</strong> {appointment.time_slot}</p>
           {appointment.reason && (
             <p><strong>Reason:</strong> {appointment.reason}</p>
           )}
 
-          <div>
-            <label className="block font-medium mt-2 mb-1">Status</label>
+          {/* Status Dropdown */}
+          <div className="mt-3">
+            <label className="block font-medium mb-1">Change Status</label>
             <select
               value={status}
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                setStatus(
-                  e.target.value as
-                    | 'Pending'
-                    | 'Confirmed'
-                    | 'Cancelled'
-                    | 'Completed'
-                )
+                setStatus(e.target.value as typeof status)
               }
               disabled={loading}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full border rounded-lg px-3 py-2 focus:ring-teal-500 focus:border-teal-500 transition"
             >
               <option value="Pending">Pending</option>
               <option value="Confirmed">Confirmed</option>
@@ -290,6 +139,7 @@ const AppointmentCard = ({ appointment }: Props) => {
           </div>
         </div>
 
+        {/* Actions */}
         <div className="flex justify-between flex-wrap gap-3 pt-4">
           <button
             onClick={handleDelete}
@@ -301,7 +151,7 @@ const AppointmentCard = ({ appointment }: Props) => {
 
           <button
             onClick={handleStatusChange}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition text-sm"
+            className="bg-gradient-to-r from-blue-600 to-teal-500 text-white px-4 py-2 rounded hover:brightness-110 transition text-sm"
             disabled={loading}
           >
             Update Status
@@ -312,7 +162,7 @@ const AppointmentCard = ({ appointment }: Props) => {
               setShowConsultationForm(true);
               setShowPrescriptionForm(false);
             }}
-            className="flex items-center gap-2 bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 transition text-sm"
+            className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-3 py-2 rounded hover:brightness-110 transition text-sm"
           >
             <ClipboardCheck className="w-4 h-4" />
             Make Consultation
@@ -323,7 +173,7 @@ const AppointmentCard = ({ appointment }: Props) => {
               setShowPrescriptionForm(true);
               setShowConsultationForm(false);
             }}
-            className="flex items-center gap-2 bg-purple-600 text-white px-3 py-2 rounded hover:bg-purple-700 transition text-sm"
+            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white px-3 py-2 rounded hover:brightness-110 transition text-sm"
           >
             <FilePlus className="w-4 h-4" />
             Make Prescription
@@ -332,25 +182,25 @@ const AppointmentCard = ({ appointment }: Props) => {
       </div>
 
       {/* Forms */}
-      {showConsultationForm && fullPatient && (
-        <div className="mt-4 animate-fadeIn">
+      {showConsultationForm && patient && (
+        <div className="mt-4 animate-fade-in">
           <ConsultationForm
             appointment={appointment}
-            patient={fullPatient}
+            patient={patient}
             onClose={() => setShowConsultationForm(false)}
-            onRefresh={handleRefresh}
+            onRefresh={() => showToast('Refreshed!')}
             disabled={false}
           />
         </div>
       )}
 
-      {showPrescriptionForm && fullPatient && (
-        <div className="mt-4 animate-fadeIn">
+      {showPrescriptionForm && patient && (
+        <div className="mt-4 animate-fade-in">
           <PrescriptionForm
             appointment={appointment}
-            patient={fullPatient}
+            patient={patient}
             onClose={() => setShowPrescriptionForm(false)}
-            onRefresh={handleRefresh}
+            onRefresh={() => showToast('Refreshed!')}
             disabled={false}
           />
         </div>

@@ -29,7 +29,7 @@ const UserComplaints = () => {
     try {
       const data = await fetchComplaintsByCurrentUser();
       setComplaints(data);
-    } catch (err) {
+    } catch {
       toast.error('Failed to load complaints');
     }
   };
@@ -39,7 +39,7 @@ const UserComplaints = () => {
     try {
       const data = await fetchAppointmentsByUserId(userId);
       setAppointments(data);
-    } catch (err) {
+    } catch {
       toast.error('Failed to load appointments');
     }
   };
@@ -65,7 +65,7 @@ const UserComplaints = () => {
       setDescription('');
       setRelatedAppointmentId('');
       await fetchUserComplaints();
-    } catch (err) {
+    } catch {
       toast.error('Error submitting complaint');
     } finally {
       setLoading(false);
@@ -78,58 +78,86 @@ const UserComplaints = () => {
   }, [userId]);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold text-teal-700 mb-4">My Complaints</h2>
-      <p className="text-gray-600 mb-6">Submit and track your complaints here.</p>
+    <div className="max-w-5xl mx-auto px-4 py-10">
+      <h2 className="text-4xl font-bold text-teal-700 mb-3 bg-gradient-to-r from-teal-600 to-cyan-500 text-transparent bg-clip-text">
+        My Complaints
+      </h2>
+      <p className="text-gray-600 mb-8">Submit and track your complaints below.</p>
 
       {/* Complaint Form */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-lg shadow p-6 mb-8 space-y-4 border"
+        className="bg-white rounded-xl border p-6 shadow-md space-y-6 mb-10"
       >
         <div>
-          <label className="block text-sm font-medium text-gray-700">Subject</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
           <input
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            className="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
-            placeholder="Enter complaint subject"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+            placeholder="e.g. Appointment delay issue"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="mt-1 w-full border rounded px-3 py-2 h-28 focus:outline-none focus:ring-2 focus:ring-teal-500"
-            placeholder="Describe your issue"
-          ></textarea>
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 h-28 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+            placeholder="Explain your issue clearly..."
+          />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Related Appointment (optional)
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Related Appointment <span className="text-gray-400">(optional)</span>
           </label>
-          <select
-            value={relatedAppointmentId}
-            onChange={(e) => setRelatedAppointmentId(Number(e.target.value) || '')}
-            className="mt-1 w-full border rounded px-3 py-2"
-          >
-            <option value="">-- Select an appointment --</option>
-            {appointments.map((appt) => (
-              <option key={appt.appointment_id} value={appt.appointment_id}>
-                {`${appt.appointment_date} at ${appt.time_slot}`}
-              </option>
-            ))}
-          </select>
+
+          {appointments.length === 0 ? (
+            <p className="text-sm text-gray-500 italic">No appointments found.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              {appointments.map((appt) => {
+                const isSelected = relatedAppointmentId === appt.appointment_id;
+                return (
+                  <button
+                    key={appt.appointment_id}
+                    type="button"
+                    onClick={() =>
+                      setRelatedAppointmentId(
+                        relatedAppointmentId === appt.appointment_id ? '' : appt.appointment_id
+                      )
+                    }
+                    className={`border rounded-xl px-4 py-3 text-left transition shadow-sm ${isSelected
+                        ? 'bg-teal-600 text-white shadow-md'
+                        : 'bg-white text-gray-800 hover:bg-teal-50'
+                      }`}
+                  >
+                    <p className="font-medium">{appt.appointment_date}</p>
+                    <p className="text-sm">
+                      Time: {appt.time_slot}
+                      <br />
+                      Doctor:{' '}
+                      <span className="font-semibold">
+                        {appt.doctor?.user
+                          ? `${appt.doctor.user.first_name} ${appt.doctor.user.last_name}`
+                          : 'Unknown'}
+                      </span>
+                    </p>
+                  </button>
+
+                );
+              })}
+            </div>
+          )}
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded transition"
+          className="bg-gradient-to-r from-teal-600 to-cyan-500 hover:opacity-90 text-white font-semibold px-6 py-2 rounded-lg transition disabled:opacity-60"
         >
           {loading ? 'Submitting...' : 'Submit Complaint'}
         </button>
@@ -137,33 +165,33 @@ const UserComplaints = () => {
 
       {/* Complaints List */}
       <div>
-        <h3 className="text-xl font-semibold text-gray-800 mb-3">Previous Complaints</h3>
+        <h3 className="text-2xl font-semibold text-gray-800 mb-4">Previous Complaints</h3>
+
         {complaints.length === 0 ? (
-          <p className="text-gray-500">No complaints submitted yet.</p>
+          <p className="text-gray-500 text-center">No complaints submitted yet.</p>
         ) : (
           <div className="space-y-4">
             {complaints.map((complaint) => (
               <div
                 key={complaint.complaint_id}
-                className="bg-white border rounded-lg p-4 shadow-sm"
+                className="bg-white border rounded-xl p-5 shadow hover:shadow-md transition"
               >
-                <div className="flex justify-between items-center mb-1">
-                  <h4 className="text-lg font-medium text-teal-800">{complaint.subject}</h4>
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="text-lg font-semibold text-gray-800">{complaint.subject}</h4>
                   <span
-                    className={`text-xs font-semibold px-2 py-1 rounded ${statusColorMap[complaint.status]}`}
+                    className={`text-xs font-semibold px-2 py-1 rounded-full ${statusColorMap[complaint.status]}`}
                   >
                     {complaint.status}
                   </span>
                 </div>
                 <p className="text-sm text-gray-700">{complaint.description}</p>
-                <p className="text-xs text-gray-400 mt-2">
-                  Submitted on {new Date(complaint.created_at).toLocaleString()}
-                </p>
-                {complaint.related_appointment_id && (
-                  <p className="text-xs text-gray-500">
-                    Related to appointment #{complaint.related_appointment_id}
-                  </p>
-                )}
+
+                <div className="mt-3 text-xs text-gray-500 space-y-1">
+                  <p>Submitted on: {new Date(complaint.created_at).toLocaleString()}</p>
+                  {complaint.related_appointment_id && (
+                    <p>Related to appointment #{complaint.related_appointment_id}</p>
+                  )}
+                </div>
               </div>
             ))}
           </div>

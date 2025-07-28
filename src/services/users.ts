@@ -8,9 +8,12 @@ import type {
   User,
 } from '@/types/user';
 
-// Get auth headers with Bearer token
+
+import type { RootState } from '@/store/store';
+
 const getAuthHeaders = () => {
-  const token = store.getState().auth.token;
+  const state = store.getState() as RootState; // ✅ Fix here
+  const token = state.auth.token;
   console.log('🔑 Auth token used for request:', token);
   return {
     headers: {

@@ -21,7 +21,6 @@ export interface DoctorCreatePayload {
 
 // -- Appointment summary for doctor table or detail view --
 export interface AppointmentSummary {
-  date(date: any): unknown;
   appointment_id: number;
   appointment_date: string; // ISO format
   time_slot: string;        // HH:MM
@@ -52,25 +51,24 @@ export interface SanitizedDoctor {
   user: SanitizedUser; // User object
 }
 
-
+// -- Doctor-patient relationship in appointment context --
 export type DoctorPatient = {
   user: {
-    address: string;
-    created_at: any;
-    last_login: any;
-    is_verified: any;
     user_id: number;
     first_name: string;
     last_name: string;
     email: string;
     contact_phone: string;
+    address: string;
     image_url: string;
+    created_at: string;
+    last_login: string;
+    is_verified: boolean;
   };
   appointmentDate: string;
   timeSlot: string;
-  status: string;
+  status: 'Pending' | 'Confirmed' | 'Cancelled';
 };
-
 
 // -- Consultation summary (for doctor's consultation list) --
 export interface ConsultationSummary {
@@ -83,7 +81,7 @@ export interface ConsultationSummary {
   patient?: SanitizedUser;
 }
 
-// -- Add this to doctor profile type if needed --
+// -- Extended doctor profile with consultations --
 export interface SanitizedDoctorWithConsultations extends SanitizedDoctor {
   consultations: ConsultationSummary[];
 }
