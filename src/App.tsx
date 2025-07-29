@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { ToastContainer } from 'react-toastify';
-import { jwtDecode } from 'jwt-decode'; // ✅ updated here
+import { ToastContainer, Slide } from 'react-toastify';
+import { jwtDecode } from 'jwt-decode';
 
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
@@ -31,15 +31,19 @@ function App() {
       <AppRoutes />
       <ToastContainer
         position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
+        autoClose={4000}
+        hideProgressBar={true}
+        newestOnTop={true}
         closeOnClick
-        rtl={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
+        transition={Slide}
+        toastClassName={() =>
+          'bg-white text-gray-800 shadow-md rounded-lg px-4 py-3 border border-gray-200'
+        }
       />
+
     </div>
   );
 }

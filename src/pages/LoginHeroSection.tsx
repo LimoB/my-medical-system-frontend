@@ -1,27 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { loginUser } from '../services/auth';
 import { useDispatch } from 'react-redux';
+import { loginUser } from '../services/auth';
 import { loginSuccess } from '@/features/slices/authSlice';
 import type { DecodedToken } from '@/types/auth';
-import { Eye, EyeOff } from 'lucide-react';
-import 'react-toastify/dist/ReactToastify.css';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
 const LoginHeroSection = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
+  const emailRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    emailRef.current?.focus();
+
     const savedEmail = localStorage.getItem('savedEmail');
     if (savedEmail) {
       setFormData((prev) => ({ ...prev, email: savedEmail }));
@@ -49,7 +47,6 @@ const LoginHeroSection = () => {
         return;
       }
 
-      // Persist token + user
       if (rememberMe) {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
@@ -59,21 +56,27 @@ const LoginHeroSection = () => {
         sessionStorage.setItem('user', JSON.stringify(user));
       }
 
-      // Dispatch to Redux
       dispatch(loginSuccess({ token, user: user as DecodedToken }));
 
-      // Redirect user by role
-      switch (user.role) {
-        case 'admin':
-          navigate('/admin');
-          break;
-        case 'doctor':
-          navigate('/doctor');
-          break;
-        default:
-          navigate('/user');
-          break;
-      }
+      toast.success('Login successful!', {
+        autoClose: 2000,
+        pauseOnHover: true,
+      });
+
+      // Delay navigation to allow toast to show
+      setTimeout(() => {
+        switch (user.role) {
+          case 'admin':
+            navigate('/admin');
+            break;
+          case 'doctor':
+            navigate('/doctor');
+            break;
+          default:
+            navigate('/user');
+            break;
+        }
+      }, 1500);
     } catch (err: any) {
       console.error('Login error:', err);
       const errMsg = err?.response?.data?.error || 'Invalid credentials';
@@ -84,29 +87,32 @@ const LoginHeroSection = () => {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center"
-      style={{ backgroundImage: `url('/national-cancer.jpg')` }}
-    >
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg opacity-90">
-        <h2 className="text-2xl font-bold text-teal-700 mb-6 text-center">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden font-sans">
+      {/* Animated background */}
+      <div className="absolute inset-0 z-0 animate-bgMove bg-[url('/national-cancer.jpg')] bg-cover bg-center scale-110" />
+
+      {/* Glassy login card */}
+      <div className="relative z-10 w-full max-w-md p-8 bg-white/40 backdrop-blur-md shadow-2xl rounded-2xl border border-white/20 animate-scale-in">
+        <h2 className="text-3xl font-extrabold text-center text-teal-800 mb-6 tracking-tight">
           Log In to Harmony Health Clinic
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm text-gray-800 font-medium">Email</label>
             <input
+              ref={emailRef}
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full mt-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full mt-1 px-4 py-2 rounded-md border bg-white/90 shadow-inner focus:ring-2 focus:ring-teal-500 focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block text-sm text-gray-800 font-medium">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -114,25 +120,25 @@ const LoginHeroSection = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full mt-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500 pr-10"
+                className="w-full mt-1 px-4 py-2 rounded-md border bg-white/90 shadow-inner pr-10 focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-teal-600"
               >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center justify-between text-sm text-gray-700">
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 text-teal-600 border-gray-300 rounded"
+                className="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
               />
               Remember Me
             </label>
@@ -144,20 +150,52 @@ const LoginHeroSection = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2 rounded transition ${loading ? 'bg-teal-300 cursor-not-allowed' : 'bg-teal-700 hover:bg-teal-800 text-white'
-              }`}
+            className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded-md font-semibold text-white transition-all duration-300
+              ${loading ? 'bg-teal-300 cursor-not-allowed' : 'bg-teal-700 hover:bg-teal-800'}`}
           >
+            {loading && <Loader2 className="w-5 h-5 animate-spin" />}
             {loading ? 'Logging in...' : 'Log In'}
           </button>
         </form>
 
-        <p className="text-sm text-center text-gray-600 mt-4">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-teal-700 font-medium hover:underline">
+        <p className="text-sm text-center text-gray-800 mt-6">
+          Don&apos;t have an account?{' '}
+          <Link to="/register" className="text-teal-700 font-semibold hover:underline">
             Sign Up
           </Link>
         </p>
       </div>
+
+      {/* Tailwind animations */}
+      <style>{`
+        @keyframes scale-in {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        .animate-scale-in {
+          animation: scale-in 0.5s ease-out forwards;
+        }
+
+        @keyframes bgMove {
+          0%, 100% {
+            background-position: center center;
+          }
+          50% {
+            background-position: center 30%;
+          }
+        }
+
+        .animate-bgMove {
+          animation: bgMove 30s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 };
