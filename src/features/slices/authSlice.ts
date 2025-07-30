@@ -23,16 +23,20 @@ const authSlice = createSlice({
     // 🟢 On successful login
     loginSuccess(
       state,
-      action: PayloadAction<{ token: string; user: DecodedToken }>
+      action: PayloadAction<{
+        token: string;
+        user: DecodedToken;
+        rememberMe?: boolean;
+      }>
     ) {
-      state.token = action.payload.token;
-      state.user = action.payload.user;
+      const { token, user, rememberMe = true } = action.payload;
 
-      // Persist login info in storage
-      localStorage.setItem('token', action.payload.token);
-      localStorage.setItem('user', JSON.stringify(action.payload.user));
-      sessionStorage.setItem('token', action.payload.token);
-      sessionStorage.setItem('user', JSON.stringify(action.payload.user));
+      state.token = token;
+      state.user = user;
+
+      const storage = rememberMe ? localStorage : sessionStorage;
+      storage.setItem('token', token);
+      storage.setItem('user', JSON.stringify(user));
     },
 
     // 🔴 On logout
@@ -40,17 +44,15 @@ const authSlice = createSlice({
       state.token = null;
       state.user = null;
 
-      // Remove all token and user data
+      // Clear auth from both storages
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
-
-      // Optional: remove saved email if you're also storing it
-      localStorage.removeItem('savedEmail');
+      localStorage.removeItem('savedEmail'); // Optional
     },
 
-    // 🔁 When restoring persisted auth
+    // 🔁 Restore persisted auth (e.g., on app reload)
     setAuthState(state, action: PayloadAction<AuthState>) {
       state.token = action.payload.token;
       state.user = action.payload.user;

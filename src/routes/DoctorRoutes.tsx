@@ -10,7 +10,8 @@ import Payments from '../features/doctor/Payments/Payments';
 import Reports from '../features/doctor/Reports/Reports';
 import Settings from '../features/doctor/Settings/Settings';
 import DoctorNotifications from '../features/doctor/Notifications/DoctorNotifications';
-import Meetings from '../features/doctor/Meetings/Meetings'; // ✅ Added
+import Meetings from '../features/doctor/Meetings/Meetings';
+import Profile from '../features/doctor/Profile/DoctorProfile'; // ✅ Reusable Profile Page
 
 import DoctorLayout from '../layouts/DoctorLayout';
 import ProtectedRoute from './ProtectedRoute';
@@ -31,11 +32,11 @@ const DoctorRoutes = () => {
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
           <Route path="notifications" element={<DoctorNotifications />} />
-          <Route path="meetings" element={<Meetings />} /> {/* ✅ New route */}
+          <Route path="meetings" element={<Meetings />} />
+          <Route path="profile" element={<Profile />} /> {/* ✅ Reusable Profile Route */}
         </Route>
       </Route>
 
-      {/* Redirect unknown paths to dashboard */}
       <Route path="*" element={<Navigate to="/doctor" replace />} />
     </Routes>
   );

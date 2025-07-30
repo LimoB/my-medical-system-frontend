@@ -11,13 +11,31 @@ const getAuthHeaders = () => {
   };
 };
 
-// ✅ Correct endpoint: POST /checkout — create a Stripe checkout session
+
+
+// ✅ Updated function with detailed logs
+// ✅ Updated function with detailed logs and proper error handling
+// ✅ Updated function with detailed logs and proper structure
 export const createStripeCheckoutSession = async (
-  payload: { appointmentId: number }
+  payload: CreatePaymentPayload
 ): Promise<{ url: string }> => {
-  const res = await api.post('/checkout', payload, getAuthHeaders());
-  return res.data; // expects: { url: string }
+  try {
+    console.log('📦 [createStripeCheckoutSession] → Payload:', JSON.stringify(payload, null, 2));
+
+    const res = await api.post('/checkout', payload, getAuthHeaders());
+
+    console.log('✅ [createStripeCheckoutSession] → Response Data:', res.data);
+    console.log('ℹ️ [createStripeCheckoutSession] → Status:', res.status);
+
+    return res.data;
+  } catch (error: any) {
+    console.error('❌ [createStripeCheckoutSession] → Error:', error?.response?.data || error.message);
+    throw error;
+  }
 };
+
+
+
 
 // ✅ Fetch all payments (admin)
 export const fetchPayments = async (): Promise<SanitizedPayment[]> => {
@@ -44,11 +62,7 @@ export const updatePayment = async (
   await api.put(`/payments/${id}`, data, getAuthHeaders());
 };
 
-
-
-
 // ✅ Fetch payments by user ID (for self or admin)
-// ✅ Fix: extract the payments array
 export const fetchPaymentsByUserId = async (userId: number): Promise<SanitizedPayment[]> => {
   const res = await api.get(`/payments/user/${userId}`, getAuthHeaders());
 
@@ -59,4 +73,3 @@ export const fetchPaymentsByUserId = async (userId: number): Promise<SanitizedPa
 
   return res.data.payments;
 };
-

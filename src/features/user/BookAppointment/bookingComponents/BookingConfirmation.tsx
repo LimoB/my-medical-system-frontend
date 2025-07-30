@@ -7,7 +7,7 @@ import Confetti from 'react-confetti';
 type Props = {
   onClose?: () => void;
   isModal?: boolean;
-  paymentMethod?: 'stripe' | 'cash' | 'mpesa' | '';
+  paymentMethod?: 'cash' | 'stripe' | 'mpesa' | 'paypal' | '';
   redirectTo?: string; // allow dynamic redirect
 };
 
@@ -49,11 +49,10 @@ const BookingConfirmation = ({
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className={`${
-          isModal
+        className={`${isModal
             ? 'p-6 sm:p-8 max-w-md bg-white rounded-2xl shadow-2xl text-center mx-auto'
             : 'p-10 sm:p-12 max-w-2xl bg-gradient-to-br from-teal-50 via-white to-emerald-100 rounded-2xl shadow-2xl text-center mx-auto'
-        }`}
+          }`}
       >
         <CheckCircle className="text-green-500 w-20 h-20 mx-auto mb-6 drop-shadow-md" />
         <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-emerald-700">

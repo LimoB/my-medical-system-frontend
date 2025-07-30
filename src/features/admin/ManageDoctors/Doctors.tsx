@@ -12,7 +12,7 @@ import type { AppDispatch, RootState } from '@/store/store';
 import type { DoctorCreatePayload, SanitizedDoctor } from '@/types/doctor';
 
 import DoctorTable from './DoctorTable';
-import DoctorForm from './DoctorForm';
+import DoctorForm from '@/components/DoctorForm';
 import DoctorDetailsModal from './DoctorDetailsModal';
 import Modal from '@/components/Modal';
 

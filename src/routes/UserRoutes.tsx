@@ -1,7 +1,7 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
 import UserDashboard from '../features/user/Dashboard/UserDashboard';
 import BookAppointment from '../features/user/BookAppointment/BookAppointment';
-import ConfirmBooking from '../features/user/BookAppointment/bookingComponents/ConfirmBooking'; // ✅ import this
+import ConfirmBooking from '../features/user/BookAppointment/bookingComponents/ConfirmBooking';
 import MyAppointments from '../features/user/MyAppointments/MyAppointments';
 import UserPrescriptions from '../features/user/Prescriptions/UserPrescriptions';
 import UserPayments from '../features/user/Payments/UserPayments';
@@ -12,6 +12,7 @@ import PaymentSuccess from '../features/user/Payments/payment-success';
 import PaymentCancel from '../features/user/Payments/payment-cancel';
 import UserConsultations from '../features/user/Consultation/UserConsultations';
 
+// import Settings from '../features//Settings/Settings'; // ✅ Assuming a shared path
 
 import UserLayout from '../layouts/UserLayout';
 import ProtectedRoute from './ProtectedRoute';
@@ -36,7 +37,6 @@ const UserRoutes = () => {
         <Route path="payment-success" element={<PaymentSuccess />} />
         <Route path="payment-cancel" element={<PaymentCancel />} />
 
-
         {/* ✅ Other user routes */}
         <Route path="appointments" element={<MyAppointments />} />
         <Route path="prescriptions" element={<UserPrescriptions />} />
@@ -45,7 +45,7 @@ const UserRoutes = () => {
         <Route path="profile" element={<UserProfile />} />
         <Route path="notifications" element={<UserNotifications />} />
         <Route path="consultations" element={<UserConsultations />} />
-
+        {/* <Route path="settings" element={<Settings />} /> ✅ Added here */}
       </Route>
 
       {/* Redirect unknown paths to dashboard */}

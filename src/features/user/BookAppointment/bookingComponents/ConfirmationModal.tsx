@@ -1,14 +1,31 @@
 import { FaRegCheckCircle } from 'react-icons/fa';
 import BookingConfirmation from '@/features/user/BookAppointment/bookingComponents/BookingConfirmation';
 
+type PaymentMethod = 'cash' | 'stripe' | 'mpesa' | 'paypal' | '';
+
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  paymentMethod?: 'stripe' | 'cash' | 'mpesa' | '';
+  paymentMethod?: PaymentMethod;
 };
 
 const ConfirmationModal = ({ isOpen, onClose, paymentMethod = '' }: Props) => {
   if (!isOpen) return null;
+
+  const getConfirmationText = () => {
+    switch (paymentMethod) {
+      case 'stripe':
+        return 'Payment successful via Stripe.';
+      case 'cash':
+        return 'You chose to pay with Cash.';
+      case 'mpesa':
+        return 'Payment processed via M-PESA.';
+      case 'paypal':
+        return 'Payment completed using PayPal.';
+      default:
+        return 'Booking recorded. Awaiting payment method.';
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-black/30 via-black/50 to-black/80 backdrop-blur-md px-4">
@@ -29,13 +46,17 @@ const ConfirmationModal = ({ isOpen, onClose, paymentMethod = '' }: Props) => {
             Booking Confirmed!
           </h2>
           <p className="text-gray-600 mt-1 text-sm md:text-base">
-            Your appointment has been successfully booked.
+            {getConfirmationText()}
           </p>
         </div>
 
         {/* Booking Confirmation Component */}
         <div className="mt-6">
-          <BookingConfirmation onClose={onClose} isModal paymentMethod={paymentMethod} />
+          <BookingConfirmation
+            onClose={onClose}
+            isModal
+            paymentMethod={paymentMethod}
+          />
         </div>
       </div>
     </div>

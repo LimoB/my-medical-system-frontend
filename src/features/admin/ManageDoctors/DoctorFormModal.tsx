@@ -2,7 +2,7 @@
 
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import DoctorForm from './DoctorForm';
+import DoctorForm from '@/components/DoctorForm';
 import type { SanitizedDoctor, DoctorCreatePayload } from '@/types/doctor';
 
 interface Props {

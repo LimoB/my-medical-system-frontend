@@ -121,6 +121,7 @@ export default function BaseTopBar({ onToggleSidebar }: BaseTopBarProps) {
                 className="absolute right-0 top-full mt-1 w-52 bg-white border border-gray-200 rounded-md shadow-md z-50"
               >
                 <div className="flex flex-col py-2 text-sm text-gray-700">
+                  {/* ✅ Profile: goes to /{role}/profile */}
                   <div
                     onClick={() => {
                       navigate(`${basePath}/profile`);
@@ -131,6 +132,8 @@ export default function BaseTopBar({ onToggleSidebar }: BaseTopBarProps) {
                     <UserIcon className="w-5 h-5 text-[#0f766e]" />
                     <span>Profile</span>
                   </div>
+
+                  {/* ✅ Settings: goes to /{role}/settings */}
                   <div
                     onClick={() => {
                       navigate(`${basePath}/settings`);
@@ -141,11 +144,14 @@ export default function BaseTopBar({ onToggleSidebar }: BaseTopBarProps) {
                     <Settings className="w-5 h-5 text-[#0f766e]" />
                     <span>Settings</span>
                   </div>
+
+                  {/* ✅ Logout (unchanged) */}
                   <LogoutButton className="text-left px-5 py-3 hover:bg-[#f0fdfa] w-full" />
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
+
         </div>
       </div>
     </header>

@@ -1,7 +1,7 @@
 import type { Key, ReactNode } from "react";
 
-export type PaymentMethod = 'cash' | 'card' | 'mpesa';
-export type PaymentStatus = 'pending' | 'paid' | 'failed';
+export type PaymentMethod = 'cash' | 'stripe' | 'mpesa' | 'paypal';
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'CashOnDelivery';
 
 export interface SanitizedPayment {
   id: Key | null | undefined;
@@ -38,6 +38,7 @@ export interface SanitizedPayment {
 
 export interface CreatePaymentPayload {
   amount: number;
-  method: PaymentMethod;
+  paymentMethod: PaymentMethod; // ✅ changed from `method`
   appointmentId: number;
 }
+
