@@ -1,3 +1,4 @@
+# File: .github/workflows/azure-static-web-apps.yml
 name: Azure Static Web Apps CI/CD
 
 on:
@@ -15,25 +16,31 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
+      # Checkout the code
       - uses: actions/checkout@v3
         with:
           submodules: true
           lfs: false
 
+      # Setup Node.js (ensure Node 20.19.0+ for Vite compatibility)
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20.19.0   # ✅ FIXED: Vite 7+ and PostCSS expect Node >= 20.19.0
+          node-version: 20.19.0
 
+      # Install pnpm globally
       - name: Install pnpm
         run: npm install -g pnpm
 
+      # Install dependencies using pnpm
       - name: Install dependencies
         run: pnpm install
 
+      # Build the project
       - name: Build project
         run: pnpm run build
 
+      # Deploy to Azure Static Web Apps
       - name: Deploy to Azure Static Web Apps
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -41,9 +48,9 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PURPLE_PLANT_08DA99010 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "/"             # Adjust if your frontend is in a subfolder
-          api_location: ""              # Set to "api" if you have API backend
-          output_location: "dist"       # Ensure this matches your Vite `outDir`
+          app_location: "/"           # Path to your frontend code (root in this case)
+          api_location: ""            # Set to folder like "api" if using Azure Functions
+          output_location: "dist"     # Vite default build folder
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
