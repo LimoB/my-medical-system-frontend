@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20.19.0   # ✅ FIXED: Vite 7+ and PostCSS expect Node >= 20.19.0
 
       - name: Install pnpm
         run: npm install -g pnpm
@@ -41,9 +41,9 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PURPLE_PLANT_08DA99010 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "/"             # Change if your frontend is in a subfolder
-          api_location: ""              # Or "api" if you have an API backend
-          output_location: "dist"       # Adjust if your build outputs elsewhere
+          app_location: "/"             # Adjust if your frontend is in a subfolder
+          api_location: ""              # Set to "api" if you have API backend
+          output_location: "dist"       # Ensure this matches your Vite `outDir`
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
