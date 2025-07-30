@@ -6,7 +6,7 @@ import ServicesSection from '../landing/servicePage/ServicesSection'; // Importi
 import TeamSection from '../landing/TeamSection';  // This now includes both doctors and non-medical staff like CEO
 import DoctorsListSection from '@/components/DoctorsListSection';
 import Testimonials from '../landing/Testimonials';
-import PartnersSection from '../landing/PartnersSection';
+// import PartnersSection from '../landing/PartnersSection';
 import Newsletter from '../landing/Newsletter';
 import Footer from '../landing/Footer';
 
@@ -39,7 +39,7 @@ const HomePage = () => {
       <Testimonials />
 
       {/* Partners Section */}
-      <PartnersSection />
+      {/* <PartnersSection /> */}
 
       {/* Newsletter Section */}
       <Newsletter />
